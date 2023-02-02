@@ -170,7 +170,7 @@ public class CPSReasoner {
 	static Vector<String> runCmdRaw(String cmd, String inData) throws IOException {
 		Runtime r = Runtime.getRuntime();
 
-		System.out.println("Executing: " + cmd);
+		//System.out.println("Executing: " + cmd);
 		Process p = r.exec(cmd);
 
 		Thread outputFiller = null;
@@ -385,7 +385,7 @@ public class CPSReasoner {
 
 	static boolean isWindows() {
 		String OS = System.getProperty("os.name");
-		System.out.println("os=" + OS);
+		//System.out.println("os=" + OS);
 		return (OS.startsWith("Windows"));
 	}
 
