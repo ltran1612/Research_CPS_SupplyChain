@@ -39,7 +39,7 @@ public class CPSReasoner {
 		String asp = aspQ;
 		String res = "";
 
-		System.out.println("query=" + query);
+		//System.out.println("query=" + query);
 
 		try {
 			String cmd;
@@ -64,7 +64,7 @@ public class CPSReasoner {
 			aspProg = jenaToASP(lines);
 			/* add the query */
 			aspProg += asp;
-			System.out.println("asp=" + aspProg);
+			//System.out.println("asp=" + aspProg);
 
 			/* run the ASP query */
 			writeToFile(tmpFileASP, aspProg);
@@ -115,6 +115,7 @@ public class CPSReasoner {
 			x.printStackTrace();
 		}
 
+		System.out.println("Query Finished");
 		return (res);
 	}
 

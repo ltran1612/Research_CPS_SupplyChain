@@ -158,7 +158,7 @@ FULL-step2.txt
 *QUERY
 SR-RE-01: After cyberattack
 EX4-sr-elevator
-clingo (all models)
+dlv (all models)
 FULL-step3.txt
 *QUERY
 SR-RE-01: Mitigation Strategy: Random method + List all possible solutions
