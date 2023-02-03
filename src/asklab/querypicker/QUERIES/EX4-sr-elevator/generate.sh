@@ -10,6 +10,10 @@ FILES="$REASONING/Integration/SR-RE-01-truthworthiness/ontology_elevator.lp $REA
 OUTPUT=FULL-step1.txt
 cat $FILES > $OUTPUT
 
+FILES="../TEST/translation.lp $REASONING/Integration/SR-RE-01-truthworthiness/obs_init_state_elevator.lp $REASONING/Integration/SR-RE-01-truthworthiness/reasoning_2_1.lp output_sr_re_01_01.lp"
+OUTPUT=FULL-step1-new.txt
+cat $FILES > $OUTPUT
+
 FILES="$REASONING/Integration/SR-RE-01-truthworthiness/ontology_elevator.lp $REASONING/Integration/SR-RE-01-truthworthiness/obs_init_state_elevator.lp $REASONING/Integration/SR-RE-01-truthworthiness/reasoning_2_2.lp output_sr_re_01_02.lp"
 OUTPUT=FULL-step2.txt
 cat $FILES > $OUTPUT

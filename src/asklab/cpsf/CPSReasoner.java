@@ -62,6 +62,7 @@ public class CPSReasoner {
 
 			/* map jena's output to ASP facts */
 			aspProg = jenaToASP(lines);
+			writeToFile("jena_result.txt", aspProg);
 			/* add the query */
 			aspProg += asp;
 			//System.out.println("asp=" + aspProg);

@@ -151,6 +151,11 @@ EX4-sr-elevator
 clingo (all models)
 FULL-step1.txt
 *QUERY
+SR-RE-01: Most/Least Trustworthy Component (new)
+EX4-sr-elevator
+clingo (all models)
+FULL-step1-new.txt
+*QUERY
 SR-RE-01: Check unsatisfied concerns
 EX4-sr-elevator
 clingo (all models)
