@@ -483,7 +483,7 @@ class owlGraph:
 
         plt.tight_layout()
 
-        nx.draw_networkx_nodes(self.netXGraph, pos = self.graphPositions, with_labels=False, arrows=False, ax = ax, node_size = .1,scale = 1)
+        nx.draw_networkx_nodes(self.netXGraph, pos = self.graphPositions, ax = ax, node_size = .1)
 
         nx.draw_networkx_edges(self.netXGraph, pos = self.graphPositions, edgelist = self.subconcernEdges, arrows=False,style = "solid",width = edge_width,edge_color = edge_color,alpha = edge_alpha)
         nx.draw_networkx_edges(self.netXGraph, pos = self.graphPositions, edgelist = self.concernFormulasEdges, arrows=False,style = "solid",width = edge_width,edge_color = edge_color, alpha = edge_alpha)

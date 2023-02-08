@@ -22,10 +22,9 @@ spartangreen = "#18453b"
 class OntologyGUI:
 
     def __init__(self,master):
-
         
         self.fontStyleTest = tkFont.Font(family="Lucida Grande", size=80, weight = "bold")
-        
+        #self.owlTree = None
         self.zoom = 1
         self.zoomIndex = 105
         
@@ -418,7 +417,6 @@ class OntologyGUI:
     def setAllTreeNodes(self):
 
         if(self.owlBaseLoaded == True):
-
             self.allTreeNodes = self.owlBase.allConcerns_owlNode
 
         if(self.owlAppLoaded == True):
@@ -438,7 +436,7 @@ class OntologyGUI:
        
     #clears the tree, re sets up owlBase and graph, draws it
     def updateTree(self):
-
+         print("Updating here...")
          self.treeAxis.clear()
 
          self.treeAxis.axis('off')
