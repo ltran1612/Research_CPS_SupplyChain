@@ -8,3 +8,7 @@
 /tmpDir/
 bin/
 *pycache*
+*myenv
+*.DS_Store
+*jena_result.txt
+*.swp
