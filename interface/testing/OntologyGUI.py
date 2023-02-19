@@ -436,7 +436,6 @@ class OntologyGUI:
        
     #clears the tree, re sets up owlBase and graph, draws it
     def updateTree(self):
-         print("Updating here...")
          self.treeAxis.clear()
 
          self.treeAxis.axis('off')
@@ -463,7 +462,7 @@ class OntologyGUI:
     #changes zoom level, fontsize, then calls updateTree to draw it again
     def handleZoom(self,event):
 
-        print("we be zooming")
+        #print("we be zooming")
 
         original_zoom = self.zoom
 

@@ -534,7 +534,7 @@ class owlGraph:
             
             list_names = ["workshop_ontologies/cpsframework-v3-sr-LKAS-Configuration-V1.owl","workshop_ontologies/cpsframework-v3-blank-app.owl"]
             if(self.owlApplication.owlName in list_names):
-                print("special")
+                #print("special")
                 nx.draw_networkx_labels(self.netXGraph,self.graphPositions,self.formulasNodeLabels,font_size=fs*.90,bbox=dict(facecolor=property_color, boxstyle='round4,pad=.3'),font_color = "white")
                 
             else:
