@@ -12,3 +12,4 @@ bin/
 *.DS_Store
 *jena_result.txt
 *.swp
+*condaenv.9rx58qzy.requirements.txt
