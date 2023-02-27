@@ -28,6 +28,24 @@
 %
 
 *LBL
+<html><u><font color='red'>CONTRACT</font></u></html>
+*QUERY
+CONTRACT Case 1: Check Feasability of the CONTRACT.
+CONTRACT
+clingo (all models)
+CONTRACT-01.txt
+*QUERY
+CONTRACT Case 2: Check if the terms are done. 
+CONTRACT
+clingo (all models)
+CONTRACT-02.txt
+*QUERY
+CONTRACT Case 3: Check if the concerns are satisfied. 
+CONTRACT
+clingo (all models)
+CONTRACT-03.txt
+
+*LBL
 <html><u><font color='red'>TEST</font></u></html>
 *QUERY
 SR-RE-01: Most/Least Trustworthy Component (Case 0)
