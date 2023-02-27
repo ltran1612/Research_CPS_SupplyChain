@@ -135,7 +135,7 @@ class OntologyGUI:
 
         self.inputAppEntry = Entry(self.leftControlFrame, width = 30,borderwidth = 5,highlightbackground="white", fg = "#18453b",font = entryFont)
         self.inputAppEntry.pack()
-        self.inputAppEntry.insert(0,"cpsframework-v3-sr-LKAS-Configuration-V1.owl")
+        self.inputAppEntry.insert(0,"test-application.owl")
 
         #button to load ontology, calls function which handles loading
         self.loadAppOntologyB = tk.Button(self.leftControlFrame, text = "Load Application Ontology",padx = 10, pady = 1, width = self.buttonWidth,bg = "#18453b", fg = self.buttonFontColor,borderwidth = 5,font = buttonFont,command = self.loadAppOntology)
@@ -167,7 +167,7 @@ class OntologyGUI:
         
         self.outputAppEntry = Entry(self.leftControlFrame, width = 30, borderwidth = 5, highlightbackground = "white", fg = "#18453b", font = entryFont)
         self.outputAppEntry.pack()
-        self.outputAppEntry.insert(2, "cpsframework-v3-sr-LKAS-Configuration-V1.owl")
+        self.outputAppEntry.insert(2, "test-application.owl")
         
         self.saveAppOntologyB = tk.Button(self.leftControlFrame, text = "Output App Ontology",padx = 10, pady = 1, width = self.outputButtonWidth,bg = "#18453b", fg = self.buttonFontColor, borderwidth = 5, font = buttonFont, command  = self.saveAppOntology)
         self.saveAppOntologyB.pack()
@@ -182,7 +182,7 @@ class OntologyGUI:
         #sets up gray box for information window
 
         self.infoFrame = Frame(self.leftControlFrame, bg = "#747780", bd = 5 )
-        self.infoFrame.place(relwidth = .9, relheight = .50, relx = .05, rely = .44)
+        #self.infoFrame.place(relwidth = .9, relheight = .50, relx = .05, rely = .44)
         
        
         
@@ -191,20 +191,20 @@ class OntologyGUI:
         self.infoFrameHeaderLabel.pack()
 
         self.owlInfoFrame = Frame(self.infoFrame, bg = spartangreen, bd = 5)
-        self.owlInfoFrame.place(relwidth = .94, relheight = .45, relx = .03, rely = .06)
+        #self.owlInfoFrame.place(relwidth = .94, relheight = .45, relx = .03, rely = .06)
 
         self.owlInfoFrame.update()
         
        
 
         self.indInfoHeaderFrame = Frame(self.infoFrame, bg = "#747780",bd = 5)
-        self.indInfoHeaderFrame.place(relwidth = .9, relheight = .07, relx  = .05, rely = .525)
+        #self.indInfoHeaderFrame.place(relwidth = .9, relheight = .07, relx  = .05, rely = .525)
 
         self.indInfoHeaderLabel = Label(self.indInfoHeaderFrame,text = "Hovered Information", font = headerFont, fg = "white", bg = "#747780")
         self.indInfoHeaderLabel.pack()
 
         self.indInfoFrame = Frame(self.infoFrame,  bg = spartangreen, bd = 5)
-        self.indInfoFrame.place(relwidth = .94, relheight = .41, relx = .03, rely = .58)
+        #self.indInfoFrame.place(relwidth = .94, relheight = .41, relx = .03, rely = .58)
 
 
         self.owlBaseNameText = tk.StringVar()
@@ -400,12 +400,13 @@ class OntologyGUI:
         self.summaryText.set(summary)
         
     def saveAppOntology(self):
-        
+        print("saving app ontology...")
         if(self.owlApplication == None ):
+            print("No app ontology")
             return
         
         #save_dir_name = "workshop_ontologies/"
-        save_dir_name = "../../src/asklab/querypicker/QUERIES/EX5-sr-lkas/"
+        save_dir_name = "../../src/asklab/querypicker/QUERIES/TEST/"
         
         output_file = self.outputAppEntry.get()
         

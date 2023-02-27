@@ -395,8 +395,9 @@ class owlApplication:
             if(lhsnode.operator == "and"):
                 
                 print(lhsnode.name)
-                
+                print(type(self.owlreadyOntology.Conjunction))
                 new_Formulas = self.owlreadyOntology.Conjunction(lhsnode.name,ontology = self.owlreadyOntology)
+                
             
             else:
                 
