@@ -177,7 +177,7 @@ class owlApplication:
     def addComponents(self):
         
         self.allComponents_owlNode = []
-        
+        print("in add components", type(self.owlreadyOntology.Component))
         all_components = np.asarray(self.owlreadyOntology.search(type = self.owlreadyOntology.Component))
         
         

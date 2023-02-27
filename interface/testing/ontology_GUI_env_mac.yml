@@ -145,7 +145,7 @@ dependencies:
   - more-itertools=6.0.0=py36_0
   - mpc=1.1.0=h6ef4df4_1
   - mpfr=4.0.1=h3018a27_3
-  - mpi4py=2.0.0=py36_0
+  #- mpi4py=2.0.0=py36_0
   - mpl-scatter-density=0.6=py_0
   - mpmath=1.1.0=py36_0
   - msgpack-python=0.6.1=py36h04f5b5a_1
@@ -162,7 +162,7 @@ dependencies:
   - numpydoc=0.8.0=py36_0
   - odo=0.5.1=py36hc1af34a_0
   - olefile=0.46=py36_0
-  - openmpi=1.6.3=1
+  #- openmpi=2.0.0=1
   - openpyxl=2.6.2=py_0
   - openssl=1.1.1g=h1de35cc_0
   - packaging=19.0=py36_0
@@ -291,7 +291,6 @@ dependencies:
   - pip:
     - absl-py==0.13.0
     - asgiref==3.2.7
-    - astroplan==0.4
     - astunparse==1.6.3
     - cached-property==1.5.2
     - cachetools==4.2.2
@@ -305,14 +304,13 @@ dependencies:
     - grpcio==1.34.1
     - h5py==3.1.0
     - isodate==0.6.0
-    - keepalive==0.5
     - keras==2.4.3
     - keras-nightly==2.5.0.dev2021032900
     - keras-preprocessing==1.1.2
     - markdown==3.3.4
     - matplotlib==2.2.3
     - networkx==1.11
-    - numpy==1.18.5
+    - numpy==1.19.2
     - oauthlib==3.1.1
     - onto2nx==0.1.1
     - ontodocs==1.2.2

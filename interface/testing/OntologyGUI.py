@@ -182,7 +182,7 @@ class OntologyGUI:
         #sets up gray box for information window
 
         self.infoFrame = Frame(self.leftControlFrame, bg = "#747780", bd = 5 )
-        #self.infoFrame.place(relwidth = .9, relheight = .50, relx = .05, rely = .44)
+        self.infoFrame.place(relwidth = .9, relheight = .50, relx = .05, rely = .44)
         
        
         
@@ -191,20 +191,20 @@ class OntologyGUI:
         self.infoFrameHeaderLabel.pack()
 
         self.owlInfoFrame = Frame(self.infoFrame, bg = spartangreen, bd = 5)
-        #self.owlInfoFrame.place(relwidth = .94, relheight = .45, relx = .03, rely = .06)
+        self.owlInfoFrame.place(relwidth = .94, relheight = .45, relx = .03, rely = .06)
 
         self.owlInfoFrame.update()
         
        
 
         self.indInfoHeaderFrame = Frame(self.infoFrame, bg = "#747780",bd = 5)
-        #self.indInfoHeaderFrame.place(relwidth = .9, relheight = .07, relx  = .05, rely = .525)
+        self.indInfoHeaderFrame.place(relwidth = .9, relheight = .07, relx  = .05, rely = .525)
 
         self.indInfoHeaderLabel = Label(self.indInfoHeaderFrame,text = "Hovered Information", font = headerFont, fg = "white", bg = "#747780")
         self.indInfoHeaderLabel.pack()
 
         self.indInfoFrame = Frame(self.infoFrame,  bg = spartangreen, bd = 5)
-        #self.indInfoFrame.place(relwidth = .94, relheight = .41, relx = .03, rely = .58)
+        self.indInfoFrame.place(relwidth = .94, relheight = .41, relx = .03, rely = .58)
 
 
         self.owlBaseNameText = tk.StringVar()
