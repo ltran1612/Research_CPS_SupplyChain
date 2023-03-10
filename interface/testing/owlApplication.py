@@ -398,7 +398,6 @@ class owlApplication:
                 print(type(self.owlreadyOntology.Conjunction))
                 new_Formulas = self.owlreadyOntology.Conjunction(lhsnode.name,ontology = self.owlreadyOntology)
                 
-            
             else:
                 
                 new_Formulas = self.owlreadyOntology.Disjunction(lhsnode.name,ontology = self.owlreadyOntology)
@@ -409,16 +408,14 @@ class owlApplication:
                 
                 if(member == ""):
                     continue
-                
-                
-                
-                
+                #print("member name", member)
                 member_owlready = self.getOWLObject(member)
-                if(self.isProperty(member_owlready) == True):
-                    
-                   
-                    member_owlready.addConcern.append(RHSNode.owlreadyObj)
-               
+
+                # address concern but we are in the formula so this may not be needed
+                # if(self.isProperty(member_owlready) == True):
+                #     print("concern", RHSNode.name)
+                #     member_owlready.addConcern.append(RHSNode.owlreadyObj)
+
                 
                 
                 #make Formulas have children, negated children 
