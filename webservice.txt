@@ -1,0 +1,6 @@
+1) Service to get parts of the ontology. (Core)
+2) Service to convert Onotlogy to ASP and combine with other ASP to run. (Core)
+3) Service to edit ontology? (maybe). 
+
+
+Automatically convert. 

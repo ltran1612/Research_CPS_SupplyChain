@@ -295,8 +295,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#ele_sr_er_01_initial_conf_0">
         <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#InitialConfiguration"/>
-        <obsFalse rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#property1"/>
-        <obsFalse rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#property2"/>
         <obsFalse rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#property3"/>
     </owl:NamedIndividual>
     
@@ -321,6 +319,14 @@
     <!-- http://www.asklab.tk/ontologies/CPS-Framework#property3 -->
 
     <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#property3">
+        <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Property"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.asklab.tk/ontologies/CPS-Framework#property4 -->
+
+    <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#property4">
         <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Property"/>
     </owl:NamedIndividual>
 </rdf:RDF>

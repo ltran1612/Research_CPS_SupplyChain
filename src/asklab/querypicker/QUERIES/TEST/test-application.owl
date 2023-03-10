@@ -8,16 +8,6 @@
 
 <owl:Ontology rdf:about="http://www.asklab.tk/ontologies/CPS-Framework"/>
 
-<owl:ObjectProperty rdf:about="#addConcern">
-  <rdfs:domain rdf:resource="#Property"/>
-  <rdfs:range rdf:resource="#Concern"/>
-</owl:ObjectProperty>
-
-<owl:ObjectProperty rdf:about="#memberOf">
-  <rdfs:domain rdf:resource="#Property"/>
-  <rdfs:range rdf:resource="#Formulas"/>
-</owl:ObjectProperty>
-
 <owl:ObjectProperty rdf:about="#addressToFunc">
   <rdfs:domain rdf:resource="#Formulas"/>
   <rdfs:range rdf:resource="#DecompositionFunction"/>
@@ -33,8 +23,36 @@
   <rdfs:range rdf:resource="#Property"/>
 </owl:ObjectProperty>
 
+<owl:ObjectProperty rdf:about="#formulasAddConcern">
+  <rdfs:domain rdf:resource="#Formulas"/>
+  <rdfs:range rdf:resource="#Concern"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#includesMember">
+  <rdfs:domain rdf:resource="#Formulas"/>
+  <rdfs:range rdf:resource="#Formulas"/>
+  <owl:inverseOf rdf:resource="#includesMember"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#memberOf">
+  <rdfs:domain rdf:resource="#Formulas"/>
+  <rdfs:domain rdf:resource="#Property"/>
+  <rdfs:range rdf:resource="#Formulas"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#negMemberOf">
+  <rdfs:domain rdf:resource="#Formulas"/>
+  <rdfs:domain rdf:resource="#Property"/>
+  <rdfs:range rdf:resource="#Formulas"/>
+</owl:ObjectProperty>
+
 <owl:ObjectProperty rdf:about="#positiveImpactTo">
   <rdfs:domain rdf:resource="#Component_Property"/>
+  <rdfs:range rdf:resource="#Concern"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#addConcern">
+  <rdfs:domain rdf:resource="#Property"/>
   <rdfs:range rdf:resource="#Concern"/>
 </owl:ObjectProperty>
 
@@ -43,199 +61,63 @@
   <rdfs:range rdf:resource="#Property"/>
 </owl:ObjectProperty>
 
-<owl:Class rdf:about="#Property"/>
+<owl:Class rdf:about="#Concern"/>
 
 <owl:Class rdf:about="#Formulas"/>
 
 <owl:Class rdf:about="#DecompositionFunction"/>
 
-<Formulas rdf:about="#g1">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Sign_In_Func"/>
-</Formulas>
+<owl:Class rdf:about="#Component_Property"/>
 
-<Formulas rdf:about="#g2">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Sign_In_Func"/>
-</Formulas>
+<owl:Class rdf:about="#Component"/>
 
-<Formulas rdf:about="#g3">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Sign_In_Func"/>
-</Formulas>
+<owl:Class rdf:about="#Property"/>
 
-<Formulas rdf:about="#g4">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Sign_In_Func"/>
-</Formulas>
+<owl:Class rdf:about="#Conjunction">
+  <rdfs:subClassOf rdf:resource="#Formulas"/>
+</owl:Class>
 
-<Formulas rdf:about="#g5">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Sign_In_Func"/>
-</Formulas>
+<owl:Class rdf:about="#Disjunction">
+  <rdfs:subClassOf rdf:resource="#Formulas"/>
+</owl:Class>
 
-<Formulas rdf:about="#g6">
+<Conjunction rdf:about="#Functional_Stability_Condition_1">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Operation_Func"/>
-</Formulas>
-
-<Formulas rdf:about="#g7">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Operation_Func"/>
-</Formulas>
-
-<Formulas rdf:about="#g8">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Energy_Func"/>
-</Formulas>
-
-<Formulas rdf:about="#g9">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Energy_Func"/>
-</Formulas>
-
-<Formulas rdf:about="#g10">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <addressToFunc rdf:resource="#Energy_Func"/>
-</Formulas>
-
-<Component_Property rdf:about="#pos_imp_sam_data_encrypted">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Encryption"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_conn_encrypted">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Encryption"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_protocol_encrypted">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Encryption"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_algo_RSA">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Encryption"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_algo_AES">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Encryption"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_firewall_setup">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Verification"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_mac_check">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Verification"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_secure_boot">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Integrity"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_advanced_mode">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Integrity"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_iris_scan">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Authorization"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_two_factors">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Authorization"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_finger_printing">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Authorization"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_sam_trusted_environment">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Authorization"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_cam_algo_RSA">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Encryption"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_cam_data_encrypted">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Encryption"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_cam_conn_encrypted">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Encryption"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_cam_protocol_encrypted">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Encryption"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_cam_mac_check">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Verification"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_cam_secure_boot">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Integrity"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_cam_advanced_mode">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Integrity"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_cam_trusted_auth_device">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Authorization"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_cam_trusted_environment">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Authorization"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_battery_powerful_mode">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Integrity"/>
-</Component_Property>
-
-<Component_Property rdf:about="#pos_imp_battery_trusted_environment">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <positiveImpactTo rdf:resource="#Authorization"/>
-</Component_Property>
+  <formulasAddConcern rdf:resource="#Functional_Stability"/>
+  <includesMember rdf:resource="#property1"/>
+  <includesMember rdf:resource="#property2"/>
+</Conjunction>
 
 <Property rdf:about="#property1">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <rdf:type rdf:resource="#Formulas"/>
-  <addConcern rdf:resource="#Authorization"/>
+  <memberOf rdf:resource="#Functional_Stability_Condition_1"/>
 </Property>
 
 <Property rdf:about="#property2">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <rdf:type rdf:resource="#Formulas"/>
-  <addConcern rdf:resource="#Frequency"/>
+  <memberOf rdf:resource="#Functional_Stability_Condition_1"/>
 </Property>
 
 <Property rdf:about="#property3">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <rdf:type rdf:resource="#Formulas"/>
-  <addConcern rdf:resource="#Verification"/>
+  <memberOf rdf:resource="#Authorization_Condition_1"/>
 </Property>
+
+<Property rdf:about="#property4">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <rdf:type rdf:resource="#Formulas"/>
+  <memberOf rdf:resource="#Authorization_Condition_1"/>
+</Property>
+
+<Disjunction rdf:about="#Authorization_Condition_1">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <formulasAddConcern rdf:resource="#Authorization"/>
+  <includesMember rdf:resource="#property3"/>
+  <includesMember rdf:resource="#property4"/>
+</Disjunction>
 
 
 </rdf:RDF>
