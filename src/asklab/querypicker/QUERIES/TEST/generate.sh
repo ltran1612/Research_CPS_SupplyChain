@@ -11,7 +11,7 @@ OUTPUT=TEST-01.txt
 cat $FILES > $OUTPUT
 
 # Check unsatisfied concerns (Case 0) 
-FILES="$REASONING/Integration/SR-RE-01-truthworthiness/ontology_driven.lp $REASONING/Integration/SR-RE-01-truthworthiness/ontology_init_ele_0.lp $REASONING/Integration/SR-RE-01-truthworthiness/reasoning_2_2_onto.lp output_sr_re_01_02.lp"
+FILES="$REASONING/Integration/SR-RE-01-truthworthiness/ontology_driven.lp $REASONING/Integration/SR-RE-01-truthworthiness/ontology_init_ele_0.lp $REASONING/Integration/SR-RE-01-truthworthiness/reasoning_2_2_onto.lp $REASONING/Integration/SR-RE-02-satisfaction/reasoning_3_1_onto.lp output_sr_re_01_02.lp"
 OUTPUT=TEST-02.txt
 cat $FILES > $OUTPUT
 

@@ -412,9 +412,10 @@ class owlApplication:
                 member_owlready = self.getOWLObject(member)
 
                 # address concern but we are in the formula so this may not be needed
-                # if(self.isProperty(member_owlready) == True):
-                #     print("concern", RHSNode.name)
-                #     member_owlready.addConcern.append(RHSNode.owlreadyObj)
+                # commented out by long
+                if(self.isProperty(member_owlready) == True):
+                    print("concern", RHSNode.name)
+                    member_owlready.addConcern.append(RHSNode.owlreadyObj)
 
                 
                 

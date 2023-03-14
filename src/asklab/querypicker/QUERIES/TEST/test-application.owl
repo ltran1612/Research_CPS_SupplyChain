@@ -81,32 +81,13 @@
   <rdfs:subClassOf rdf:resource="#Formulas"/>
 </owl:Class>
 
-<Conjunction rdf:about="#Functional_Stability_Condition_1">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <formulasAddConcern rdf:resource="#Functional_Stability"/>
-  <includesMember rdf:resource="#property1"/>
-  <includesMember rdf:resource="#property2"/>
-</Conjunction>
-
 <Property rdf:about="#property1">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <rdf:type rdf:resource="#Formulas"/>
-  <memberOf rdf:resource="#Functional_Stability_Condition_1"/>
-</Property>
-
-<Property rdf:about="#property2">
-  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
-  <rdf:type rdf:resource="#Formulas"/>
-  <memberOf rdf:resource="#Functional_Stability_Condition_1"/>
-</Property>
-
-<Property rdf:about="#property3">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <rdf:type rdf:resource="#Formulas"/>
   <memberOf rdf:resource="#Authorization_Condition_1"/>
 </Property>
 
-<Property rdf:about="#property4">
+<Property rdf:about="#property2">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <rdf:type rdf:resource="#Formulas"/>
   <memberOf rdf:resource="#Authorization_Condition_1"/>
@@ -115,9 +96,15 @@
 <Disjunction rdf:about="#Authorization_Condition_1">
   <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
   <formulasAddConcern rdf:resource="#Authorization"/>
-  <includesMember rdf:resource="#property3"/>
-  <includesMember rdf:resource="#property4"/>
+  <includesMember rdf:resource="#property1"/>
+  <includesMember rdf:resource="#property2"/>
 </Disjunction>
+
+<Component rdf:about="#component1">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <relateToProperty rdf:resource="#property1"/>
+  <relateToProperty rdf:resource="#property2"/>
+</Component>
 
 
 </rdf:RDF>
