@@ -1,1 +1,0 @@
-java asklab.querypicker.QueryPicker
