@@ -87,7 +87,7 @@ public class CPSReasoner {
 
 			//System.out.println("---ThanhNH : " + out);
 			/* Write Raw output to file using to export CSV */
-			writeToFile("./Integration/ASP/tmpASPoutput.txt",out);
+			writeToFile("./tmpASPoutput.txt",out);
 
 			/* convert output to one-literal-per-line */
 			cmd = mkatomsCmd();
@@ -130,8 +130,8 @@ public class CPSReasoner {
 	}
 
 	static void writeToFile(String file, String str) throws IOException {
-		PrintWriter out = new PrintWriter(file);
-		out.print(str);
+		FileWriter out = new FileWriter(file);
+		out.write(str);
 		out.close();
 	}
 

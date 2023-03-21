@@ -123,6 +123,13 @@ class QExecActionListener implements ActionListener {
 					System.err.println("unable to create the directory " + tmpDir);
 					return null;
 				}
+				System.out.println(baseDir);
+				System.out.println(exDir);
+				System.out.println(tmpDir);
+				System.out.println(aspFile);
+				System.out.println(sparqlFile);
+				System.out.println(solver);
+
 				copyOWL(baseDir, tmpDir);
 				copyOWL(exDir, tmpDir);
 				String f = exDir + "/" + aspFile;
@@ -240,8 +247,8 @@ public class QueryPicker {
 	final String dataDir = pkgPath("QUERIES/");
 	final String contentFile = dataDir + "content.txt";
 
-	public final static String config_ASP_result_file = "./Integration/ASP/tmpASPoutput.txt";
-	public final static String config_CSV_file = "./Integration/CSV/out.csv";
+	public final static String config_ASP_result_file = "./tmpASPoutput.txt";
+	public final static String config_CSV_file = "./out.csv";
 	public final static String CSV_Expoter_Script = "./CSVExport/product/exportASP.py";
 	public final static String PYTHON_COMMAND = "/anaconda3/bin/python";
 
@@ -430,14 +437,14 @@ public class QueryPicker {
 				System.out.println("Export Answert to CSV");
 				String[] command = new String[] { PYTHON_COMMAND, CSV_Expoter_Script, config_ASP_result_file,
 						config_CSV_file };
-				String s = executeCommand(command);
-				System.out.print(s);
+				//String s = executeCommand(command);
+				//System.out.print(s);
 
-				if (s.contains("successfully")) {
-					JOptionPane.showMessageDialog(null, "CSV File is ready to use");
-				} else {
-					JOptionPane.showMessageDialog(null, "Please check ! File has not created yet");
-				}
+				// if (s.contains("successfully")) {
+				// 	JOptionPane.showMessageDialog(null, "CSV File is ready to use");
+				// } else {
+				// 	JOptionPane.showMessageDialog(null, "Please check ! File has not created yet");
+				// }
 			}
 		});
 
