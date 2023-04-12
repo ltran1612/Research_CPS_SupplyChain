@@ -21,7 +21,7 @@ public class CPSReasoner {
 		try {
 			version = readFile(pkgPath(versionFile));
 		} catch (Exception x) {
-			System.out.println("Exception while loading file " + versionFile + ": " + x);
+			System.err.println("Exception while loading file " + versionFile + ": " + x);
 			x.printStackTrace();
 			version = "[Specify in " + versionFile + " in the CPSReasoner folder]";
 		}
@@ -33,6 +33,10 @@ public class CPSReasoner {
 	}
 
 	public static String query(String sparqlQ, String aspQ, String ontologyDir, int solver) {
+		System.err.println(sparqlQ);
+		System.err.println(aspQ);
+		System.err.println(ontologyDir);
+		System.err.println(solver);
 		String tmpFile = "./tmpfile.sparql";
 		String tmpFileASP = "./tmpfileASP.sparql";
 		String query = sparqlQ;
@@ -51,7 +55,7 @@ public class CPSReasoner {
 				res = cmdOutToString(runCmdRaw(cmd));
 
 				return (res);
-			}
+			} //
 
 			String out;
 			String aspProg;
@@ -59,7 +63,7 @@ public class CPSReasoner {
 
 			cmd = jenaCmd(tmpFile, ontologyDir);
 			lines = runCmdRaw(cmd);
-
+			//System.out.println("Jena: " + lines);
 			/* map jena's output to ASP facts */
 			aspProg = jenaToASP(lines);
 			writeToFile("jena_result.txt", aspProg);
@@ -85,6 +89,8 @@ public class CPSReasoner {
 			}
 			out = runCmd(cmd);
 
+			//System.out.println(out);
+
 			//System.out.println("---ThanhNH : " + out);
 			/* Write Raw output to file using to export CSV */
 			writeToFile("./tmpASPoutput.txt",out);
@@ -108,22 +114,22 @@ public class CPSReasoner {
 			}
 			// System.out.println(res);
 		} catch (FileNotFoundException fnx) {
-			System.out.println("Unable to create file " + tmpFile);
-			System.out.println(fnx);
-			System.out.println("HERE");
+			System.err.println("Unable to create file " + tmpFile);
+			System.err.println(fnx);
+			System.err.println("HERE");
 		} catch (Exception x) {
-			System.out.println("Exception: " + x);
+			System.err.println("Exception: " + x);
 			x.printStackTrace();
 		}
 
-		System.out.println("Query Finished");
+		System.err.println("Query Finished");
 		return (res);
 	}
 
 	
 	static String pkgPath(String p) {
 		if (CPSReasoner.class.getResource(p) == null) {
-			System.out.println("ERROR: path does not exist: " + p);
+			System.err.println("ERROR: path does not exist: " + p);
 			return ("");
 		}
 		return (CPSReasoner.class.getResource(p).getPath());
@@ -640,14 +646,14 @@ class ReadStream implements Runnable {
 				if (s == null)
 					break;
 
-				if (discard)
-					System.out.println("[" + name + "] " + s);
+				if (discard);
+					//System.out.println("[" + name + "] " + s);
 				else
 					v.addElement(s);
 			}
 			is.close();
 		} catch (Exception ex) {
-			System.out.println("Problem reading stream " + name + "... :" + ex);
+			System.err.println("Problem reading stream " + name + "... :" + ex);
 			ex.printStackTrace();
 		}
 	}
