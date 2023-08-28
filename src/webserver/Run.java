@@ -1,3 +1,4 @@
+// the Java code to run the logic processing process
 package webserver;
 
 import java.io.*;
@@ -33,6 +34,7 @@ public class Run {
 
 // read file
 class Utils {
+    // read file from a path
     static String readFile(String s) throws FileNotFoundException, IOException {
         BufferedReader br = new BufferedReader(new FileReader(s));
         String res = readFile(br);
@@ -40,6 +42,7 @@ class Utils {
         return (res);
     } // end readFile
 
+    // read file from a File object
     static String readFile(File f) throws FileNotFoundException, IOException {
         BufferedReader br = new BufferedReader(new FileReader(f));
         String res = readFile(br);
@@ -47,6 +50,7 @@ class Utils {
         return (res);
     } // end readFile
 
+    // read file from a bufferred reader
     static String readFile(BufferedReader br) throws IOException {
         String str = "", line;
         while ((line = br.readLine()) != null)
@@ -55,9 +59,16 @@ class Utils {
     } // end readFile
 } // end class Utils
 
+// a class that accepts the string arrays of arguments to get the required information needed
+// to parse the data and get the results 
 class Info {
+
+    // the path the the directory containing all the important files
+    // such as the ontology files and the ASP file.  
     public String dirPath;
+    // the asp file to run 
     public String aspFileName;
+    // an integer denoting the solver to use
     public int solver;
 
     public Info(String[] args) {
