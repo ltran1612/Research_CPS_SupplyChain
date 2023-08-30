@@ -1,7 +1,0 @@
-<span>Query Results (2 answers): <br>-------------------------------------------- 
-Query response               | Component   | Positive TW val   | Negative TW val   | Distance   | step  
-========================================================================================================
-Lest trustworthy component   | cpsf:ER     | 16                | 8                 | 8          | 0     
-Most trustworthy component   | cpsf:EC     | 37                | 0                 | 37         | 0     
-
-</span>
