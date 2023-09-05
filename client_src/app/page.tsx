@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image'
 import { useState } from 'react';
-import { FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
+import { FieldValues, FormProvider, useFieldArray, useForm, useFormContext } from "react-hook-form";
 
 
 function MyRadio(
@@ -15,9 +15,21 @@ function MyRadio(
   </div>
 } // end MyRadio
 
-function handleSubmission(value: any) {
-  console.log("submitted")
-  console.log(value)
+function handleSubmission(value: FieldValues) {
+  const ASPFile = value.ASPFile[0];
+  const files = value.file;
+  const solver = value.solver;
+
+  const formData = new FormData();
+  formData.append("aspName", ASPFile.name)
+  formData.append('file1', ASPFile);
+  for (let i = 0; i < files.length; ++i) {
+    const temp = files[i].value[0];
+    formData.append(`file${i+2}`, temp);
+  } // end for i
+  formData.append("solver", solver);
+
+  // submit the data
 
 } // end handleSubmission
 
@@ -59,14 +71,18 @@ function FieldArray() {
 export default function HomePage() {
   const [output, changeOutput] = useState("")
 
-  const methods = useForm();
+  const methods = useForm({defaultValues: {
+    ASPFile: '',
+    solver: "3",
+    file: []
+  }});
   const { register, handleSubmit } = methods;
 
   return (<div>
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(handleSubmission, handleError)} className='flex flex-col'>
         <label htmlFor='asp'>ASP Filename:</label>
-        <input id="asp" type="file"  {...register('ASPFilename', {required: "need to have asp file name"})} />
+        <input id="asp" type="file"  {...register('ASPFile', {required: "need to have asp file name"})} />
 
         <label htmlFor='ontologies_list'>Ontologies:</label>
         <div id="ontologies_list">
