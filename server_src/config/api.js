@@ -32,7 +32,7 @@ async function reasoning(req, res, next) {
     let ASPFileName = fields.aspName;
     let solver = fields.solver;
 
-    const tmpDir = tmp.dirSync({ mode: 0766 });
+    const tmpDir = tmp.dirSync({ mode: 0o766 });
 
     // copy the ontology from the base folder to here.
     // copyOWL(BASE_CORE_DIR, tmpDir);
@@ -75,7 +75,7 @@ async function runExample(req, res) {
   const exampleASP = "FULL-SR-ER-01-ELE-01-00.txt";
   const solver = 3;
 
-  const tmpDir = tmp.dirSync({ mode: 0766 });
+  const tmpDir = tmp.dirSync({ mode: 0o766 });
 
   // copy the ontology from the base folder to here.
   // copyOWL(BASE_CORE_DIR, tmpDir);
