@@ -15,23 +15,6 @@ function MyRadio(
   </div>
 } // end MyRadio
 
-function handleSubmission(value: FieldValues) {
-  const ASPFile = value.ASPFile[0];
-  const files = value.file;
-  const solver = value.solver;
-
-  const formData = new FormData();
-  formData.append("aspName", ASPFile.name)
-  formData.append('file1', ASPFile);
-  for (let i = 0; i < files.length; ++i) {
-    const temp = files[i].value[0];
-    formData.append(`file${i+2}`, temp);
-  } // end for i
-  formData.append("solver", solver);
-
-  // submit the data
-
-} // end handleSubmission
 
 function handleError(error: any) {
   console.log("error")
@@ -70,6 +53,42 @@ function FieldArray() {
 
 export default function HomePage() {
   const [output, changeOutput] = useState("")
+
+  function handleSubmission(value: FieldValues) {
+    const ASPFile = value.ASPFile[0];
+    const files = value.file;
+    const solver = value.solver;
+
+    const formData = new FormData();
+    formData.append("aspName", ASPFile.name)
+    formData.append('file1', ASPFile);
+    for (let i = 0; i < files.length; ++i) {
+      const temp = files[i].value[0];
+      formData.append(`file${i+2}`, temp);
+    } // end for i
+    formData.append("solver", solver);
+
+    // submit the data
+    fetch('http://localhost:9000/reasoning', {
+      method: 'POST',
+      body: formData
+    }) // end fetch
+    .then(response => {
+      if (response.ok) {
+        return response.text();
+      } else {
+        throw new Error('File upload failed');
+      } // end else
+    }) // end then
+    .then(data => {
+      changeOutput(data)
+      console.log('Server response:', data);
+    }) // end then
+    .catch(error => {
+      console.error('Error uploading file:', error);
+    }); // end catch
+
+  } // end handleSubmission
 
   const methods = useForm({defaultValues: {
     ASPFile: '',
