@@ -5,8 +5,8 @@ const express = require("express");
 const cors = require('cors')
 
 // import the IP and port number
-const hostname = "127.0.0.1";
-const port = 9000;
+const hostname = process.env.HOSTNAME || "127.0.0.1";
+const port = process.env.PORT || 9000;
 
 // create the app
 const app = express();
