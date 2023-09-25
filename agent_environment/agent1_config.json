@@ -1,0 +1,4 @@
+{
+    "id": "agent1",
+    "brokerAddress": "mqtt://localhost:1883"
+}
