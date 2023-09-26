@@ -18,6 +18,7 @@ client.on("connect", () => {
 });
 
 client.on("message", (topic, message) => {
+  console.log(`"${message.toString()}" from ${topic}`);
   for (const agent of agents) {
     if (topic.match(new RegExp(`.*${agent}.*`))) {
       for (const dest of pairs[agent]) {
@@ -29,6 +30,4 @@ client.on("message", (topic, message) => {
       } // end for
     } // end if
   } // end for
-  // message is Buffer
-  console.log(message.toString());
 });
