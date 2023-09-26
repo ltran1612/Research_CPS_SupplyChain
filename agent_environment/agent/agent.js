@@ -1,6 +1,5 @@
 const mqtt = require("mqtt")
 const { loadConfig, showConfig} = require("../misc")
-const state = [];
 
 // load config object based on command-line arguments
 const config = loadConfig();
@@ -28,7 +27,5 @@ client.on("connect", () => {
 });
 
 client.on("message", (topic, message) => {
-  // message is Buffer
-  state.push(message.toString());
   console.log(`${message.toString()}`);
 }); // end 

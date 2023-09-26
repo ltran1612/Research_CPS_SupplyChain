@@ -1,5 +1,5 @@
 {
-    "brokerAddress": "mqtt://localhost:1883",
+    "brokerAddress": "localhost",
     "pairs": {
         "agent1": ["agent2"],
         "agent2": ["agent1"]
