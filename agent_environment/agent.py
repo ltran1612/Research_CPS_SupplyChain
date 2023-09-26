@@ -1,4 +1,5 @@
 import paho.mqtt.client as mqtt
+from threading import Lock
 from misc import load_config, show_config
 
 config = load_config()
@@ -6,24 +7,48 @@ show_config(config)
 
 publish_topic = f"env/{config['id']}" 
 subscribe_topic = f"for/{config['id']}" 
+received_publish_topic = f"recv/{config['id']}" 
+next_subscribe_topic = f"next/{config['id']}" 
+
+action = "start"
+startLock = Lock()
+start = True
 
 print(f"Publish to {publish_topic}")
 print(f"Subscribe to {subscribe_topic}")
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
+    global start
     print("Connected with result code "+str(rc))
+    startLock.acquire()
+    if start:
+        client.publish(received_publish_topic, "", qos=2, retain=False)
+        print("first publish")
+        start = False
+    startLock.release()
 
-    client.publish(publish_topic, f"bought(1000) from {config['id']}")
-    print("published")
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe(subscribe_topic)
+    client.subscribe(next_subscribe_topic)
 
 # The callback for when a PUBLISH message is received from the server.
-def on_message(client, userdata, msg):
-    if msg.topic == subscribe_topic:
-        print(msg.topic+" "+str(msg.payload))
+def on_message(client: mqtt.Client, userdata, msg):
+    global action
+    topic: str = msg.topic
+    message: str = msg.payload
+    if topic == subscribe_topic:
+        # received the information for this state
+        print(topic, message)
+        # do some reasoning
+        action = "hi there"
+        # received the state information
+        client.publish(received_publish_topic, "")
+    elif topic == next_subscribe_topic:
+        # send the action
+        client.publish(publish_topic, "")
+        # wait again till we can do it
 
 client = mqtt.Client()
 client.on_connect = on_connect
