@@ -22,11 +22,11 @@ function handleError(error: any) {
 } // end handleError
 
 
-function FieldArray() {
+function FieldArray({fieldName}:{fieldName: string}) {
   const { control, register } = useFormContext();
   const { fields, append, prepend, remove, swap, move, insert } = useFieldArray({
     control, // control props comes from useForm (optional: if you are using FormContext)
-    name: "file", // unique name for your Field Array
+    name: fieldName, // unique name for your Field Array
   });
 
   return (<div className='flex flex-col'>
@@ -38,7 +38,7 @@ function FieldArray() {
         >
           <input
             type="file"
-            {...register(`file.${index}.value`)} 
+            {...register(`${fieldName}.${index}.value`)} 
           />
           <button onClick={() => {remove(index)}} type="button">Remove</button>
         </div>
@@ -55,17 +55,29 @@ export default function HomePage() {
   const [output, changeOutput] = useState("")
 
   function handleSubmission(value: FieldValues) {
-    const ASPFile = value.ASPFile[0];
+    // asp files
+    const ASPFiles = value.asp;
+    // ontologies files
     const files = value.file;
+    // solver to use
     const solver = value.solver;
 
+    // setting form data 
     const formData = new FormData();
-    formData.append("aspName", ASPFile.name)
-    formData.append('file1', ASPFile);
+
+    // set asp files
+    for (let i = 0; i < ASPFiles.length; ++i) {
+      const temp = ASPFiles[i].value[0];
+      formData.append(`asp${i}`, temp);
+    } // end for i
+
+    // set ontologies 
     for (let i = 0; i < files.length; ++i) {
       const temp = files[i].value[0];
-      formData.append(`file${i+2}`, temp);
+      formData.append(`onto${i}`, temp);
     } // end for i
+
+    // set solver
     formData.append("solver", solver);
 
     // submit the data
@@ -100,12 +112,15 @@ export default function HomePage() {
   return (<div>
     <FormProvider {...methods}>
       <form onSubmit={handleSubmit(handleSubmission, handleError)} className='flex flex-col'>
-        <label htmlFor='asp'>ASP Filename:</label>
-        <input id="asp" type="file"  {...register('ASPFile', {required: "need to have asp file name"})} />
+        <label htmlFor='asp'>ASP Files:</label>
+        <div id="asp">
+        {/* <input id="asp" type="file"  {...register('ASPFile', {required: "need to have asp file name"})} /> */}
+          <FieldArray fieldName="asp"/>
+        </div>
 
         <label htmlFor='ontologies_list'>Ontologies:</label>
         <div id="ontologies_list">
-          <FieldArray/>
+          <FieldArray fieldName="file"/>
         </div>
 
         <label htmlFor='solver_selection'>Solvers:</label>
