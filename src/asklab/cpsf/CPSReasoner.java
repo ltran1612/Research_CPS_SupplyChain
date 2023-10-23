@@ -1,43 +1,30 @@
 package asklab.cpsf;
 
 import java.io.*;
-import java.util.List;
 import java.util.Arrays;
-import java.util.Random;
 import java.util.Vector;
 
 public class CPSReasoner {
-	static final String versionFile = "version.txt";
-
 	/* Available ASP solvers */
 	public static final int SLVR_CLINGO = 1;
 	public static final int SLVR_DLV = 2;
 	public static final int SLVR_CLINGO_ALL = 3;
 	public static final int SLVR_DLV_ALL = 4;
 
-	public static String version() {
-		String vFile, version;
-
-		try {
-			version = readFile(pkgPath(versionFile));
-		} catch (Exception x) {
-			System.err.println("Exception while loading file " + versionFile + ": " + x);
-			x.printStackTrace();
-			version = "[Specify in " + versionFile + " in the CPSReasoner folder]";
-		}
-		return (version);
-	}
-
+	// query the CPS + Ontology with dlv solver
 	public static String query(String sparqlQ, String aspQ, String ontologyDir) {
 		return (query(sparqlQ, aspQ, ontologyDir, SLVR_DLV));
-	}
+	} // end query
 
+	// query the CPS + Ontology
 	public static String query(String sparqlQ, String aspQ, String ontologyDir, int solver) {
 		System.err.println(sparqlQ);
 		System.err.println(aspQ);
 		System.err.println(ontologyDir);
 		System.err.println(solver);
-		String tmpFile = "./tmpfile.sparql";
+
+		// name of the temporary file for sparql
+		String tmpFileSPARQL = "./tmpfile.sparql";
 		String tmpFileASP = "./tmpfileASP.sparql";
 		String query = sparqlQ;
 		String asp = aspQ;
@@ -47,51 +34,54 @@ public class CPSReasoner {
 
 		try {
 			String cmd;
+			// write the SPARQL query to the temp file
+			writeToFile(tmpFileSPARQL, query);
 
-			writeToFile(tmpFile, query);
-
+			// if the asp query is empty
 			if (asp.equals("")) {
-				cmd = jenaCmd(tmpFile, ontologyDir);
+				cmd = jenaCmd(tmpFileSPARQL, ontologyDir);
 				res = cmdOutToString(runCmdRaw(cmd));
 
 				return (res);
-			} //
+			} // end if
 
 			String out;
 			String aspProg;
 			Vector<String> lines;
-
-			cmd = jenaCmd(tmpFile, ontologyDir);
+			
+			// query the ontologies with the SPARQL query.
+			cmd = jenaCmd(tmpFileSPARQL, ontologyDir);
 			lines = runCmdRaw(cmd);
-			//System.out.println("Jena: " + lines);
+
 			/* map jena's output to ASP facts */
 			aspProg = jenaToASP(lines);
+			// write the result of parsing into the file
 			writeToFile("jena_result.txt", aspProg);
+
 			/* add the query */
 			aspProg += asp;
-			//System.out.println("asp=" + aspProg);
-
 			/* run the ASP query */
+			// write the completed ASP program to the temp file
 			writeToFile(tmpFileASP, aspProg);
+			
+			// run the solver on the ASP file
 			switch (solver) {
-			case SLVR_DLV_ALL:
-				cmd = dlvCmdAll(tmpFileASP);
-				break;
-			case SLVR_CLINGO_ALL:
-				cmd = clingoCmdAll(tmpFileASP);
-				break;
-			case SLVR_DLV:
-				cmd = dlvCmd(tmpFileASP);
-				break;
-			case SLVR_CLINGO:
-				cmd = clingoCmd(tmpFileASP);
-				break;
-			}
+				case SLVR_DLV_ALL:
+					cmd = dlvCmdAll(tmpFileASP);
+					break;
+				case SLVR_CLINGO_ALL:
+					cmd = clingoCmdAll(tmpFileASP);
+					break;
+				case SLVR_DLV:
+					cmd = dlvCmd(tmpFileASP);
+					break;
+				case SLVR_CLINGO:
+					cmd = clingoCmd(tmpFileASP);
+					break;
+			} // end switch
 			out = runCmd(cmd);
 
-			//System.out.println(out);
-
-			//System.out.println("---ThanhNH : " + out);
+			// intepreting the output
 			/* Write Raw output to file using to export CSV */
 			writeToFile("./tmpASPoutput.txt",out);
 
@@ -99,48 +89,48 @@ public class CPSReasoner {
 			cmd = mkatomsCmd();
 			lines = runCmdRaw(cmd, out);
 
-		    //System.out.println(lines);
-
 			/* convert the output to OWL reasoner style */
 			Vector<Vector<String>> models;
-			models = modelEnumerator.models(lines);
+			models = ModelEnumerator.models(lines);
 			res = "";
 			for (Vector<String> lines2 : models) {
-				aspToOWLoutput a = new aspToOWLoutput();
+				AspToOWLoutput a = new AspToOWLoutput();
 				if (!res.equals(""))
 					res = res + "\n";
 				//System.out.println(lines2);
 				res += a.process(lines2);
-			}
+			} // end for i
 			// System.out.println(res);
 		} catch (FileNotFoundException fnx) {
-			System.err.println("Unable to create file " + tmpFile);
+			System.err.println("Unable to create file " + tmpFileSPARQL);
 			System.err.println(fnx);
 			System.err.println("HERE");
 		} catch (Exception x) {
 			System.err.println("Exception: " + x);
 			x.printStackTrace();
-		}
+		} // end catch
 
 		System.err.println("Query Finished");
 		return (res);
-	}
+	} // end query
 
-	
+	// get the package path that is stored in this same module/package	
 	static String pkgPath(String p) {
 		if (CPSReasoner.class.getResource(p) == null) {
 			System.err.println("ERROR: path does not exist: " + p);
 			return ("");
-		}
+		} // end if
 		return (CPSReasoner.class.getResource(p).getPath());
-	}
+	} // get the path to a package
 
+	// write a string to a file
 	static void writeToFile(String file, String str) throws IOException {
 		FileWriter out = new FileWriter(file);
 		out.write(str);
 		out.close();
-	}
+	} // end writeToFile
 
+	// convert jena output to ASP
 	static String jenaToASP(Vector<String> in) {
 		String aspProg;
 
@@ -167,18 +157,21 @@ public class CPSReasoner {
 			/* ^^xsd:int" removed */
 			line = line.replaceAll("\\^\\^xsd:int\"", "");
 			aspProg += line + "\n";
-		}
+		} // end for i
 		return (aspProg);
-	}
+	} // end jenaToASP
 
+	// run a command with no data
 	static Vector<String> runCmdRaw(String cmd) throws IOException {
 		return (runCmdRaw(cmd, null));
-	}
+	} // end runCmdRaw
 
+	// run a command with data
 	static Vector<String> runCmdRaw(String cmd, String inData) throws IOException {
 		Runtime r = Runtime.getRuntime();
 
 		//System.out.println("Executing: " + cmd);
+		// execute the command
 		Process p = r.exec(cmd);
 
 		Thread outputFiller = null;
@@ -188,9 +181,7 @@ public class CPSReasoner {
 			// PrintWriter out=new PrintWriter(p.getOutputStream());
 			// out.print(inData);
 			// out.close();
-		}
-
-//		p.waitFor();
+		} // end if
 
 		/* retrieve the output */
 		Vector<String> res = new Vector<String>();
@@ -210,15 +201,17 @@ public class CPSReasoner {
 		} finally {
 			if (p != null)
 				p.destroy();
-		}
+		} // end finally
 
 		return (res);
-	}
+	} // end runCmdRaw
 
+	// run a command with no data
 	static String runCmd(String cmd) throws IOException {
 		return (runCmd(cmd, null));
-	}
+	}  // end runCmd
 
+	// run a command with data
 	static String runCmd(String cmd, String inData) throws IOException {
 		String res;
 
@@ -227,8 +220,9 @@ public class CPSReasoner {
 			res = res + line + "\n";
 
 		return (res);
-	}
+	} // end runCmd
 
+	// convertn command output (vector of strings) into one string
 	static String cmdOutToString(Vector<String> out) {
 		String res;
 
@@ -237,150 +231,176 @@ public class CPSReasoner {
 			res = res + line + "\n";
 
 		return (res);
-	}
+	} //  cmdOutToString
 
+	// get a list of ontologies files as 1 string
 	static String ontologyFileList(String ontologyDir) throws IOException {
 		return (ontologyFileList(ontologyDir, ""));
-	}
+	} // end ontologyFileList
 
+	// put the path of all ontologies in a single string with space in between them 
 	static String ontologyFileList(String ontologyDir, String prefix) throws IOException {
 		String list;
 
+		// get a list  of files in the ontology folder
 		File[] ontologyFiles = new File(ontologyDir).listFiles();
 
 		list = "";
+		// sort the list
 		Arrays.sort(ontologyFiles);
+		// for each file in the folder
 		for (File f : ontologyFiles) {
 			String str;
-
+			// get the file path/name 
 			str = f.toString();
+
+			// if the file is an ontology file
 			if (str.endsWith(".owl")) {
+				// if there is space, error
 				if (str.indexOf(" ") >= 0) {
 					throw (new IOException("No spaces allowed in filenames. Aborting. Offending filename: " + str));
-				}
-				if (isWindows()) { /*
-									 * For jena to work properly under Windows with X:/... paths, we need to prefix
-									 * the path with "/". Since this does not affect pellet, we do it regardless of
-									 * reasoner.
-									 */
+				} // end if
+				
+				// if windows OS, change the file path 
+				/*
+					* For jena to work properly under Windows with X:/... paths, we need to prefix
+					* the path with "/". Since this does not affect pellet, we do it regardless of
+					* reasoner.
+				*/
+				if (isWindows()) { 					
 					if (str.indexOf(":") >= 0)
 						str = "/" + str;
-				}
+				} // end if
+				
+				// append it to the final result with a space
 				list += prefix + str + " ";
-			}
-		}
+			} // end if
+		} // end for file
 
 		return (list);
-	}
+	} // end ontologyFileList
 
-	static String pelletCmd(String queryFile, String ontologyDir, boolean useXML) throws IOException {
-		String cmd;
-
-		// cmd="./pelletcli/bin/";
-		cmd = pkgPath("pelletcli/bin/");
-		if (isWindows())
-			cmd += "pellet.bat";
-		else
-			cmd += "pellet";
-		cmd += " query ";
-		if (useXML)
-			cmd += "-o XML ";
-		cmd += "-q " + queryFile;// +" "+ontologyFile;
-//		cmd+=" query -o XML -q "+tmpFile;//+" "+ontologyFile;
-//		cmd+=" query -o JSON -q "+tmpFile;//+" "+ontologyFile;
-
-		cmd += " ";
-		cmd += ontologyFileList(ontologyDir);
-
-		return (cmd);
-	}
-
+	// get a command to run a jena on the ontology files with a query 
 	static String jenaCmd(String queryFile, String ontologyDir) throws IOException {
+		// get the path to jena folder
 		String cmd = pkgPath("");
 
+		// add the command to run jena
 		if (isWindows())
 			cmd += "runjena.bat";
 		else
 			cmd += "./runjena.sh";
+
+		// pass in the query file in the cmd
 		cmd += " --file=" + queryFile;
 
+		// pass in the ontologies files to the cmd
 		cmd += " ";
 		cmd += ontologyFileList(ontologyDir, "--data=").replace("\\", "/");
 
+		// set the result of jena
 		cmd += "--results=text ";
 
 		return (cmd);
-	}
+	} // end jenaCmd
 
+	// get a command to run clingo on a particular asp file
 	static String clingoCmd(String aspFile) {
 		String cmd;
 
 		// cmd="./clingo-4.4.0/";
+		// get the path to clingo folder
 		cmd = pkgPath("clingo-4.4.0/");
+
+		// choose the right executable
 		if (isWindows())
 			cmd += "clingo.exe";
 		else if (isMacOSX())
 			cmd += "clingo-macosx";
 		else
 			cmd += "clingo-linux-x86";
+		
+		// pass in the asp file to run on
 		cmd += " " + aspFile;
 
 		return (cmd);
-	}
+	} // end clingoCmd
 
+	// get a commmand to run clingo and get all possible answer set
 	static String clingoCmdAll(String aspFile) {
 		String cmd;
 
 		// cmd="./clingo-4.4.0/";
+		// get the path to the clingo folder
 		cmd = pkgPath("clingo-4.4.0/");
+
+		// get the right executable 
 		if (isWindows())
 			cmd += "clingo.exe";
 		else if (isMacOSX())
 			cmd += "clingo-macosx";
 		else
 			cmd += "clingo-linux-x86";
+
+		// pass the file and the flag to get all possible answer set 
 		cmd += " 0 " + aspFile;
 
 		return (cmd);
-	}
+	} // end clingoCmdAll
 
+	// get a string to run dlv command
 	static String dlvCmd(String aspFile) {
 		String cmd;
 
 		// cmd="./clingo-4.4.0/";
+		// get the path to the dlv folder
 		cmd = pkgPath("dlv/");
+		
+		// choose the right executable
 		if (isWindows())
 			cmd += "dlv.mingw.exe";
 		else if (isMacOSX())
 			cmd += "dlv-macosx";
 		else
 			cmd += "dlv";
+
+		// pass in the asp file to run
 		cmd += " -n=1 " + aspFile;
 
 		return (cmd);
-	}
+	} // end dlvCmd
 
+	// get a string to run dlv on an asp file and get all answer sets
 	static String dlvCmdAll(String aspFile) {
 		String cmd;
 
 		// cmd="./clingo-4.4.0/";
+		// get folder
 		cmd = pkgPath("dlv/");
+
+		// choose executable
 		if (isWindows())
 			cmd += "dlv.mingw.exe";
 		else if (isMacOSX())
 			cmd += "dlv-macosx";
 		else
 			cmd += "dlv";
+
+		// pass the file
 //		cmd+=" -n=1 "+aspFile;
 		cmd += " " + aspFile;
 
 		return (cmd);
-	}
+	} // end dlvCmdAll
 
+	// run mkatoms which is a function to parse the output of solving an asp program
 	static String mkatomsCmd() {
 		String cmd;
 
+		// get folder
 		cmd = pkgPath("mkatoms/");
+
+		// choose executable
 		if (isWindows())
 			cmd += "mkatoms.exe";
 		else if (isMacOSX())
@@ -389,42 +409,49 @@ public class CPSReasoner {
 			cmd += "mkatoms-linux-x86";
 
 		return (cmd);
-	}
+	} // end mkatoms
 
+	// Windows OS?
 	static boolean isWindows() {
 		String OS = System.getProperty("os.name");
 		//System.out.println("os=" + OS);
 		return (OS.startsWith("Windows"));
-	}
+	} // end isWindows
 
+	// MacOS ?
 	static boolean isMacOSX() {
 		String OS = System.getProperty("os.name");
 		return (OS.startsWith("Mac"));
-	}
-
+	} // end isMacOSX
+	
+	// return a content of a file - parameter is the path 
 	static String readFile(String s) throws FileNotFoundException, IOException {
 		BufferedReader br = new BufferedReader(new FileReader(s));
 		String res = readFile(br);
 		br.close();
 		return (res);
-	}
+	} // end readFile
 
+	// return a content of a file - parameter is a File object 
 	static String readFile(File f) throws FileNotFoundException, IOException {
 		BufferedReader br = new BufferedReader(new FileReader(f));
 		String res = readFile(br);
 		br.close();
 		return (res);
-	}
+	} // end readFile
 
+	// return a content of a file - parameter is a BufferedReader object 
 	static String readFile(BufferedReader br) throws IOException {
 		String str = "", line;
 		while ((line = br.readLine()) != null)
 			str = str + line + "\n";
 		return (str);
-	}
-}
+	} // end readFile
+} // end class CPSReasoner 
 
-class modelEnumerator {
+// get all models from the output of the running the reasoner
+// for example, running the reasoner can get multiple answer sets, we just cut one big output into smaller inputs corresponding to an answer set 
+class ModelEnumerator {
 	static Vector<Vector<String>> models(Vector<String> in) throws IOException {
 		Vector<Vector<String>> models = new Vector<Vector<String>>();
 
@@ -434,20 +461,20 @@ class modelEnumerator {
 			if (!started) {
 				models.add(new Vector<String>());
 				started = true;
-			}
+			} // end if
 
 			models.elementAt(i).add(line);
 
 			if (line.startsWith("::endmodel")) {
 				i++;
 				started = false;
-			}
-		}
+			} // end if
+		} // end for
 		return (models);
-	}
-}
+	} // end models
+} // end class modelEnumerator
 
-class aspToOWLoutput {
+class AspToOWLoutput {
 	String[] lines;
 	Vector<Integer> maxlens;
 	int headings_line;
@@ -458,6 +485,7 @@ class aspToOWLoutput {
     // final static String commaRegex=",(?=[^\\)]*(?:\\(|$))";
 	final static String commaRegex = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)(?=[^\\)]*(?:\\(|$))";
 
+	// process input lines
 	String process(Vector<String> in) throws IOException {
 		String res;
 
@@ -473,14 +501,12 @@ class aspToOWLoutput {
 		res = "Query Results (" + n_answers + " answers): \n-------------------------------------------- \n" + res;
 
 		return (res);
-	}
+	} // end process
 
 	/*
 	 * Sets fields lines, maxlens, headings_line, n_answers
 	 */
 	void extractOutputLines(Vector<String> in) throws IOException {
-		String cmd;
-
 		lines = new String[in.size()];
 		/* initialize the array to empty strings */
 		for (int i = 0; i < in.size(); i++)
@@ -500,7 +526,7 @@ class aspToOWLoutput {
 			if (line.startsWith("::endmodel")) {
 				lines[n_line] = line;
 				break;
-			}
+			} // end if
 
 			if (!line.startsWith("output(") && !line.startsWith("output_headings("))
 				continue;
@@ -511,14 +537,6 @@ class aspToOWLoutput {
 			else
 				n_answers++;
 
-			if (1 == 0) { /* '"' are removed */
-				newline = line.replaceAll("\"", "");
-				/* 'output(' replaced by "" */
-				newline = newline.replaceFirst("^output\\(|^output_headings\\(", "");
-				/* ')' replaced by "" */
-				newline = newline.replaceFirst("\\)$", "");
-			}
-			
 			/* ThanhNH : Rule is reading output(.) and output_headings(.) only */
 			
 			/* 'output(' replaced by "" */
@@ -537,24 +555,24 @@ class aspToOWLoutput {
 				n_args = args.length;
 				// line.length() - line.replace(",", "").length() + 1;
 				maxlens = new Vector<Integer>();
-				for (int i = 0; i < n_args; maxlens.addElement(0), i++)
-					;
-			}
+				for (int i = 0; i < n_args; maxlens.addElement(0), i++);
+			} // end if
 
 			for (int i = 0; i < args.length; i++) {
 				if (args[i].length() > maxlens.elementAt(i))
 					maxlens.setElementAt(args[i].length(), i);
-			}
-		}
-	}
+			} // end for i
+		} // end for 
+	} // end extractOutputLines
 
 	/* Sorts lines, paying attention to the headings line, if present */
 	void sortLines() {
 		String headtxt = "";
+
 		if (headings_line >= 0) {
 			headtxt = lines[headings_line];
 			lines[headings_line] = "";
-		}
+		} // end if
 
 		/* Sort the lines */
 		Arrays.sort(lines);
@@ -564,8 +582,8 @@ class aspToOWLoutput {
 				inter[i + 2] = lines[i];
 			inter[0] = headtxt;
 			lines = inter;
-		}
-	}
+		} // end if
+	} // end sortLines
 
 	/* Converts the lines to a string and adds the headings separator, if needed */
 	String linesToString() {
@@ -591,7 +609,7 @@ class aspToOWLoutput {
 				/* '\"' are mapped to '"' */
 				args[i] = args[i].replaceAll("\\\\\"", "\"");
 				// args[i]=args[i].replaceAll("\\\\","xxx");
-			}
+			} // end for i
 
 			newline = "";
 			for (int i = 0; i < args.length; i++) {
@@ -601,19 +619,20 @@ class aspToOWLoutput {
 					newline += " ";
 				if (i < args.length - 1)
 					newline += " | ";
-			}
+			} // end for i
 
 			// newline="| "+newline+" |";
 			if (headings_line >= 0 && res.equals("")) { /* This is a headings line */
 				newline = newline + "\n" + newline.replaceAll(".", "=");
-			}
+			} // end if
 			res += newline + "\n";
-		}
+		} // end for line 
 
 		return (res);
-	}
-}
+	} // end linesToString
+} // end AspToOWLOutput
 
+// a Runnable 
 class ReadStream implements Runnable {
 	String name;
 	InputStream is;
@@ -626,16 +645,16 @@ class ReadStream implements Runnable {
 		this.is = is;
 		this.v = v;
 		this.discard = discard;
-	}
+	} // end ReadStream
 
 	public void start() {
 		thread = new Thread(this);
 		thread.start();
-	}
+	} // end start
 
 	public void waitFor() throws InterruptedException {
 		thread.join();
-	}
+	} // end waitFor
 
 	public void run() {
 		try {
@@ -650,14 +669,14 @@ class ReadStream implements Runnable {
 					//System.out.println("[" + name + "] " + s);
 				else
 					v.addElement(s);
-			}
+			} // end while
 			is.close();
 		} catch (Exception ex) {
 			System.err.println("Problem reading stream " + name + "... :" + ex);
 			ex.printStackTrace();
-		}
-	}
-}
+		} // end catch
+	} // end Run
+} // end class ReadStream
 
 class StreamFiller implements Runnable {
 	private final OutputStream os;
@@ -666,11 +685,11 @@ class StreamFiller implements Runnable {
 	StreamFiller(OutputStream os, String inData) {
 		this.os = os;
 		this.inData = inData;
-	}
+	} // end StreamFiller
 
 	public void run() {
 		PrintWriter out = new PrintWriter(os);
 		out.print(inData);
 		out.close();
-	}
-}
+	} // end run
+} // end class StreamFiller
