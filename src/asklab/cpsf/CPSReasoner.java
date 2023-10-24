@@ -40,7 +40,8 @@ public class CPSReasoner {
 			// if the asp query is empty
 			if (asp.equals("")) {
 				cmd = jenaCmd(tmpFileSPARQL, ontologyDir);
-				res = cmdOutToString(runCmdRaw(cmd));
+				Vector<String> lines = runCmdRaw(cmd);
+				res = jenaToASP(lines) ;
 
 				return (res);
 			} // end if
