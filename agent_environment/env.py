@@ -51,24 +51,30 @@ def custom_loop():
     while True:
         global received
         global step
+        global messages
+
+        # we received fully everything
+        # compile information
+        # send the information to each agent
         messageLock.acquire()
         if len(messages.keys()) == len(agents):
-            # we received fully everything
-            # compile information
-            # send the information to each agent
             for agent in agents:
                 final_message = []
                 for target in pairs[agent]:
+                    # parse the data to the right one.  
+                    # append the message
                     final_message.append(messages[target])
                 final_message = "".join(final_message)
                 print("send state information")
                 client.publish(f"for/{agent}", final_message, qos=2)
+        # reset the messages storage
+        messages = {}
         messageLock.release()
 
+        # all users have received the information we sent
+        # sent them the message to do the next step
         receivedLock.acquire()
         if len(received) == len(agents):
-            # all users have received the information we sent
-            # sent them the message to do the next step
             step += 1 
             print("received all, start the next step")
             for agent in agents:
@@ -78,6 +84,8 @@ def custom_loop():
 
         receivedLock.release()
         sleep(1)
+
+# run the thread
 my_thread = Thread(target=custom_loop, args=())
 my_thread.start()
 client.connect(config['brokerAddress'], 1883, 60)

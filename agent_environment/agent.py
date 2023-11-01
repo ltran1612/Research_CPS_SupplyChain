@@ -42,12 +42,12 @@ def on_message(client: mqtt.Client, userdata, msg):
         # received the information for this state
         print(topic, message)
         # do some reasoning
-        action = "hi there"
+        action = input()
         # received the state information
         client.publish(received_publish_topic, "")
     elif topic == next_subscribe_topic:
         # send the action
-        client.publish(publish_topic, "")
+        client.publish(publish_topic, action)
         # wait again till we can do it
 
 client = mqtt.Client()
