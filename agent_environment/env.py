@@ -6,20 +6,24 @@ import subprocess
 import logging
 import sys
 
-# see the config
+# load and display the config
 config = load_config()
 show_config(config)
 
 # parse the config
 pairs = config['pairs']
 agents = list(pairs.keys())
+
+# messages storage
 messages = {}
 messageLock = Lock() 
 
 # initialized the received queue  
 received = [] 
-step = 0
 receivedLock = Lock()
+
+# step
+step = -1
 
 
 # The callback for when the client receives a CONNACK response from the server.
@@ -112,8 +116,9 @@ def custom_loop():
 
             # reset received 
             received = []            
-
         receivedLock.release()
+
+        # sleep for 1 second
         sleep(1)
 
 # set the logging
@@ -121,7 +126,6 @@ log_handler = logging.StreamHandler(sys.stdout)
 log_handler.setLevel(logging.INFO)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logging.getLogger().setLevel(logging.INFO)
-logging.getLogger().setLevel(logging.ERROR)
 logging.getLogger().addHandler(log_handler)
 
 

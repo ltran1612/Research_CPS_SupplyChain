@@ -13,12 +13,12 @@ def show_config(config):
     except Exception as e:
         pass
     
-    print(f"Address to connect is {address}")
+    print(f"MQTT Broker address is {address}")
     if id:
-        print(f"Agent with id {id}")
+        print(f"This is an Agent with id {id}")
     else: 
         pairs = config["pairs"]
-        print(f"Environment with these pairs set up: {json.dumps(pairs)}")
+        print(f"This is an Environment with these pairs set up: {json.dumps(pairs)}")
 
 
 def load_config():
