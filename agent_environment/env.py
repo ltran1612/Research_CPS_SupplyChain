@@ -77,19 +77,26 @@ def custom_loop():
                         f.write(message)
                     command = ["clingo", target_parser, name, "-V0", "--out-atom=%s."] 
                     result= subprocess.run(command, capture_output=True)
-                    parsed_message = result.stdout.decode("utf-8")
 
-                    logging.info("hello")
-                    if "UNSATISFIABLE" in parsed_message:
-                        pass
-                        
+                    # parse the message
+                    parsed_message: str = result.stdout.decode("utf-8")
+                    parsed_message = parsed_message.strip()
+                    lines = parsed_message.split("\n")
 
-                    # add to the final message
-                    final_message.append(parsed_message)
-
+                    # check for potential error, if not clean the message
+                    if "UNSATISFIABLE" in lines:
+                        logging.error("Parsing is unsatisfiable somehow")
+                    else:
+                        lines.pop()
+                        logging.debug(f"parsed these atoms array {lines}")
+                        # add to the final message
+                        final_message.extend(lines)
+                
+                # compose the final message from the messsage of all agents 
                 final_message = "\n".join(final_message)
                 client.publish(f"for/{agent}", final_message, qos=2)
                 logging.info(f"sent state information to {agent}")
+
             # reset the messages storage
             messages = {}
         messageLock.release()
@@ -114,6 +121,7 @@ log_handler = logging.StreamHandler(sys.stdout)
 log_handler.setLevel(logging.INFO)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.ERROR)
 logging.getLogger().addHandler(log_handler)
 
 
