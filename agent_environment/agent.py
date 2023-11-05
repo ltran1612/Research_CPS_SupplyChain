@@ -10,7 +10,7 @@ subscribe_topic = f"for/{config['id']}"
 received_publish_topic = f"recv/{config['id']}" 
 next_subscribe_topic = f"next/{config['id']}" 
 
-action = "start"
+action = ""
 startLock = Lock()
 start = True
 
@@ -24,7 +24,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
     startLock.acquire()
     if start:
         client.publish(received_publish_topic, "", qos=2, retain=False)
-        print("first publish")
+        print("told server that I'm online")
         start = False
     startLock.release()
 

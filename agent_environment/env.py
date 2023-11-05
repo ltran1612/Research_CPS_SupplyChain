@@ -2,6 +2,7 @@ import paho.mqtt.client as mqtt
 from misc import load_config, show_config
 from threading import Lock, Thread 
 from time import sleep
+import subprocess
 
 config = load_config()
 show_config(config)
@@ -27,9 +28,8 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
     topic: str = msg.topic
-    message: str = str(msg.payload)
+    message: str = str(msg.payload.decode("ascii"))
 
-    print(topic, message)
     for agent in agents:
         if topic == f"env/{agent}":
             print(f"received from {agent}")
@@ -43,7 +43,6 @@ def on_message(client: mqtt.Client, userdata, msg):
             receivedLock.release()
 
 client = mqtt.Client()
-
 
 client.on_connect = on_connect
 client.on_message = on_message
@@ -63,12 +62,26 @@ def custom_loop():
                 for target in pairs[agent]:
                     # parse the data to the right one.  
                     # append the message
-                    final_message.append(messages[target])
-                final_message = "".join(final_message)
+                    target_name = target["name"]
+                    target_parser = target["parser"]
+                    message = messages[target_name]
+
+                    # parse the message
+                    name = f"{target_name}_temp.lp" 
+                    with open(name, "w") as f:
+                        f.write(message)
+                    command = ["clingo", target_parser, name] 
+                    result= subprocess.run(command, capture_output=True)
+                    parsed_message = result.stdout.decode("utf-8")
+
+                    # add to the final message
+                    final_message.append(parsed_message)
+
+                final_message = "\n".join(final_message)
                 print("send state information")
                 client.publish(f"for/{agent}", final_message, qos=2)
-        # reset the messages storage
-        messages = {}
+            # reset the messages storage
+            messages = {}
         messageLock.release()
 
         # all users have received the information we sent
@@ -80,6 +93,7 @@ def custom_loop():
             for agent in agents:
                 client.publish(f"next/{agent}", str(step), qos=2, retain=False)
 
+            # reset received 
             received = []            
 
         receivedLock.release()

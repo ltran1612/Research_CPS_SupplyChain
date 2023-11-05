@@ -1,7 +1,7 @@
 {
     "brokerAddress": "localhost",
     "pairs": {
-        "agent1": ["agent2"],
-        "agent2": ["agent1"]
+        "agent1": [{"name": "agent2", "parser": "env/builder_lumber_env.lp"}],
+        "agent2": [{"name": "agent1", "parser": "env/lumber_builder_env.lp"}]
     }
 }
