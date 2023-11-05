@@ -67,7 +67,9 @@ def custom_loop():
         messageLock.acquire()
         if len(messages.keys()) == len(agents):
             for agent in agents:
-                final_message = []
+                # intialize the message to contain its current messages
+                final_message = [messages[agent]]
+
                 for target in pairs[agent]:
                     # parse the data to the right one.  
                     # append the message
