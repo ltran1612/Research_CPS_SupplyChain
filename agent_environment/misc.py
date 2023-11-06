@@ -1,5 +1,6 @@
-import sys
+import sys, subprocess
 import json
+
 
 defaultConfig = {
     "brokerAddress": "mqtt://localhost:1883",
@@ -33,3 +34,13 @@ def load_config():
         return config
 
     return defaultConfig
+
+
+
+def run_clingo(files: list):
+    command = ["clingo"]
+    command.extend(files)
+    command.extend(["-V0", "--out-atom=%s."]) 
+    result= subprocess.run(command, capture_output=True)
+    return result
+    

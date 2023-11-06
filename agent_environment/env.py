@@ -1,8 +1,7 @@
 import paho.mqtt.client as mqtt
-from misc import load_config, show_config
+from misc import load_config, show_config, run_clingo
 from threading import Lock, Thread 
 from time import sleep
-import subprocess
 import logging
 import sys
 
@@ -78,11 +77,10 @@ def custom_loop():
                     message = messages[target_name]
 
                     # parse the message
-                    name = f"{target_name}_temp.lp" 
-                    with open(name, "w") as f:
+                    message_file = f"{target_name}_temp.lp" 
+                    with open(message_file, "w") as f:
                         f.write(message)
-                    command = ["clingo", target_parser, name, "-V0", "--out-atom=%s."] 
-                    result= subprocess.run(command, capture_output=True)
+                    result = run_clingo([target_parser, message_file])
 
                     # parse the message
                     parsed_message: str = result.stdout.decode("utf-8")
