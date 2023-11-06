@@ -1,4 +1,7 @@
 {
-    "id": "agent2",
-    "brokerAddress": "localhost"
+    "id": "lumber",
+    "brokerAddress": "localhost",
+    "domain": "",
+    "initial_state": "",
+    "planner": ""
 }

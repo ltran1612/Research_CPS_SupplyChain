@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from misc import load_config, show_config, run_clingo
+from src.misc import load_config, show_config, run_clingo
 from threading import Lock, Thread 
 from time import sleep
 import logging

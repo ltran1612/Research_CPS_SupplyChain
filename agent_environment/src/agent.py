@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 from threading import Lock
-from misc import load_config, show_config
+from src.misc import load_config, show_config
 import logging, sys
 
 # load config and display it
