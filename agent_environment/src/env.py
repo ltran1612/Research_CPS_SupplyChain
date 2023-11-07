@@ -114,6 +114,7 @@ def custom_loop():
         if len(received) == len(agents):
             step += 1 
             logging.info(f"received all, start the next step {step}")
+            input()
             for agent in agents:
                 client.publish(f"next/{agent}", str(step), qos=2, retain=False)
 

@@ -17,10 +17,11 @@ class Planner:
         self.cps = config['cps']
         self.id = config['id']
 
-    def plan(self, observation=""):
+    def plan(self, target_step, observation=""):
         temp_file = f"{self.id}_temp.lp" 
         with open(temp_file, "w") as f:
             f.write(observation)
+            f.write(f"target_step({target_step}).")
         files = [self.domain, self.initial_state, self.planner, self.clause_concern_map,\
                  self.clauses, self.global_domain, self.cps, self.contract_cps,\
                  temp_file]  
@@ -51,6 +52,9 @@ next_subscribe_topic = f"next/{config['id']}"
 # store the action for the step
 action = ""
 
+# target step 
+target_step = 0 
+
 # variable to identify if we're connecting for the first time or not
 # with a Lock/mutex
 startLock = Lock()
@@ -80,6 +84,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
     global action
+    global target_step
 
     # get the topic and messages
     topic: str = msg.topic
@@ -90,7 +95,7 @@ def on_message(client: mqtt.Client, userdata, msg):
         # received the information for this state
         logging.info(f"{topic} - {message}")
         # do some reasoning
-        action = planner.plan(message)
+        action = planner.plan(target_step, message)
         logging.debug(f"the planned action is {action}")
         # received the state information
         client.publish(received_publish_topic, "")
@@ -99,6 +104,7 @@ def on_message(client: mqtt.Client, userdata, msg):
         # send the action then wait again till we can do it
         client.publish(publish_topic, action)
         step = int(message)-1
+        target_step = step+1
         if step == -1:
             logging.info(f"the env realized this agent existence")
         else:
