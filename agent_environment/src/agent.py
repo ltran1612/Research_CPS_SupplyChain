@@ -1,11 +1,46 @@
 import paho.mqtt.client as mqtt
 from threading import Lock
-from misc import load_config, show_config
+from subprocess import CompletedProcess
+from misc import load_config, show_config, run_clingo, parse_output
 import logging, sys
+
+# a planner object
+class Planner:
+    def __init__(self, config):
+        self.domain = config['domain']
+        self.initial_state = config['initial_state']
+        self.planner = config['planner']
+        self.clause_concern_map = config['clause_concern_map']
+        self.clauses = config['clauses']
+        self.global_domain = config['global_domain']
+        self.contract_cps = config['contract_cps']
+        self.cps = config['cps']
+        self.id = config['id']
+
+    def plan(self, observation=""):
+        temp_file = f"{self.id}_temp.lp" 
+        with open(temp_file, "w") as f:
+            f.write(observation)
+        files = [self.domain, self.initial_state, self.planner, self.clause_concern_map,\
+                 self.clauses, self.global_domain, self.cps, self.contract_cps,\
+                 temp_file]  
+        result: CompletedProcess[bytes] = run_clingo(files, flags=["1", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
+        return_code = result.returncode
+        if return_code == 0:
+            logging.info("unknown error")
+            exit(1)
+        elif return_code != 10 and return_code != 30: 
+            logging.error(f"{return_code} - {result.stderr.decode()}")
+            exit(1)
+        
+        answer = result.stdout.decode()
+        answer = parse_output(answer)
+        return "\n".join(answer)
 
 # load config and display it
 config = load_config()
 show_config(config)
+planner: Planner = Planner(config)
 
 # agent topics
 publish_topic = f"env/{config['id']}" 
@@ -55,7 +90,8 @@ def on_message(client: mqtt.Client, userdata, msg):
         # received the information for this state
         logging.info(f"{topic} - {message}")
         # do some reasoning
-        action = input()
+        action = planner.plan(message)
+        logging.debug(f"the planned action is {action}")
         # received the state information
         client.publish(received_publish_topic, "")
         logging.debug("notified the env that the agent received the environment information")
@@ -70,7 +106,7 @@ def on_message(client: mqtt.Client, userdata, msg):
 
 # set the logging
 log_handler = logging.StreamHandler(sys.stdout)
-log_handler.setLevel(logging.INFO)
+log_handler.setLevel(logging.DEBUG)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logger = logging.getLogger()
 logger.handlers = []

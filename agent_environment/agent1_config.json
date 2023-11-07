@@ -1,8 +1,12 @@
 {
     "id": "builder",
     "brokerAddress": "localhost",
-    "domain": "scenarios/builder_lumber/builder/domain.lp",
-    "initial_state": "scenarios/builder_lumber/builder/test_init.lp",
-    "planner": "scenarios/builder_lumber/builder/plan.lp",
-    "clause_concern_map": "scenarios/builder_lumber/builder/clause-concern-map.lp"
+    "domain": "../scenarios/builder_lumber/builder/domain.lp",
+    "initial_state": "../scenarios/builder_lumber/builder/test_init.lp",
+    "planner": "../scenarios/builder_lumber/builder/plan.lp",
+    "clause_concern_map": "../scenarios/builder_lumber/builder/clause-concern-map.lp",
+    "global_domain": "../scenarios/builder_lumber/global_domain.lp",
+    "clauses": "../scenarios/builder_lumber/clauses.lp",
+    "contract_cps": "../scenarios/builder_lumber/cps/contract-cps.lp",
+    "cps": "../scenarios/builder_lumber/cps/cps.lp"
 }
