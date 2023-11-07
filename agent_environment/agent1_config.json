@@ -1,7 +1,8 @@
 {
     "id": "builder",
     "brokerAddress": "localhost",
-    "domain": "",
-    "initial_state": "",
-    "planner": ""
+    "domain": "scenarios/builder_lumber/builder/domain.lp",
+    "initial_state": "scenarios/builder_lumber/builder/test_init.lp",
+    "planner": "scenarios/builder_lumber/builder/plan.lp",
+    "clause_concern_map": "scenarios/builder_lumber/builder/clause-concern-map.lp"
 }
