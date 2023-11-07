@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from src.misc import load_config, show_config, run_clingo
+from misc import load_config, show_config, run_clingo
 from threading import Lock, Thread 
 from time import sleep
 import logging
@@ -81,15 +81,18 @@ def custom_loop():
                     with open(message_file, "w") as f:
                         f.write(message)
                     result = run_clingo([target_parser, message_file])
+                    logging.debug(f"run clingo with {target_parser} and {message_file}")
 
                     # parse the message
                     parsed_message: str = result.stdout.decode("utf-8")
                     parsed_message = parsed_message.strip()
+                    logging.debug(f"clingo output is {parsed_message}")
                     lines = parsed_message.split("\n")
 
                     # check for potential error, if not clean the message
                     if "UNSATISFIABLE" in lines:
                         logging.error("Parsing is unsatisfiable somehow")
+                        exit(1)
                     else:
                         lines.pop()
                         logging.debug(f"parsed these atoms array {lines}")
@@ -125,7 +128,7 @@ def custom_loop():
 log_handler = logging.StreamHandler(sys.stdout)
 log_handler.setLevel(logging.INFO)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.DEBUG)
 logging.getLogger().addHandler(log_handler)
 
 

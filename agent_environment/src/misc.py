@@ -1,7 +1,6 @@
 import sys, subprocess
 import json
 
-
 defaultConfig = {
     "brokerAddress": "mqtt://localhost:1883",
 }

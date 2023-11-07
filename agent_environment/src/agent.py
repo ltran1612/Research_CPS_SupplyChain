@@ -1,6 +1,6 @@
 import paho.mqtt.client as mqtt
 from threading import Lock
-from src.misc import load_config, show_config
+from misc import load_config, show_config
 import logging, sys
 
 # load config and display it
@@ -72,8 +72,10 @@ def on_message(client: mqtt.Client, userdata, msg):
 log_handler = logging.StreamHandler(sys.stdout)
 log_handler.setLevel(logging.INFO)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logging.getLogger().setLevel(logging.INFO)
-logging.getLogger().addHandler(log_handler)
+logger = logging.getLogger()
+logger.handlers = []
+logger.setLevel(logging.DEBUG)
+logger.addHandler(log_handler)
 
 # start the agent 
 client = mqtt.Client()
