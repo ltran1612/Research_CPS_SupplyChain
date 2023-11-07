@@ -77,7 +77,7 @@ def custom_loop():
                     message = messages[target_name]
 
                     # parse the message
-                    message_file = f"{target_name}_temp.lp" 
+                    message_file = f"env_{target_name}_temp.lp" 
                     with open(message_file, "w") as f:
                         f.write(message)
                     result = run_clingo([target_parser, message_file])
