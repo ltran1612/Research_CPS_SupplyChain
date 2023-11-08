@@ -47,6 +47,7 @@ def run_clingo(files: list, flags=["-V0", "--out-atom=%s."]):
 # on successful there will be an answer set
 # also, there will be the word successful
 # unhandled situations: atoms that do not occur in any rule head 
+#TODO parse output
 def parse_output(output: str): 
     output = output.strip()
     lines = output.split("\n")

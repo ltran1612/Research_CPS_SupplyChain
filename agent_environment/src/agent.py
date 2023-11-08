@@ -2,58 +2,8 @@ import paho.mqtt.client as mqtt
 from threading import Lock
 from subprocess import CompletedProcess
 from misc import load_config, show_config, run_clingo, parse_output
+from planner import Planner 
 import logging, sys
-
-# a planner object
-class Planner:
-    def __init__(self, config):
-        self.domain = config['domain']
-        self.initial_state = config['initial_state']
-        self.planner = config['planner']
-        self.clause_concern_map = config['clause_concern_map']
-        self.clauses = config['clauses']
-        self.global_domain = config['global_domain']
-        self.contract_cps = config['contract_cps']
-        self.cps = config['cps']
-        self.id = config['id']
-        self.plan = {} 
-
-    # TODO:  
-    def observation_matches_plan(self, observation):
-        pass
-
-    def plan(self, observation):
-        # write observations to a temporary file
-        temp_file = f"{self.id}_temp.lp" 
-        with open(temp_file, "w") as f:
-            f.write(observation)
-            f.write(f"target_step({target_step}).")
-        
-        # get the plan
-        files = [self.domain, self.initial_state, self.planner, self.clause_concern_map,\
-                 self.clauses, self.global_domain, self.cps, self.contract_cps,\
-                 temp_file]  
-        result: CompletedProcess[bytes] = run_clingo(files, flags=["1", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
-        return_code = result.returncode
-        if return_code == 0:
-            logging.info("unknown error")
-            exit(1)
-        elif return_code != 10 and return_code != 30: 
-            logging.error(f"{return_code} - {result.stderr.decode()}")
-            exit(1)
-        
-        answer = result.stdout.decode()
-        answer = parse_output(answer)
-        return "\n".join(answer)
-
-    def next_step(self, target_step, observation=""):
-        # compare the observation with the plan
-        if self.observation_matches_plan(observation):
-            # return the action at the target step
-            return ""
-
-        # else replan if different
-        self.plan(observation)
 
 # load config and display it
 config = load_config()

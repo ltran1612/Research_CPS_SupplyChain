@@ -1,6 +1,6 @@
 satisfied_clauses_count(N) :- N = #count{Clause : hold(sat(Clause), maxStepsConst), clause(Clause)}.
-% #maximize {N : satisfied_clauses_count(N)}. 
-:- not hold(sat("C2"), maxStepsConst).
+#maximize {N : satisfied_clauses_count(N)}. 
+% :- not hold(sat("C2"), maxStepsConst).
 
 number(10000000).
 number(2000).
