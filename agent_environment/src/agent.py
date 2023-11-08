@@ -16,12 +16,20 @@ class Planner:
         self.contract_cps = config['contract_cps']
         self.cps = config['cps']
         self.id = config['id']
+        self.plan = {} 
 
-    def plan(self, target_step, observation=""):
+    # TODO:  
+    def observation_matches_plan(self, observation):
+        pass
+
+    def plan(self, observation):
+        # write observations to a temporary file
         temp_file = f"{self.id}_temp.lp" 
         with open(temp_file, "w") as f:
             f.write(observation)
             f.write(f"target_step({target_step}).")
+        
+        # get the plan
         files = [self.domain, self.initial_state, self.planner, self.clause_concern_map,\
                  self.clauses, self.global_domain, self.cps, self.contract_cps,\
                  temp_file]  
@@ -37,6 +45,15 @@ class Planner:
         answer = result.stdout.decode()
         answer = parse_output(answer)
         return "\n".join(answer)
+
+    def next_step(self, target_step, observation=""):
+        # compare the observation with the plan
+        if self.observation_matches_plan(observation):
+            # return the action at the target step
+            return ""
+
+        # else replan if different
+        self.plan(observation)
 
 # load config and display it
 config = load_config()
@@ -95,8 +112,8 @@ def on_message(client: mqtt.Client, userdata, msg):
         # received the information for this state
         logging.info(f"{topic} - {message}")
         # do some reasoning
-        action = planner.plan(target_step, message)
-        logging.debug(f"the planned action is {action}")
+        action = planner.next_step(target_step, message)
+        logging.debug(f"the next action is {action}")
         # received the state information
         client.publish(received_publish_topic, "")
         logging.debug("notified the env that the agent received the environment information")
