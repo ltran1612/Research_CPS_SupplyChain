@@ -5,6 +5,7 @@ number(1000).
 number(2000).
 number(3000).
 1{occur(pay(Amount, PaymentType), Time) : number(Amount), paymentType(PaymentType)}1 :- target_step(Time). 
+target_step(1).
 
 % #show hold/2.
 #show occur/2.
