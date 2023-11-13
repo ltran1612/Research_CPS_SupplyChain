@@ -2,7 +2,7 @@
 import logging
 from subprocess import CompletedProcess
 import sys
-from src.misc import parse_output, run_clingo
+from misc import parse_output, run_clingo
 
 class Planner:
     def __init__(self, config):
@@ -31,7 +31,7 @@ class Planner:
         files = [self.domain, self.initial_state, self.planner, self.clause_concern_map,\
                  self.clauses, self.global_domain, self.cps, self.contract_cps,\
                  temp_file]  
-        result: CompletedProcess[bytes] = run_clingo(files, flags=["1", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
+        result: CompletedProcess[bytes] = run_clingo(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
         return_code = result.returncode
         if return_code == 0:
             logging.info("unknown error")
@@ -42,8 +42,11 @@ class Planner:
         
         answer = result.stdout.decode()
         answer = parse_output(answer)
-        answer = "\n".join(answer)
+        # answer = "\n".join(answer)
         self.theplan = answer
+    
+    def see_plan(self):
+        return self.theplan
 
     def next_step(self, target_step, observation=""):
         # compare the observation with the plan
@@ -82,5 +85,7 @@ if __name__ == "__main__":
     }
 
     plan = Planner(config)
+    plan.plan("")
+    print(plan.see_plan())
 
     # see the plan
