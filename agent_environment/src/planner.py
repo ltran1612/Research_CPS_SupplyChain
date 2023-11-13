@@ -2,9 +2,12 @@
 import logging
 from subprocess import CompletedProcess
 import sys
+import re
 from misc import parse_output, run_clingo
 
 class Planner:
+    theplan: list
+
     def __init__(self, config):
         self.domain = config['domain']
         self.initial_state = config['initial_state']
@@ -15,10 +18,10 @@ class Planner:
         self.contract_cps = config['contract_cps']
         self.cps = config['cps']
         self.id = config['id']
-        self.theplan = "" 
+        self.theplan = [] 
 
     # TODO:  
-    def observation_matches_plan(self, observation):
+    def observation_matches_plan(self, observation: list):
         pass
 
     def plan(self, observation):
@@ -47,18 +50,21 @@ class Planner:
     
     def see_plan(self):
         return self.theplan
+    
+    def get_actions_at_step(self, step):
+        reg = re.compile(f"occur\(.*,{step}\)")
+        actions = list(filter(reg.match, self.theplan))
+        return actions
 
-    def next_step(self, target_step, observation=""):
+    def next_step(self, target_step, observation=[]):
         # compare the observation with the plan
         if self.observation_matches_plan(observation):
-            # TODO: 
-            # return the action at the target step
-            return ""
+            return self.get_actions_at_step(target_step)
 
         # else replan if different
         self.plan(observation)
-        # then, return the target step
-        # TODO:
+        # return the next step
+        return self.next_step(target_step, observation)
 
 if __name__ == "__main__":
     # set the logging
@@ -86,6 +92,6 @@ if __name__ == "__main__":
 
     plan = Planner(config)
     plan.plan("")
-    print(plan.see_plan())
+    print(plan.get_actions_at_step(1))
 
     # see the plan

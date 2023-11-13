@@ -52,5 +52,8 @@ def parse_output(output: str):
     output = output.strip()
     lines = output.split("\n")
     lines.pop(-1)
-    return lines
+    result = [] 
+    for line in lines:
+        result.extend(line.split(". "))
+    return result 
     
