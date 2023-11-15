@@ -22,19 +22,42 @@ class Planner:
 
     # TODO:  
     def observation_matches_plan(self, observation: list):
-        pass
+        checking_file = "../scenarios/builder_lumber/tests/plan_checking.lp"
+        temp_file = f"{self.id}_temp.lp" 
+        with open(temp_file, "w") as f:
+            f.write(". ".join(self.theplan))
+            f.write(" ".join(observation))
 
-    def plan(self, observation):
+        files = [temp_file, checking_file, self.global_domain]
+
+        result: CompletedProcess[bytes] = run_clingo(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
+        return_code = result.returncode
+
+        if return_code == 0:
+            logging.info("unknown error")
+            exit(1)
+        elif return_code != 10 and return_code != 30: 
+            answer = result.stdout.decode()
+            if "UNSATISFIABLE" in answer:
+                return False
+            logging.error(f"{return_code} - {result.stderr.decode()}")
+            exit(1)
+
+        return True        
+
+
+    def plan(self, observation: list):
         # write observations to a temporary file
         temp_file = f"{self.id}_temp.lp" 
         with open(temp_file, "w") as f:
-            f.write(observation)
+            f.write(" ".join(observation))
         
         # get the plan
         files = [self.domain, self.initial_state, self.planner, self.clause_concern_map,\
                  self.clauses, self.global_domain, self.cps, self.contract_cps,\
                  temp_file]  
         result: CompletedProcess[bytes] = run_clingo(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
+
         return_code = result.returncode
         if return_code == 0:
             logging.info("unknown error")
@@ -60,7 +83,9 @@ class Planner:
         # compare the observation with the plan
         if self.observation_matches_plan(observation):
             return self.get_actions_at_step(target_step)
-
+        
+        input()
+        print("myplan", self.theplan)
         # else replan if different
         self.plan(observation)
         # return the next step
@@ -91,7 +116,8 @@ if __name__ == "__main__":
     }
 
     plan = Planner(config)
-    plan.plan("")
+    plan.plan([])
     print(plan.get_actions_at_step(1))
+    plan.next_step(1, ["occur(pay(1000, board), 1)."])
 
     # see the plan

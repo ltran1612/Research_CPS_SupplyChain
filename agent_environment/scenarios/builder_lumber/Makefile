@@ -19,7 +19,7 @@ cps_builder:
 	${run_clingo} ${builder} builder/clause-concern-map.lp ${cps_contract} $(into_lines) 
 
 plan_cps_builder:
-	${run_clingo} -q1,2,2  ${builder} builder/clause-concern-map.lp builder/plan.lp ${cps_contract} ${surpress} $(format_atoms)  
+	${run_clingo} -q1,2,2 --parallel-mode 5,compete  ${builder} builder/clause-concern-map.lp builder/plan.lp ${cps_contract} ${surpress} $(format_atoms)  
 
 plan_cps_lumber:
 	${run_clingo} -q1 ${lumber} lumber/clause-concern-map.lp lumber/plan.lp ${cps_contract} ${surpress} $(format_atoms) 
@@ -32,3 +32,5 @@ env_lumber_builder:
 
 cps:
 	clingo cps/cps.lp cps/test.lp 
+test:
+	${run_clingo} tests/observation.lp tests/theplan.lp tests/plan_checking.lp
