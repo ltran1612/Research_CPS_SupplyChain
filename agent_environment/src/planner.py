@@ -84,8 +84,6 @@ class Planner:
         if self.observation_matches_plan(observation):
             return self.get_actions_at_step(target_step)
         
-        input()
-        print("myplan", self.theplan)
         # else replan if different
         self.plan(observation)
         # return the next step
@@ -117,7 +115,9 @@ if __name__ == "__main__":
 
     plan = Planner(config)
     plan.plan([])
-    print(plan.get_actions_at_step(1))
-    plan.next_step(1, ["occur(pay(1000, board), 1)."])
+    print("initial plan", plan.see_plan())
+    input()
+    plan.next_step(1, ["occur(pay(1000, board), 0)."])
+    print("new plan", plan.see_plan())
 
     # see the plan
