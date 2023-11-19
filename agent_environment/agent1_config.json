@@ -5,6 +5,7 @@
     "initial_state": "../scenarios/builder_lumber/builder/test_init.lp",
     "planner": "../scenarios/builder_lumber/builder/plan.lp",
     "clause_concern_map": "../scenarios/builder_lumber/builder/clause-concern-map.lp",
+    "plan_checking": "../scenarios/builder_lumber/builder/plan_checking.lp",
     "global_domain": "../scenarios/builder_lumber/global_domain.lp",
     "clauses": "../scenarios/builder_lumber/clauses.lp",
     "contract_cps": "../scenarios/builder_lumber/cps/contract-cps.lp",
