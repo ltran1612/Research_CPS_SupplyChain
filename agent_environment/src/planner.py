@@ -3,7 +3,7 @@ import logging
 from subprocess import CompletedProcess
 import sys
 import re
-from misc import parse_output, run_clingo_raw
+from misc import parse_clingo_output, run_clingo_raw
 
 class Planner:
     theplan: list
@@ -68,7 +68,7 @@ class Planner:
             exit(1)
         
         answer = result.stdout.decode()
-        answer = parse_output(answer)
+        answer = parse_clingo_output(answer)
         # answer = "\n".join(answer)
         self.theplan = answer
     
