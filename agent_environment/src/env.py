@@ -80,29 +80,21 @@ def custom_loop():
                     target_parser = target["parser"]
                     message = messages[target_name]
 
-                    # parse the message
+                    # parse the message 
+                    # put the message to a temporary file
                     message_file = f"env_{target_name}_temp.lp" 
                     with open(message_file, "w") as f:
                         f.write(message)
-                    result = run_clingo([target_parser, message_file])
-                    logging.debug(f"run clingo with {target_parser} and {message_file}")
-
-                    # parse the message
-                    parsed_message: str = result.stdout.decode("utf-8")
-                    parsed_message = parsed_message.strip()
-                    logging.debug(f"clingo output is {parsed_message}")
-                    lines = parsed_message.split("\n")
-                    logging.debug(f"the parsed lines are {lines}")
-
+                    # run clingo with the message
+                    foundAnswerSet, answerSet = run_clingo([target_parser, message_file])
                     # check for potential error, if not clean the message
-                    if "UNSATISFIABLE" in lines:
+                    if not foundAnswerSet:
                         logging.error("Parsing is unsatisfiable somehow")
                         exit(1)
                     else:
-                        lines.pop(-1)
-                        logging.debug(f"parsed these atoms array {lines}")
+                        logging.debug(f"parsed these atoms array {answerSet}")
                         # add to the final message
-                        final_message.extend(lines)
+                        final_message.extend(answerSet)
                 
                 # compose the final message from the messsage of all agents 
                 final_message = " ".join(final_message)

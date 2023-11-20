@@ -3,7 +3,7 @@ import logging
 from subprocess import CompletedProcess
 import sys
 import re
-from misc import parse_output, run_clingo
+from misc import parse_output, run_clingo_raw
 
 class Planner:
     theplan: list
@@ -31,7 +31,7 @@ class Planner:
 
         files = [temp_file, checking_file, self.global_domain]
 
-        result: CompletedProcess[bytes] = run_clingo(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
+        result: CompletedProcess[bytes] = run_clingo_raw(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
         return_code = result.returncode
 
         if return_code == 0:
@@ -57,7 +57,7 @@ class Planner:
         files = [self.domain, self.initial_state, self.planner, self.clause_concern_map,\
                  self.clauses, self.global_domain, self.cps, self.contract_cps,\
                  temp_file]  
-        result: CompletedProcess[bytes] = run_clingo(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
+        result: CompletedProcess[bytes] = run_clingo_raw(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
 
         return_code = result.returncode
         if return_code == 0:

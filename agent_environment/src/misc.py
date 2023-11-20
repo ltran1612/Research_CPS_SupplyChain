@@ -1,5 +1,6 @@
 import sys, subprocess
 import json
+import logging
 
 defaultConfig = {
     "brokerAddress": "mqtt://localhost:1883",
@@ -36,13 +37,26 @@ def load_config():
 
 
 
-def run_clingo(files: list, flags=["-V0", "--out-atom=%s."]):
+def run_clingo_raw(files: list, flags=["-V0", "--out-atom=%s."]):
     command = ["clingo"]
     command.extend(files)
     command.extend(flags)
     result= subprocess.run(command, capture_output=True)
     return result
 
+def run_clingo(files: list, flags=["-V0", "--out-atom=%s."]):
+    result = run_clingo_raw(files, flags)
+    # parse the message
+    parsed_message: str = result.stdout.decode("utf-8")
+    # clean the message
+    parsed_message = parsed_message.strip()
+    # parse the lines
+    lines = parsed_message.split("\n")
+    status = lines.pop(-1)
+    if "UNSATISFIABLE" == status: 
+        return (False, lines)
+
+    return (True, lines)
 # we would expect that the output comes from running clingo with the flags -V0 --output-atoms=%s.
 # on successful there will be an answer set
 # also, there will be the word successful
