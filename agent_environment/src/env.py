@@ -24,6 +24,10 @@ receivedLock = Lock()
 # step
 step = -1
 
+# set up
+states = {}
+for agent in agents:
+    states[agent] = ""
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -88,6 +92,7 @@ def custom_loop():
                     parsed_message = parsed_message.strip()
                     logging.debug(f"clingo output is {parsed_message}")
                     lines = parsed_message.split("\n")
+                    logging.debug(f"the parsed lines are {lines}")
 
                     # check for potential error, if not clean the message
                     if "UNSATISFIABLE" in lines:
@@ -100,8 +105,10 @@ def custom_loop():
                         final_message.extend(lines)
                 
                 # compose the final message from the messsage of all agents 
-                final_message = "\n.".join(final_message)
-                client.publish(f"for/{agent}", final_message, qos=2)
+                final_message = " ".join(final_message)
+                logging.debug(f"the message from the parsing is {final_message}")
+                states[agent] += " " + final_message
+                client.publish(f"for/{agent}", states[agent], qos=2)
                 logging.info(f"sent state information to {agent}")
 
             # reset the messages storage
@@ -127,7 +134,7 @@ def custom_loop():
 
 # set the logging
 log_handler = logging.StreamHandler(sys.stdout)
-log_handler.setLevel(logging.INFO)
+log_handler.setLevel(logging.DEBUG)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logging.getLogger().setLevel(logging.DEBUG)
 logging.getLogger().addHandler(log_handler)
