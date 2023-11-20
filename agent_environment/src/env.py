@@ -4,6 +4,7 @@ from threading import Lock, Thread
 from time import sleep
 import logging
 import sys
+from state import StateManger
 
 # load and display the config
 config = load_config()
@@ -25,9 +26,7 @@ receivedLock = Lock()
 step = -1
 
 # set up
-states = {}
-for agent in agents:
-    states[agent] = ""
+states = StateManger(agents)
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -99,8 +98,8 @@ def custom_loop():
                 # compose the final message from the messsage of all agents 
                 final_message = " ".join(final_message)
                 logging.debug(f"the message from the parsing is {final_message}")
-                states[agent] += " " + final_message
-                client.publish(f"for/{agent}", states[agent], qos=2)
+                states.add_to_state(agent, final_message)
+                client.publish(f"for/{agent}", states.get_state(agent), qos=2)
                 logging.info(f"sent state information to {agent}")
 
             # reset the messages storage
