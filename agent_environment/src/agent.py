@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 from threading import Lock
 from subprocess import CompletedProcess
-from misc import load_config, show_config, run_clingo, parse_output
+from misc import load_config, show_config, get_atoms
 from planner import Planner 
 import logging, sys
 
@@ -9,6 +9,7 @@ import logging, sys
 config = load_config()
 show_config(config)
 planner: Planner = Planner(config)
+planner.plan([])
 
 # agent topics
 publish_topic = f"env/{config['id']}" 
@@ -61,8 +62,10 @@ def on_message(client: mqtt.Client, userdata, msg):
     if topic == subscribe_topic:
         # received the information for this state
         logging.info(f"{topic} - {message}")
+        observations = get_atoms([message])
         # do some reasoning
-        action = planner.next_step(target_step, message)
+        actions = planner.next_step(target_step, observations)
+        action = " ".join(actions)
         logging.debug(f"the next action is {action}")
         # received the state information
         client.publish(received_publish_topic, "")

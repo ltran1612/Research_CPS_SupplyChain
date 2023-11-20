@@ -18,14 +18,15 @@ class Planner:
         self.contract_cps = config['contract_cps']
         self.cps = config['cps']
         self.id = config['id']
+        self.plan_checking = config['plan_checking']
         self.theplan = [] 
 
     # TODO:  
     def observation_matches_plan(self, observation: list):
-        checking_file = "../scenarios/builder_lumber/tests/plan_checking.lp"
+        checking_file = self.plan_checking
         temp_file = f"{self.id}_temp.lp" 
         with open(temp_file, "w") as f:
-            f.write(". ".join(self.theplan))
+            f.write(" ".join(self.theplan))
             f.write(" ".join(observation))
 
         files = [temp_file, checking_file, self.global_domain]
@@ -117,7 +118,7 @@ if __name__ == "__main__":
     plan.plan([])
     print("initial plan", plan.see_plan())
     input()
-    plan.next_step(1, ["occur(pay(1000, board), 0)."])
+    plan.next_step(1, ["occur(pay(1000, board), 0)"])
     print("new plan", plan.see_plan())
 
     # see the plan

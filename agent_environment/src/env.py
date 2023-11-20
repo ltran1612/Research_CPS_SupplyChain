@@ -94,13 +94,13 @@ def custom_loop():
                         logging.error("Parsing is unsatisfiable somehow")
                         exit(1)
                     else:
-                        lines.pop()
+                        lines.pop(-1)
                         logging.debug(f"parsed these atoms array {lines}")
                         # add to the final message
                         final_message.extend(lines)
                 
                 # compose the final message from the messsage of all agents 
-                final_message = "\n".join(final_message)
+                final_message = "\n.".join(final_message)
                 client.publish(f"for/{agent}", final_message, qos=2)
                 logging.info(f"sent state information to {agent}")
 

@@ -52,8 +52,25 @@ def parse_output(output: str):
     output = output.strip()
     lines = output.split("\n")
     lines.pop(-1)
+
+    return get_atoms(lines)
+
+def get_atoms(lines: list[str]):
     result = [] 
     for line in lines:
-        result.extend(line.split(". "))
+        result.extend(line.split("."))
+    
+    def clean(item):
+        item = item.strip()
+        if item != "":
+            item += "."
+        return item
+    result = list(map(clean, result))
+    if len(result) > 1:
+        result.pop(-1)
     return result 
+
+if __name__ == "__main__":
+    print(parse_output("test(1). \nOPTIMUM FOUND"))
+    print(parse_output("test(2). test(1). \nOPTIMUM FOUND"))
     
