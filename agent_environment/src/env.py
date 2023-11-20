@@ -4,12 +4,11 @@ from threading import Lock, Thread
 from time import sleep
 import logging
 import sys
-from state import StateManger
+from env_misc import StateManger
 
 # load and display the config
 config = load_config()
 show_config(config)
-
 # parse the config
 pairs = config['pairs']
 agents = list(pairs.keys())
@@ -54,9 +53,10 @@ def on_message(client: mqtt.Client, userdata, msg):
             receivedLock.release()
 
 client = mqtt.Client()
-
 client.on_connect = on_connect
 client.on_message = on_message
+
+# custom loop function that will loop forever
 def custom_loop(): 
     while True:
         global received
@@ -129,7 +129,6 @@ log_handler.setLevel(logging.DEBUG)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logging.getLogger().setLevel(logging.DEBUG)
 logging.getLogger().addHandler(log_handler)
-
 
 # run the thread
 my_thread = Thread(target=custom_loop, args=())
