@@ -65,6 +65,7 @@ def on_message(client: mqtt.Client, userdata, msg):
         observations = get_atoms([message])
         # do some reasoning
         actions = planner.next_step(target_step, observations)
+        # assemble the actions to do into a message to send
         action = " ".join(actions)
         logging.debug(f"the next action is {action}")
         # received the state information

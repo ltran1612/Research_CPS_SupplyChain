@@ -72,11 +72,14 @@ def custom_loop():
                 # intialize the message to contain its current messages
                 final_message = [messages[agent]]
 
+                # take the message from the agent that concerns this agent.
+                # then add them to a final message
                 for target in pairs[agent]:
-                    # parse the data to the right one.  
-                    # append the message
+                    # get the concerned agent's name
                     target_name = target["name"]
+                    # get the right file to parse that agent's message
                     target_parser = target["parser"]
+                    # get the message to parse
                     message = messages[target_name]
 
                     # parse the message 
@@ -84,10 +87,11 @@ def custom_loop():
                     message_file = f"env_{target_name}_temp.lp" 
                     write_to_temp_file(message_file, message)
 
-                    # run clingo with the message
-                    foundAnswerSet, answerSet = run_clingo([target_parser, message_file])
+                    # run clingo with the message and the parser file
+                    hasFoundAnswerSet, answerSet = run_clingo([target_parser, message_file])
+
                     # check for potential error, if not clean the message
-                    if not foundAnswerSet:
+                    if not hasFoundAnswerSet:
                         logging.error("Parsing is unsatisfiable somehow")
                         exit(1)
                     else:
@@ -98,7 +102,9 @@ def custom_loop():
                 # compose the final message from the messsage of all agents 
                 final_message = " ".join(final_message)
                 logging.debug(f"the message from the parsing is {final_message}")
+                # add the final message to the state of a agent
                 states.add_to_state(agent, final_message)
+                # send the state information to the agent
                 client.publish(f"for/{agent}", states.get_state(agent), qos=2)
                 logging.info(f"sent state information to {agent}")
 
@@ -110,13 +116,16 @@ def custom_loop():
         # sent them the message to do the next step
         receivedLock.acquire()
         if len(received) == len(agents):
+            # environment control the signal for the next step
+            # increase the step
             step += 1 
             logging.info(f"received all, start the next step {step}")
             input()
+            # send a message to each agent so they will send the action for this step
             for agent in agents:
                 client.publish(f"next/{agent}", str(step), qos=2, retain=False)
 
-            # reset received 
+            # reset received array
             received = []            
         receivedLock.release()
 

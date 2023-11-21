@@ -1,3 +1,4 @@
+# manage the information state of each agent
 class StateManger:
     states = {}
     def __init__(self, agents):
