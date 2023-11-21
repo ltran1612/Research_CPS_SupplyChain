@@ -134,9 +134,9 @@ def custom_loop():
 
 # set the logging
 log_handler = logging.StreamHandler(sys.stdout)
-log_handler.setLevel(logging.DEBUG)
+log_handler.setLevel(logging.INFO)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logging.getLogger().setLevel(logging.DEBUG)
+logging.getLogger().setLevel(logging.INFO)
 logging.getLogger().addHandler(log_handler)
 
 # run the thread

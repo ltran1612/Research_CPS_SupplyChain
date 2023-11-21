@@ -57,17 +57,20 @@ def on_message(client: mqtt.Client, userdata, msg):
     # get the topic and messages
     topic: str = msg.topic
     message: str = msg.payload.decode("ascii")
+    message = message.strip()
 
     # if the topic matches our needed topic 
     if topic == subscribe_topic:
         # received the information for this state
-        logging.info(f"{topic} - {message}")
+        logging.debug(f"{topic} - {message}")
+        logging.info(f"The state at the start of step {target_step} is: {message}")
         observations = get_atoms([message])
         # do some reasoning
         actions = planner.next_step(target_step, observations)
         # assemble the actions to do into a message to send
         action = " ".join(actions)
         logging.debug(f"the next action is {action}")
+        logging.info(f"the action to do in {target_step} is: {action}")
         # received the state information
         client.publish(received_publish_topic, "")
         logging.debug("notified the env that the agent received the environment information")
@@ -83,11 +86,11 @@ def on_message(client: mqtt.Client, userdata, msg):
 
 # set the logging
 log_handler = logging.StreamHandler(sys.stdout)
-log_handler.setLevel(logging.DEBUG)
+log_handler.setLevel(logging.INFO)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
 logger = logging.getLogger()
 logger.handlers = []
-logger.setLevel(logging.DEBUG)
+logger.setLevel(logging.INFO)
 logger.addHandler(log_handler)
 
 # start the agent 
