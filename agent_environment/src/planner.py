@@ -3,7 +3,7 @@ import logging
 from subprocess import CompletedProcess
 import sys
 import re
-from misc import parse_clingo_output, run_clingo_raw
+from misc import parse_clingo_output, run_clingo_raw, write_to_temp_file
 
 class Planner:
     theplan: list
@@ -25,9 +25,8 @@ class Planner:
     def observation_matches_plan(self, observation: list):
         checking_file = self.plan_checking
         temp_file = f"{self.id}_temp.lp" 
-        with open(temp_file, "w") as f:
-            f.write(" ".join(self.theplan))
-            f.write(" ".join(observation))
+        write_to_temp_file(temp_file, " ".join(self.theplan) +\
+                           " ".join(observation))
 
         files = [temp_file, checking_file, self.global_domain]
 
@@ -50,8 +49,7 @@ class Planner:
     def plan(self, observation: list):
         # write observations to a temporary file
         temp_file = f"{self.id}_temp.lp" 
-        with open(temp_file, "w") as f:
-            f.write(" ".join(observation))
+        write_to_temp_file(temp_file, " ".join(observation))
         
         # get the plan
         files = [self.domain, self.initial_state, self.planner, self.clause_concern_map,\

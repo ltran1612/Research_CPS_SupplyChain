@@ -1,5 +1,5 @@
 import paho.mqtt.client as mqtt
-from misc import load_config, show_config, run_clingo
+from misc import load_config, show_config, run_clingo, write_to_temp_file
 from threading import Lock, Thread 
 from time import sleep
 import logging
@@ -82,8 +82,8 @@ def custom_loop():
                     # parse the message 
                     # put the message to a temporary file
                     message_file = f"env_{target_name}_temp.lp" 
-                    with open(message_file, "w") as f:
-                        f.write(message)
+                    write_to_temp_file(message_file, message)
+
                     # run clingo with the message
                     foundAnswerSet, answerSet = run_clingo([target_parser, message_file])
                     # check for potential error, if not clean the message

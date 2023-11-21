@@ -83,7 +83,11 @@ def get_atoms(lines: list[str]):
         result.pop(-1)
     return result 
 
-# 
+# write to a temporary file 
+def write_to_temp_file(filename: str, message:str):
+    with open(filename, "w") as f:
+        f.write(message)
+
 
 if __name__ == "__main__":
     print(parse_clingo_output("test(1). \nOPTIMUM FOUND"))
