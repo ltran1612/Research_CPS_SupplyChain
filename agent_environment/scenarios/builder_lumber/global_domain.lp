@@ -1,5 +1,5 @@
 % maximum number of steps 
-#const maxStepsConst = 6.
+#const maxStepsConst = 10.
 
 % steps declaration
 step(0..maxStepsConst).

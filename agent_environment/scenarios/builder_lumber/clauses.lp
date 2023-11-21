@@ -8,7 +8,7 @@ clause("C4").
 
 % clause condition
 % C1 : L responsible_for board(144K, Q) ∧ 1 ≤ Q when by_week 4.
-hold(sat("C1"), maxStepsConst) :- hold(board(Amount, Quality), 4), Amount >= 144000, Quality >= 1.
+hold(sat("C1"), maxStepsConst) :- hold(total_produced(Amount, Quality), 4), Amount >= 144000, Quality >= 1.
 
 % C2 : L responsible_for delivered(144K, Q) ∧ 2 ≤ Q when by_week 4.
 hold(sat("C2"), maxStepsConst) :- hold(total_delivered(Amount, Quality), 4), Amount >= 144000, Quality >= 2.
