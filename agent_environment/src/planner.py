@@ -62,7 +62,8 @@ class Planner:
             logging.info("unknown error")
             exit(1)
         elif return_code != 10 and return_code != 30: 
-            logging.error(f"{return_code} - {result.stderr.decode()}")
+            # https://github.com/potassco/clasp/issues/42#issuecomment-459981038
+            logging.error(f"error with planning - {return_code} - {result.stderr.decode()}")
             exit(1)
         
         answer = result.stdout.decode()
@@ -120,4 +121,4 @@ if __name__ == "__main__":
     plan.next_step(1, ["occur(pay(1000, board), 0)."])
     print("new plan", plan.see_plan())
 
-    # see the plan
+    # see the plan/
