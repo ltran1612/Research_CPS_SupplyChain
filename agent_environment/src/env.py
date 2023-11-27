@@ -56,6 +56,8 @@ client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
 
+# custom environment function
+
 # custom loop function that will loop forever
 def custom_loop(): 
     while True:

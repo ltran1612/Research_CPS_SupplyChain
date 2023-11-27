@@ -109,14 +109,15 @@ if __name__ == "__main__":
         "global_domain": "../scenarios/builder_lumber/global_domain.lp",
         "clauses": "../scenarios/builder_lumber/clauses.lp",
         "contract_cps": "../scenarios/builder_lumber/cps/contract-cps.lp",
-        "cps": "../scenarios/builder_lumber/cps/cps.lp"
+        "cps": "../scenarios/builder_lumber/cps/cps.lp",
+        "plan_checking": "../scenarios/builder_lumber/builder/plan_checking.lp",
     }
 
     plan = Planner(config)
     plan.plan([])
     print("initial plan", plan.see_plan())
     input()
-    plan.next_step(1, ["occur(pay(1000, board), 0)"])
+    plan.next_step(1, ["occur(pay(1000, board), 0)."])
     print("new plan", plan.see_plan())
 
     # see the plan
