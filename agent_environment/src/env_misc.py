@@ -70,10 +70,9 @@ class StateManger:
         return result
 
     # calculate state
-    # TODO:
     def calculate_state(self): 
         self.lock.acquire()
-        # TODO: move the file from scenarios to a folder meant for environment 
+        # MAYBE: move the file from scenarios to a folder meant for environment 
         compute_global_state_code = "../scenarios/builder_lumber/env/compute_next.lp"
 
         # temp file
