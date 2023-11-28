@@ -1,4 +1,5 @@
 from threading import Lock 
+from misc import decode_setup_data
 
 # manage the global state information 
 # thread-safe
@@ -16,11 +17,9 @@ class StateManger:
             self.states[agent] = ""
 
     # function to receive setup information from the domain
-    #
-    # TODO
     def setup(self, agent, setup_info):    
         self.lock.acquire()
-        self.setup_info[agent] = setup_info
+        self.setup_info[agent] = decode_setup_data(setup_info)
         self.lock.release()
 
     # function to receive the message 

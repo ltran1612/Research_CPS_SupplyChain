@@ -1,7 +1,7 @@
 import paho.mqtt.client as mqtt
 from threading import Lock
 from subprocess import CompletedProcess
-from misc import load_config, show_config, get_atoms
+from misc import load_config, show_config, get_atoms, encode_setup_data
 from planner import Planner 
 import logging, sys
 
@@ -40,7 +40,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
     startLock.acquire()
     if start:
         # send setup information 
-        client.publish(publish_topic, "", qos=2, retain=False)
+        client.publish(publish_topic, encode_setup_data(config), qos=2, retain=False)
         logging.info("agent notified to the env of its existence")
         start = False
     startLock.release()

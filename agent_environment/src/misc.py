@@ -88,6 +88,20 @@ def write_to_temp_file(filename: str, message:str):
     with open(filename, "w") as f:
         f.write(message)
 
+def encode_setup_data(config) -> dict:
+    domain = config["domain"]
+    initial_state = config['initial_state']
+
+    setup_data = {} 
+    with open(domain, "r") as f:
+        setup_data["domain"] = f.readlines()
+    with open(initial_state, "r") as f:
+        setup_data["initial_state"] = f.readlines()
+
+    return json.dumps(setup_data)
+
+def decode_setup_data(config):
+    return json.loads(config)
 
 if __name__ == "__main__":
     print(parse_clingo_output("test(1). \nOPTIMUM FOUND"))

@@ -3,7 +3,7 @@ import logging
 from subprocess import CompletedProcess
 import sys
 import re
-from misc import parse_clingo_output, run_clingo_raw, write_to_temp_file
+from misc import parse_clingo_output, run_clingo_raw, write_to_temp_file, encode_setup_data, decode_setup_data
 
 class Planner:
     theplan: list
@@ -89,6 +89,7 @@ class Planner:
         # return the next step
         return self.next_step(target_step, observation)
 
+
 if __name__ == "__main__":
     # set the logging
     log_handler = logging.StreamHandler(sys.stdout)
@@ -114,11 +115,14 @@ if __name__ == "__main__":
         "plan_checking": "../scenarios/builder_lumber/builder/plan_checking.lp",
     }
 
-    plan = Planner(config)
-    plan.plan([])
-    print("initial plan", plan.see_plan())
-    input()
-    plan.next_step(1, ["occur(pay(1000, board), 0)."])
-    print("new plan", plan.see_plan())
+    # plan = Planner(config)
+    # plan.plan([])
+    # print("initial plan", plan.see_plan())
+    # input()
+    # plan.next_step(1, ["occur(pay(1000, board), 0)."])
+    # print("new plan", plan.see_plan())
 
-    # see the plan/
+    # check the encoder and decoder
+    config = encode_setup_data(config) 
+    # print(config)
+    # print(decode_setup_data(config))
