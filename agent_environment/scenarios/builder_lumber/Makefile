@@ -33,4 +33,4 @@ env_lumber_builder:
 cps:
 	clingo cps/cps.lp cps/test.lp 
 test:
-	${run_clingo} tests/observation.lp tests/theplan.lp tests/plan_checking.lp
+	${run_clingo} env/compute_next.lp builder/test_init.lp  builder/domain.lp lumber/domain.lp lumber/test_init.lp 

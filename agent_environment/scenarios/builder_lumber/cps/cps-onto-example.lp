@@ -683,10 +683,10 @@ step(0).
 %	not other_func(P,C,"cpsf:bc1").
 
 % impacts of requirements -- shortcut using addresses/3, from cpsf:addressedByProperty and cpsf:addressesAtFunc
-%hold(impacted(C,F,pos),S) :-
+%h(impacted(C,F,pos),S) :-
 %	step(S),
 %	addresses(A,C,F),
-%	hold(sat(A),S).
+%	h(sat(A),S).
 
 
 
@@ -703,9 +703,9 @@ defined(neg,sat("consist_reading_freq_input1")).
 %   reading frequency"
 impacted(neg,sat("consist_reading_freq_input1"),S) :-
 	step(S),
-	hold(sat("using_basic_input1"),S),
-	hold(sat("encrypted_mem_input1"),S),
-	-hold(sat("slow_mode_input1"),S).
+	h(sat("using_basic_input1"),S),
+	h(sat("encrypted_mem_input1"),S),
+	-h(sat("slow_mode_input1"),S).
 %%%%% NOTE: to use inference on the satisfaction of concerns,
 %%%%%       one MUST define one of the following facts:
 %%%%%
@@ -797,7 +797,7 @@ addresses(Q,C,F) :-
 	conditionProperty(Cond,Q).
 
 
-hold(impacted(C,F,M),S) :-
+h(impacted(C,F,M),S) :-
 	step(S),
 	rule(Rule),
 	addressesAtFunc(Rule,F),
@@ -823,7 +823,7 @@ body_satisfied(Rule,S) :-
 	hasCondition(Rule,Cond),
 	conditionProperty(Cond,A),
 	conditionPolarity(Cond,pos),
-	not hold(sat(A),S).
+	not h(sat(A),S).
 
 % ASSUMPTION: satisfaction of concerns does not affect satisfaction of properties
 -condSat(A,S) :-
@@ -831,7 +831,7 @@ body_satisfied(Rule,S) :-
 	hasCondition(Rule,Cond),
 	conditionProperty(Cond,A),
 	conditionPolarity(Cond,neg),
-	not -hold(sat(A),S).
+	not -h(sat(A),S).
 
 
 % DEBUGGING
@@ -840,28 +840,28 @@ body_satisfied(Rule,S) :-
 %	hasCondition(Rule,Cond),
 %	conditionProperty(Cond,A),
 %	conditionPolarity(Cond,pos),
-%	not -hold(sat(A),S).
+%	not -h(sat(A),S).
 %condSat(A,S) :-
 %	step(S),
 %	hasCondition(Rule,Cond),
 %	conditionProperty(Cond,A),
 %	conditionPolarity(Cond,neg),
-%	not hold(sat(A),S).
+%	not h(sat(A),S).
 
 
 % The satisfaction of requirements is handled explicitly
 % by user-provided state constraints
-%-hold(sat_property(A),S) :-
+%-h(sat_property(A),S) :-
 %	step(S),
 %	atomic_statement(P,A),
 %	isAssertion(P),
-%	not hold(A,S).
+%	not h(A,S).
 %
-%-hold(sat(C),S) :-
+%-h(sat(C),S) :-
 %	step(S),
 %	addresses(C,P),
 %	atomic_statement(P,A), 
-%	-hold(sat_property(A),S).
+%	-h(sat_property(A),S).
 
 fluent(sat(A)) :- atomic_statement(P,A).
 fluent(sat(A)) :- config_feature(A).
@@ -870,18 +870,18 @@ impact_mode(pos). impact_mode(neg).
 fluent(impacted(C,F,M)) :- concern(C), isFunctionClass(F), impact_mode(M).
 
 
-% sat_sub(C,F) hold iff every relevant sub-concern of C is satisfied
-%-hold(sat_sub(C1,F),S) :-
+% sat_sub(C,F) h iff every relevant sub-concern of C is satisfied
+%-h(sat_sub(C1,F),S) :-
 %	step(S), relevantToFunc(C1,F),
 %	subconcern(C1,C2), relevantToFunc(C2,F),
-%	not hold(sat(C2,F),S).
+%	not h(sat(C2,F),S).
 %fluent(sat_sub(C,F)) :- relevantToFunc(C,F).
 %defined(neg,sat_sub(C,F)) :- relevantToFunc(C,F).
 
 % The satisfaction of C in F is impacted by some combination of requirements at S
 impacted(C,F,S) :-
 	step(S), relevantToFunc(C,F),impact_mode(M),
-	hold(impacted(C,F,M),S).
+	h(impacted(C,F,M),S).
 
 % Concern C has at least one relevant sub-concern in function F
 has_relevant_subconcern(C1,F) :-
@@ -892,37 +892,37 @@ has_relevant_subconcern(C1,F) :-
 % 2. a relevant sub-concern is satisfied
 positively_influenced(C,F,S) :-
 	step(S), relevantToFunc(C,F),
-	hold(impacted(C,F,pos),S).
+	h(impacted(C,F,pos),S).
 positively_influenced(C1,F,S) :-
 	step(S), relevantToFunc(C1,F),
 %	has_relevant_subconcern(C1,F),
-%	hold(sat_sub(C1,F),S).
+%	h(sat_sub(C1,F),S).
 	subconcern(C1,C2), relevantToFunc(C2,F),
-	hold(sat(C2,F),S).
+	h(sat(C2,F),S).
 
 % A concern is negatively influenced if:
 % 1. a combination of requirements impacts it negatively OR
 % 2. a relevant sub-concern is unsatisfied
 negatively_influenced(C,F,S) :-
 	step(S), relevantToFunc(C,F),
-	hold(impacted(C,F,neg),S).
+	h(impacted(C,F,neg),S).
 negatively_influenced(C1,F,S) :-
 	step(S), relevantToFunc(C1,F),
 %	has_relevant_subconcern(C1,F),
-%	-hold(sat_sub(C1,F),S).
+%	-h(sat_sub(C1,F),S).
 	subconcern(C1,C2), relevantToFunc(C2,F),
-	-hold(sat(C2,F),S).
+	-h(sat(C2,F),S).
 
 % A concern is affected by uncertain influence (from its sub-concerns) if:
 % 1. a relevant sub-concern has unknown satisfaction
 uncertainly_influenced(C1,F,S) :-
 	step(S), relevantToFunc(C1,F),
 %	has_relevant_subconcern(C1,F),
-%	not hold(sat_sub(C1,F),S),
-%	not -hold(sat_sub(C1,F),S).
+%	not h(sat_sub(C1,F),S),
+%	not -h(sat_sub(C1,F),S).
 	subconcern(C1,C2), relevantToFunc(C2,F),
-	not hold(sat(C2,F),S),
-	not -hold(sat(C2,F),S).
+	not h(sat(C2,F),S),
+	not -h(sat(C2,F),S).
 
 
 %%%%%%%% INFERENCE ON CONCERN SATISFACTION
@@ -940,7 +940,7 @@ uncertainly_influenced(C1,F,S) :-
 % A concern (in a given function f, e.g. use case u1) is satisfied if:
 %   1. it is positively influenced AND
 %   2. it is not negatively influenced
-hold(sat(C,F),S) :-
+h(sat(C,F),S) :-
 	inference(concerns,pessimistic),
 	step(S), relevantToFunc(C,F),
 	positively_influenced(C,F,S),
@@ -965,7 +965,7 @@ defined(pos,sat(C,F)) :- inference(concerns,pessimistic), relevantToFunc(C,F).
 %   1. it is positively influenced AND
 %   2. it is not negatively influenced AND
 %   3. is not affected by uncertain influence
-hold(sat(C,F),S) :-
+h(sat(C,F),S) :-
 	inference(concerns,skeptical),
 	step(S), relevantToFunc(C,F),
 	positively_influenced(C,F,S),
@@ -985,7 +985,7 @@ likelihood(sat(C,F),S,D) :-
 %   1. it is negatively influenced AND
 %   2. it is not positively influenced AND
 %   3. is not affected by uncertain influence
--hold(sat(C,F),S) :-
+-h(sat(C,F),S) :-
 	inference(concerns,skeptical),
 	step(S), relevantToFunc(C,F),
 	negatively_influenced(C,F,S),
@@ -995,7 +995,7 @@ likelihood(sat(C,F),S,D) :-
 %   1. it has no relevant sub-concerns AND
 %   2. it is not positively influenced AND
 %   3. it is not negatively influenced
--hold(sat(C,F),S) :-
+-h(sat(C,F),S) :-
 	inference(concerns,skeptical),
 	step(S), relevantToFunc(C,F),
 	not has_relevant_subconcern(C,F),
@@ -1015,7 +1015,7 @@ likelihood(sat(C,F),S,D) :-
 % A concern (in a given function f, e.g. use case u1) is satisfied if:
 %   1. it is positively influenced AND
 %   2. it is not negatively influenced
-hold(sat(C,F),S) :-
+h(sat(C,F),S) :-
 	inference(concerns,optimistic),
 	step(S), relevantToFunc(C,F),
 	positively_influenced(C,F,S),
@@ -1031,7 +1031,7 @@ likelihood(sat(C,F),S,D) :-
 %   1. it has no relevant sub-concerns AND
 %   2. it is not positively influenced AND
 %   3. it is not negatively influenced
-hold(sat(C,F),S) :-
+h(sat(C,F),S) :-
 	inference(concerns,optimistic),
 	step(S), relevantToFunc(C,F),
 	not has_relevant_subconcern(C,F),
@@ -1078,26 +1078,26 @@ related(Q1,Q3) :-
 
 % initial state of the CPS
 
-hold(F,0) :-
+h(F,0) :-
 	fluent(F),
 	obs(F,true).
 
--hold(F,0) :-
+-h(F,0) :-
 	fluent(F),
 	obs(F,false).
 
-hold(F,0) :-
+h(F,0) :-
 	fluent(F),
 	assumed(F,true),
-	not -hold(F,0).
+	not -h(F,0).
 
--hold(F,0) :-
+-h(F,0) :-
 	fluent(F),
 	assumed(F,false),
-	not hold(F,0).
+	not h(F,0).
 
 % Ad-hoc for prob_of_state functional fluent
-hold(prob_of_state(100),0).
+h(prob_of_state(100),0).
 
 % next state: inertia axioms
 is_defined(F) :- fluent(F), defined(M,F).
@@ -1106,41 +1106,41 @@ is_defined(F) :- fluent(F), defined(M,F).
 -inertial(F) :- is_numerical(F).
 -inertial(F) :- is_defined(F).
 
-hold(F,S2) :-
+h(F,S2) :-
 	fluent(F),
 	not -inertial(F),
 	step(S), step(S2), S2=S+1,
-	hold(F,S),
-	not -hold(F,S2).
+	h(F,S),
+	not -h(F,S2).
 
--hold(F,S2) :-
+-h(F,S2) :-
 	fluent(F),
 	not -inertial(F),
 	step(S), step(S2), S2=S+1,
-	-hold(F,S),
-	not hold(F,S2).
+	-h(F,S),
+	not h(F,S2).
 
-hold(F,S) :-
+h(F,S) :-
 	fluent(F),
 	defined(neg,F),
 	step(S),
-	not -hold(F,S).
+	not -h(F,S).
 
--hold(F,S) :-
+-h(F,S) :-
 	fluent(F),
 	defined(pos,F),
 	step(S),
-	not hold(F,S).
+	not h(F,S).
 
 % effect of a negative impact
--hold(A,S) :-
+-h(A,S) :-
 	impacted(neg,A,S).
 
 
 % Ad-hoc treatment of prob_of_state functional fluent
-hold(prob_of_state(P2),S2) :-
+h(prob_of_state(P2),S2) :-
 	step(S), step(S2), S2=S+1,
-	hold(prob_of_state(P),S),
+	h(prob_of_state(P),S),
 	do(A,S),
 	prob_success(A,PSucc),
 	P2a=P*PSucc,
@@ -1153,9 +1153,9 @@ unk_prob_success(S) :-
 	step(S),
 	not -unk_prob_success(S).
 
-hold(prob_of_state(P),S2) :-
+h(prob_of_state(P),S2) :-
 	step(S), step(S2), S2=S+1,
-	hold(prob_of_state(P),S),
+	h(prob_of_state(P),S),
 	unk_prob_success(S).
 %       -- to be used together with theory*.lp
 %          and with step1-BASE.lp
@@ -1172,16 +1172,16 @@ inference(concerns,optimistic).
 
 % ------ Output Interface ------
 
-output(D,property,"-",S) :- last_step(S), hold(sat(A),S), atomic_statement(P,A), descr(P,D).
-output(C,concern,F,S) :- last_step(S), hold(sat(C,F),S),concern(C),not aspect(C), C!=all.
-output(C,aspect,F,S) :- last_step(S), hold(sat(C,F),S),aspect(C).
-output("concern-tree",tree,F,S) :- last_step(S), hold(sat(all,F),S).
+output(D,property,"-",S) :- last_step(S), h(sat(A),S), atomic_statement(P,A), descr(P,D).
+output(C,concern,F,S) :- last_step(S), h(sat(C,F),S),concern(C),not aspect(C), C!=all.
+output(C,aspect,F,S) :- last_step(S), h(sat(C,F),S),aspect(C).
+output("concern-tree",tree,F,S) :- last_step(S), h(sat(all,F),S).
 
 output(C,"concern/aspect (unk)",F,S) :- 
 	inference(concerns,skeptical),
 	last_step(S), concern(C), relevantToFunc(C,F), 
-	not hold(sat(C,F),S),
-	not hold(sat(C,F),S).
+	not h(sat(C,F),S),
+	not h(sat(C,F),S).
 
 output_headings("satisfied concern/aspect/property","type","function","step").
 % ------ Output Interface ------

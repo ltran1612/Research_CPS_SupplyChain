@@ -1,20 +1,20 @@
-satisfied_clauses_count(N) :- N = #count{Clause : hold(sat(Clause), maxStepsConst), clause(Clause)}.
+satisfied_clauses_count(N) :- N = #count{Clause : h(sat(Clause), maxStepsConst), clause(Clause)}.
 #maximize {N : satisfied_clauses_count(N)}. 
-% :- not hold(sat("C1"), maxStepsConst).
-% :- not hold(sat("C2"), maxStepsConst).
+% :- not h(sat("C1"), maxStepsConst).
+% :- not h(sat("C2"), maxStepsConst).
 
 
-hold(total_payment(0, board), 0). 
-hold(total_payment(0, shipping), 0). 
+h(total_payment(0, board), 0). 
+h(total_payment(0, shipping), 0). 
 
-hold(total_payment(NewAmount, PaymentType), Time+1) :- NewAmount = Current + Amount,
-    hold(total_payment(Current, PaymentType), Time),
+h(total_payment(NewAmount, PaymentType), Time+1) :- NewAmount = Current + Amount,
+    h(total_payment(Current, PaymentType), Time),
     observe(payment(Amount, PaymentType), Time),
     step(Time+1)
     .
 
-hold(total_payment(Amount, PaymentType), Time+1) :- step(Time+1),
-    hold(total_payment(Amount, PaymentType), Time),
+h(total_payment(Amount, PaymentType), Time+1) :- step(Time+1),
+    h(total_payment(Amount, PaymentType), Time),
     0=#count{X: observe(payment(X, PaymentType), Time)}
     .
 
@@ -44,9 +44,9 @@ number(Amount) :- occur(produce(Amount, _), Time).
 % 0{observe(payment(Amount, PaymentType), Time) : number(Amount), paymentType(PaymentType)}1 :- step(Time).
 
 % condition to continue doing actions
-% :- hold(total_payment(Amount, board), 3), not Amount >= 100000.
+% :- h(total_payment(Amount, board), 3), not Amount >= 100000.
 
-#show hold/2.
+#show h/2.
 #show occur/2.
 #show observe/2.
 #show satisfied_clauses_count/1.

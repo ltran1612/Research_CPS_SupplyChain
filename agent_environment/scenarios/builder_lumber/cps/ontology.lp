@@ -15,17 +15,17 @@ descr(P,P) :- atomic_statement(P,A), not input(P,"rdfs:comment",_).
 % The pair <Clause_ID, A> is in the private part of the contract. A is a property/requirement
 private_part(C,A) :- input(C,"cpsf:addProperty",P), atomic_statement(P,A).
 
-hold(impacted(C,"cpsf:bc1",pos),S) :-
+h(impacted(C,"cpsf:bc1",pos),S) :-
 	step(S),
 	private_part(_,A),
-	hold(sat(A),S),
+	h(sat(A),S),
 	atomic_statement(P,A),
 	input(P,"cpsf:addConcern",C).
 
-hold(impacted(C,"cpsf:bc1",neg),S) :-
+h(impacted(C,"cpsf:bc1",neg),S) :-
 	step(S),
 	private_part(_,A),
-	-hold(sat(A),S),
+	-h(sat(A),S),
 	atomic_statement(P,A),
 	input(P,"cpsf:addConcern",C).
 

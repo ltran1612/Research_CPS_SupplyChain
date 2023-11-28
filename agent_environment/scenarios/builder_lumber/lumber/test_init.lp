@@ -1,8 +1,8 @@
 % initial states of fluents
-hold(board(0, X), 0) :- quality(X).
-hold(total_delivered(0, X), 0) :- quality(X).
-hold(total_produced(0, X), 0) :- quality(X).
-hold(received(0), 0).
+h(board(0, X), 0) :- quality(X).
+h(total_delivered(0, X), 0) :- quality(X).
+h(total_produced(0, X), 0) :- quality(X).
+h(received(0), 0).
 
 % % actions did 
 % occur(produce(100, 1), 0).

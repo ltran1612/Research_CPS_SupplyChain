@@ -1,4 +1,4 @@
-satisfied_clauses_count(N) :- N = #count{Clause : hold(sat(Clause), maxStepsConst), clause(Clause)}.
+satisfied_clauses_count(N) :- N = #count{Clause : h(sat(Clause), maxStepsConst), clause(Clause)}.
 #maximize {N : satisfied_clauses_count(N)}. 
 
 number(50000).
@@ -8,6 +8,6 @@ number(40000).
 number(1000).
 0{occur(pay(Amount, PaymentType), Time) : number(Amount), paymentType(PaymentType)}1 :- step(Time).
 
-% #show hold/2.
+% #show h/2.
 #show occur/2.
 % #show observe/2.
