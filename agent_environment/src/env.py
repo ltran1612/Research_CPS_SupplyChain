@@ -64,6 +64,16 @@ def custom_loop():
     while True:
         global step
 
+        # setup
+        if state.is_setup() and step == -1:
+            # state
+            # handle conflict here
+            state.calculate_state()
+
+            step = 0
+            for agent in agents:
+                client.publish(f"next/{agent}", str(step), qos=2, retain=False)
+
         # we received fully everything
         # compile information
         # send the information to each agent
