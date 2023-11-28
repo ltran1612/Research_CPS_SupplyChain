@@ -18,8 +18,8 @@ def show_config(config):
     if id:
         print(f"This is an Agent with id {id}")
     else: 
-        pairs = config["pairs"]
-        print(f"This is an Environment with these pairs set up: {json.dumps(pairs)}")
+        parsers = config["parsers"]
+        print(f"This is an Environment with these pairs set up: {json.dumps(parsers)}")
 
 
 def load_config():
@@ -101,7 +101,10 @@ def encode_setup_data(config) -> dict:
     return json.dumps(setup_data)
 
 def decode_setup_data(config):
-    return json.loads(config)
+    result = json.loads(config)
+    for key in result.keys():
+        result[key] = "".join(result[key])
+    return result
 
 if __name__ == "__main__":
     print(parse_clingo_output("test(1). \nOPTIMUM FOUND"))

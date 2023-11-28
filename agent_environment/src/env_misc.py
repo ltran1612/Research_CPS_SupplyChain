@@ -1,25 +1,34 @@
 from threading import Lock 
-from misc import decode_setup_data
+from misc import decode_setup_data, run_clingo
 
 # manage the global state information 
 # thread-safe
 class StateManger:
-    state = "" 
+    global_state = "" 
     states = {} 
     messages = {}
     setup_info = {}
     agents = []
 
     lock = Lock() 
-    def __init__(self, agents):
+    def __init__(self, agents, config):
+        self.global_domain = config["global_domain"]
+        self.parsers = config["parsers"]
         self.agents = agents
         for agent in agents:
             self.states[agent] = ""
 
     # function to receive setup information from the domain
-    def setup(self, agent, setup_info):    
+    def setup(self, agent, agent_setup_info):    
         self.lock.acquire()
-        self.setup_info[agent] = decode_setup_data(setup_info)
+        agent_setup_data = decode_setup_data(agent_setup_info)
+        for key in agent_setup_data.keys():
+            file_name = f"state_{key}_{agent}_temp.lp"
+            with open(file_name, "w") as f:
+                f.write(agent_setup_data[key])
+            agent_setup_data[key] = file_name
+        
+        self.setup_info[agent] = agent_setup_data
         self.lock.release()
 
     # function to receive the message 
@@ -42,11 +51,38 @@ class StateManger:
     # TODO:
     def calculate_state(self): 
         self.lock.acquire()
-        # calculate states - TODO
-        self.state = ""
-        for agent in self.agents:
-            self.states[agent] = ""
+        temp_file = "state_temp.lp"
+        if len(self.messages.keys()) != 0:
+            with open(temp_file, "w") as f:
+                for agent in self.agents:
+                    f.write(self.messages[agent])
+        
 
+        files = [temp_file, self.global_domain] 
+        for agent in self.agents:
+            agent_data = self.setup_info[agent]
+            files.append(agent_data["domain"])
+            files.append(agent_data["initial_state"])
+        (result, lines) = run_clingo(files)
+        # todo: handle error
+        if not result:
+            return False
+
+        self.global_state = "".join(lines)
+        with open(temp_file, "w") as f:
+            f.write(self.global_state)
+
+        # calculate states
+        for agent in self.agents:
+            files = [self.parsers[agent], temp_file]
+            (result, lines) = run_clingo(files)
+            
+            # todo: handle error
+            if not result:
+                return False
+
+            self.states[agent] = "".join(lines)
+            print(agent, self.states[agent])
         # reset message buffer
         self.messages = {}
         self.lock.release()

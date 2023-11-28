@@ -11,8 +11,8 @@ from queue import Queue
 config = load_config()
 show_config(config)
 # parse the config
-pairs = config['pairs']
-agents = list(pairs.keys())
+
+agents = list(config['parsers'])
 
 # initialized the received queue  
 received = Received(agents) 
@@ -21,7 +21,7 @@ received = Received(agents)
 step = -1
 
 # set up
-state = StateManger(agents)
+state = StateManger(agents, config)
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -71,8 +71,10 @@ def custom_loop():
             state.calculate_state()
 
             step = 0
+            logging.info(f"start step {step}")
             for agent in agents:
                 client.publish(f"next/{agent}", str(step), qos=2, retain=False)
+            continue
 
         # we received fully everything
         # compile information
