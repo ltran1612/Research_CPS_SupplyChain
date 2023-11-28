@@ -4,8 +4,7 @@ from misc import decode_setup_data, run_clingo
 # manage the global state information 
 # thread-safe
 class StateManger:
-    global_state = "" 
-    states = {} 
+    global_state = "global_state_temp.lp" 
     messages = {}
     setup_info = {}
     agents = []
@@ -15,25 +14,48 @@ class StateManger:
         self.global_domain = config["global_domain"]
         self.parsers = config["parsers"]
         self.agents = agents
-        for agent in agents:
-            self.states[agent] = ""
+
+        # reset the global state to empty
+        with open(self.global_state, "w") as f:
+            f.write("")
 
     # function to receive setup information from the domain
     def setup(self, agent, agent_setup_info):    
         self.lock.acquire()
+        # decode the setup data retrieved from each agent
+        # each data will be a string containing the information
         agent_setup_data = decode_setup_data(agent_setup_info)
+
+        # write the values of each key to a temp file
         for key in agent_setup_data.keys():
-            file_name = f"state_{key}_{agent}_temp.lp"
+            file_name = f"{key}_{agent}_temp.lp"
             with open(file_name, "w") as f:
                 f.write(agent_setup_data[key])
+            # save the file name instead of a file now
             agent_setup_data[key] = file_name
         
+        # set up the data for each agent  
         self.setup_info[agent] = agent_setup_data
+
+        #  add initial state to global state
+        # get the initial state
+        initial_state = "" 
+        with open(agent_setup_data["initial_state"], "r") as f:
+            initial_state = "".join(f.readlines()) 
+
+        # MAYBE: parse the initial state to a form used by environment
+        # write the initial state to the global state 
+        with open(self.global_state, "w+") as f:
+            f.write(initial_state)
+        
         self.lock.release()
 
     # function to receive the message 
     def receive_message(self, agent, message):
         self.lock.acquire()
+        # TODO: parse the message to a form that the environment uses
+
+        # store the message
         self.messages[agent] = message
         self.lock.release()
 
@@ -51,44 +73,36 @@ class StateManger:
     # TODO:
     def calculate_state(self): 
         self.lock.acquire()
-        temp_file = "state_temp.lp"
-        if len(self.messages.keys()) != 0:
+        # TODO: move the file from scenarios to a folder meant for environment 
+        compute_global_state_code = "../scenarios/builder_lumber/env/compute_next.lp"
+
+        # temp file
+        # calculate global state
+        # add in messages from each agent
+        # the added message needs to be pass
+        temp_file = "env_temp.lp"
+        if len(self.messages.keys()) > 0: # if there is a message
             with open(temp_file, "w") as f:
                 for agent in self.agents:
-                    f.write(self.messages[agent])
+                    f.write(self.messages[agent]) # write the message to the file
         
-
-        files = [temp_file, self.global_domain] 
-        for agent in self.agents:
-            agent_data = self.setup_info[agent]
-            files.append(agent_data["domain"])
-            files.append(agent_data["initial_state"])
-        (result, lines) = run_clingo(files)
-        # todo: handle error
-        if not result:
-            return False
-
-        self.global_state = "".join(lines)
-        with open(temp_file, "w") as f:
-            f.write(self.global_state)
-
-        # calculate states
-        for agent in self.agents:
-            files = [self.parsers[agent], temp_file]
-            (result, lines) = run_clingo(files)
-            
-            # todo: handle error
-            if not result:
-                return False
-
-            self.states[agent] = "".join(lines)
-            print(agent, self.states[agent])
+        
+        # run the program to calcualte the state
+        files = [temp_file, self.global_state, compute_global_state_code]
+        (run_success, output) = run_clingo(files)
+        if run_success:
+            print(output)
+            # saves the global state
+            with open(self.global_state, "w") as f:
+                f.write(output)
+        
         # reset message buffer
         self.messages = {}
         self.lock.release()
 
+        return run_success 
+
     # check if setup
-    # TODO: make sure that the setup information is scalable
     def is_setup(self) -> bool:
         result: bool = False
 
@@ -103,11 +117,13 @@ class StateManger:
         state = None
 
         self.lock.acquire()
-        state = self.states[agent]
+        # TODO: get state for each agent from the global state
+        # it will be done by doing some parsing. 
         self.lock.release()
 
         return state
 
+# a thread-safe way to check the number of messages that the user responded.
 class Received:
     received = {}
     receiveLock = Lock()
