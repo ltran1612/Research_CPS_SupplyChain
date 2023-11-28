@@ -39,6 +39,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
     # connectting for the first time, notified the environment
     startLock.acquire()
     if start:
+        # send setup information 
         client.publish(received_publish_topic, "", qos=2, retain=False)
         logging.info("agent notified to the env of its existence")
         start = False

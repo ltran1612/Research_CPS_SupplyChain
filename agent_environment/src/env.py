@@ -35,14 +35,23 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
 def on_message(client: mqtt.Client, userdata, msg):
     topic: str = msg.topic
     message: str = str(msg.payload.decode("ascii"))
+    agent = ""
 
-    for agent in agents:
-        if topic == f"env/{agent}":
-            logging.info(f"received from {agent}")
-            state.receive_message(agent, message)
-        elif topic == f"recv/{agent}":
-            logging.info(f"{agent} received")
-            received.receive(agent)
+    # 
+    try:
+        agent = topic[topic.rindex("/")+1:]
+    except ValueError as e:
+        logging.error(e)
+
+    if topic == f"env/{agent}":
+        logging.info(f"received from {agent}")
+        if not state.is_setup():
+            state.setup(agent, message)
+            return
+        state.receive_message(agent, message)
+    elif topic == f"recv/{agent}":
+        logging.info(f"{agent} received")
+        received.receive(agent)
 
 client = mqtt.Client()
 client.on_connect = on_connect
