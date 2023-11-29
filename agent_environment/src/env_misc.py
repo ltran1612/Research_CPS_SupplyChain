@@ -42,11 +42,13 @@ class StateManger:
         initial_state = "" 
         with open(agent_setup_data["initial_state"], "r") as f:
             initial_state = "".join(f.readlines()) 
-
+        
         # MAYBE: parse the initial state to a form used by environment
         # write the initial state to the global state 
         with open(self.global_state, "w+") as f:
             f.write(initial_state)
+        
+        # TODO: Parse the domain to a form that can be used by the environment
         
         self.lock.release()
 
