@@ -10,6 +10,6 @@
     "clauses": "../scenarios/builder_lumber/clauses.lp",
     "contract_cps": "../scenarios/builder_lumber/cps/contract-cps.lp",
     "cps": "../scenarios/builder_lumber/cps/cps.lp",
-    "interest": ["total_delivered/2"] 
+    "interest": ["total_delivered", "available_board", "delivered", "available_funds", "total_payment"] 
 
 }

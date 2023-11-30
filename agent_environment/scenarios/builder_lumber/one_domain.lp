@@ -185,6 +185,7 @@ h(received(Amount), Time+1) :- step(Time), step(Time+1),
 
 % fluents
 fluent(board(Quantity, Quality)) :- number(Quantity), quality(Quality).
+
 % actions
 
 :-  occur(deliver(Quantity, Quality), Time), 

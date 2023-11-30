@@ -83,6 +83,9 @@ def get_atoms(lines: list[str]):
         result.pop(-1)
     return result 
 
+def atoms_to_str(lines: list[str]):
+    return " ".join(lines)
+
 # write to a temporary file 
 def write_to_temp_file(filename: str, message:str):
     with open(filename, "w") as f:

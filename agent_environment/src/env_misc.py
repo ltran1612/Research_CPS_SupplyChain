@@ -1,5 +1,6 @@
 from threading import Lock 
-from misc import decode_setup_data, run_clingo
+from misc import decode_setup_data, run_clingo, get_atoms, atoms_to_str
+import re
 
 # manage the global state information 
 # thread-safe
@@ -8,6 +9,7 @@ class StateManger:
     messages = {}
     setup_info = {}
     agents = []
+    temp_file = "env_temp.lp"
 
     lock = Lock() 
     def __init__(self, agents, config):
@@ -32,14 +34,6 @@ class StateManger:
         # decode the setup data retrieved from each agent
         # each data will be a string containing the information
         agent_setup_data = decode_setup_data(agent_setup_info)
-
-        # write the values of each key to a temp file
-        file_name = f"interest_{agent}_temp.lp"
-        with open(file_name, "w") as f:
-            for item in agent_setup_data["interest"]: 
-                f.write(f"show {item}.")
-        # save the file name instead of a file now
-        agent_setup_data["interest"] = file_name
         
         # set up the data for each agent  
         self.setup_info[agent] = agent_setup_data
@@ -86,7 +80,6 @@ class StateManger:
         files = [messages, self.global_state, self.domain]
         (run_success, output) = run_clingo(files)
         if run_success:
-            print(output)
             # saves the global state
             with open(self.global_state, "w") as f:
                 f.write("".join(output))
@@ -112,11 +105,28 @@ class StateManger:
         state = None
 
         self.lock.acquire()
+        interested_fluents = self.setup_info[agent]["interest"]
+        state = ""
+        with open(self.global_state, "r") as f:
+            state = f.readlines()
+
+        state_atoms = get_atoms(state)
+        def filter_fluent(x: str):
+            for fluent in interested_fluents:
+                regex = r"h\(" + re.escape(fluent) + r"\(.*\),\d+\)\."
+                if re.match(regex, x, re.IGNORECASE):
+                    return True
+
+            return False
+
+        agent_interested_info = list(filter(filter_fluent, state_atoms))
+        print("agent", agent_interested_info)
+
         # TODO: get state for each agent from the global state
         # it will be done by doing some parsing. 
         self.lock.release()
 
-        return state
+        return atoms_to_str(agent_interested_info) 
 
 # a thread-safe way to check the number of messages that the user responded.
 class Received:

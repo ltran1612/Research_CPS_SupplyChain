@@ -10,5 +10,5 @@
     "clauses": "../scenarios/builder_lumber/clauses.lp",
     "contract_cps": "../scenarios/builder_lumber/cps/contract-cps.lp",
     "cps": "../scenarios/builder_lumber/cps/cps.lp",
-    "interest": ["total_payment/2"] 
+    "interest": ["total_payment", "board", "received", "total_delivered", "abnormal"] 
 }
