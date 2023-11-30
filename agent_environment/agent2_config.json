@@ -9,5 +9,6 @@
     "global_domain": "../scenarios/builder_lumber/global_domain.lp",
     "clauses": "../scenarios/builder_lumber/clauses.lp",
     "contract_cps": "../scenarios/builder_lumber/cps/contract-cps.lp",
-    "cps": "../scenarios/builder_lumber/cps/cps.lp"
+    "cps": "../scenarios/builder_lumber/cps/cps.lp",
+    "interest": ["total_payment/2"] 
 }

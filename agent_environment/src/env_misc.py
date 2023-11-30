@@ -11,13 +11,20 @@ class StateManger:
 
     lock = Lock() 
     def __init__(self, agents, config):
-        self.global_domain = config["global_domain"]
         self.parsers = config["parsers"]
         self.agents = agents
 
         # reset the global state to empty
+        one_init = "../scenarios/builder_lumber/one_init.lp"
+        with open(one_init, "r") as f: 
+            one_init = "".join(f.readlines())
         with open(self.global_state, "w") as f:
-            f.write("")
+            f.write(one_init)
+
+        # update the global domain with the one 
+        # TODO: update this to config file
+        one_domain = "../scenarios/builder_lumber/one_domain.lp"
+        self.domain = one_domain
 
     # function to receive setup information from the domain
     def setup(self, agent, agent_setup_info):    
@@ -27,29 +34,16 @@ class StateManger:
         agent_setup_data = decode_setup_data(agent_setup_info)
 
         # write the values of each key to a temp file
-        for key in agent_setup_data.keys():
-            file_name = f"{key}_{agent}_temp.lp"
-            with open(file_name, "w") as f:
-                f.write(agent_setup_data[key])
-            # save the file name instead of a file now
-            agent_setup_data[key] = file_name
+        file_name = f"interest_{agent}_temp.lp"
+        with open(file_name, "w") as f:
+            for item in agent_setup_data["interest"]: 
+                f.write(f"show {item}.")
+        # save the file name instead of a file now
+        agent_setup_data["interest"] = file_name
         
         # set up the data for each agent  
         self.setup_info[agent] = agent_setup_data
 
-        #  add initial state to global state
-        # get the initial state
-        initial_state = "" 
-        with open(agent_setup_data["initial_state"], "r") as f:
-            initial_state = "".join(f.readlines()) 
-        
-        # MAYBE: parse the initial state to a form used by environment
-        # write the initial state to the global state 
-        with open(self.global_state, "w+") as f:
-            f.write(initial_state)
-        
-        # TODO: Parse the domain to a form that can be used by the environment
-        
         self.lock.release()
 
     # function to receive the message 
@@ -81,21 +75,21 @@ class StateManger:
         # calculate global state
         # add in messages from each agent
         # the added message needs to be pass
-        temp_file = "env_temp.lp"
+        messages = "env_temp.lp"
         if len(self.messages.keys()) > 0: # if there is a message
-            with open(temp_file, "w") as f:
+            with open(messages, "w") as f:
                 for agent in self.agents:
                     f.write(self.messages[agent]) # write the message to the file
         
         
         # run the program to calcualte the state
-        files = [temp_file, self.global_state, compute_global_state_code]
+        files = [messages, self.global_state, self.domain]
         (run_success, output) = run_clingo(files)
         if run_success:
             print(output)
             # saves the global state
             with open(self.global_state, "w") as f:
-                f.write(output)
+                f.write("".join(output))
         
         # reset message buffer
         self.messages = {}

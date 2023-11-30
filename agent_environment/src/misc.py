@@ -91,19 +91,22 @@ def write_to_temp_file(filename: str, message:str):
 def encode_setup_data(config) -> dict:
     domain = config["domain"]
     initial_state = config['initial_state']
+    interested_atoms = config["interest"]
 
     setup_data = {} 
     with open(domain, "r") as f:
         setup_data["domain"] = f.readlines()
     with open(initial_state, "r") as f:
         setup_data["initial_state"] = f.readlines()
+    setup_data["interest"] = interested_atoms 
 
     return json.dumps(setup_data)
 
 def decode_setup_data(config):
     result = json.loads(config)
     for key in result.keys():
-        result[key] = "".join(result[key])
+        if type(result[key]) is str:
+            result[key] = "".join(result[key])
     return result
 
 if __name__ == "__main__":
