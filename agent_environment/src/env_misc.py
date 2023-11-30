@@ -120,7 +120,6 @@ class StateManger:
             return False
 
         agent_interested_info = list(filter(filter_fluent, state_atoms))
-        print("agent", agent_interested_info)
 
         # TODO: get state for each agent from the global state
         # it will be done by doing some parsing. 

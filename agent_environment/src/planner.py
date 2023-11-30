@@ -75,7 +75,7 @@ class Planner:
         return self.theplan
     
     def get_actions_at_step(self, step):
-        reg = re.compile(f"occur\(.*,{step}\)")
+        reg = re.compile(f"occur\(.*,{step}\)\.")
         actions = list(filter(reg.match, self.theplan))
         return actions
 

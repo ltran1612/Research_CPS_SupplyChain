@@ -8,4 +8,4 @@ h(total_payment(0, board), 0).
 h(board(0, X), 0) :- quality(X).
 h(total_delivered(0, X), 0) :- quality(X).
 h(total_produced(0, X), 0) :- quality(X).
-h(received(0), 0).
+h(received(0, PaymentType), 0) :- paymentType(PaymentType).

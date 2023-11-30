@@ -238,9 +238,9 @@ h(delivered(Quantity, Quality), Time+1) :- occur(deliver(Quantity, Quality), Tim
 
 % received 
 % dynamic laws
-h(received(NewAmount), Time+1) :-  NewAmount=Amount+Current, 
+h(received(NewAmount, PaymentType), Time+1) :-  NewAmount=Amount+Current, 
     h(received(Current), Time), 
-    observe(payment(Amount), Time),
+    observe(payment(Amount, PaymentType), Time),
     step(Time), step(Time+1)
     .
 
