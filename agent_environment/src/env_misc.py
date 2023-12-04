@@ -113,7 +113,7 @@ class StateManger:
         state_atoms = get_atoms(state)
         def filter_fluent(x: str):
             for fluent in interested_fluents:
-                regex = r"h\(" + re.escape(fluent) + r"\(.*\),\d+\)\."
+                regex = create_fluent_regex(fluent)
                 if re.match(regex, x, re.IGNORECASE):
                     return True
 
@@ -163,3 +163,5 @@ class Received:
 
         return result
 
+def create_fluent_regex(fluent):
+   return r"h\(" + re.escape(fluent) + r"\(.*\),\d+\)\."
