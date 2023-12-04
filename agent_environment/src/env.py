@@ -81,7 +81,7 @@ def custom_loop():
         # send the information to each agent
         if state.received_all():
             # calcualte the global next state
-            state.calculate_state()
+            state.calculate_state(step)
 
             # then, for each agent, pick out the important information. 
             for agent in agents:

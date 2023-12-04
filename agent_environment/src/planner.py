@@ -89,7 +89,6 @@ class Planner:
         # return the next step
         return self.next_step(target_step, observation)
 
-
 if __name__ == "__main__":
     # set the logging
     log_handler = logging.StreamHandler(sys.stdout)

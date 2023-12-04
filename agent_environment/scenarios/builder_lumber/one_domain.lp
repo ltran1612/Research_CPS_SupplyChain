@@ -1,9 +1,9 @@
 % global
 % maximum number of steps 
-#const maxStepsConst = 10.
+% #const maxStepsConst = 10.
 
 % steps declaration
-step(0..maxStepsConst).
+% step(0..maxStepsConst).
 
 % board quality
 quality(1..2).

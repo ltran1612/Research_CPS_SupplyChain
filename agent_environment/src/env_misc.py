@@ -60,7 +60,7 @@ class StateManger:
         return result
 
     # calculate state
-    def calculate_state(self): 
+    def calculate_state(self, step=None): 
         self.lock.acquire()
         # MAYBE: move the file from scenarios to a folder meant for environment 
         compute_global_state_code = "../scenarios/builder_lumber/env/compute_next.lp"
@@ -69,9 +69,12 @@ class StateManger:
         # calculate global state
         # add in messages from each agent
         # the added message needs to be pass
-        messages = "env_temp.lp"
+        messages = self.temp_file
         if len(self.messages.keys()) > 0: # if there is a message
             with open(messages, "w") as f:
+                # write the step
+                if not step is None:
+                    f.write(f"step({step}).")
                 for agent in self.agents:
                     f.write(self.messages[agent]) # write the message to the file
         
