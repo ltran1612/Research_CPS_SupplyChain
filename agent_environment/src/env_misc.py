@@ -1,5 +1,7 @@
 from threading import Lock 
 from misc import decode_setup_data, run_clingo, get_atoms, atoms_to_str
+from parser_factory import ParserFactory
+import logging
 import re
 
 # manage the global state information 
@@ -12,9 +14,10 @@ class StateManger:
     temp_file = "env_temp.lp"
 
     lock = Lock() 
-    def __init__(self, agents, config):
+    def __init__(self, agents, config, global_domain):
         self.parsers = config["parsers"]
         self.agents = agents
+        self.global_domain = global_domain
 
         # reset the global state to empty
         one_init = "../scenarios/builder_lumber/one_init.lp"
@@ -34,10 +37,37 @@ class StateManger:
         # decode the setup data retrieved from each agent
         # each data will be a string containing the information
         agent_setup_data = decode_setup_data(agent_setup_info)
-        
+
+        # put the domain
+        domain_filename = f"{agent}_domain_temp.lp"
+        with open(domain_filename, "w") as f:
+            f.write(agent_setup_data["domain"])
+            agent_setup_data["domain"] = domain_filename
+
+        # get fluents and atoms
+        (result, lines) = run_clingo([agent_setup_data["domain"], self.global_domain])
+        if not result:
+            logging.error(f"cannot get fluents of {agent}")
+            exit(1)
+        atoms = get_atoms(lines) 
+        parser_factory = ParserFactory()
+        fluent_parser = parser_factory.fluent()
+
+        # get fluents
+        fluent_atoms = list(filter(parser_factory.is_fluent, atoms))
+        fluents = {} 
+        for atom in fluent_atoms:
+            (fluent, param_num) = fluent_parser(atom)
+            if fluent in fluents:
+                continue
+                
+            fluents[fluent] = param_num
+
+        agent_setup_data["interest"].extend(fluents.keys())
+        agent_setup_data["interest"] = list(dict.fromkeys(agent_setup_data["interest"]).keys())
+
         # set up the data for each agent  
         self.setup_info[agent] = agent_setup_data
-
         self.lock.release()
 
     # function to receive the message 
@@ -70,11 +100,11 @@ class StateManger:
         # add in messages from each agent
         # the added message needs to be pass
         messages = self.temp_file
-        if len(self.messages.keys()) > 0: # if there is a message
-            with open(messages, "w") as f:
-                # write the step
-                if not step is None:
-                    f.write(f"step({step}).")
+        with open(messages, "w") as f:
+            # write the step
+            if not step is None:
+                f.write(f"step({step}).")
+            if len(self.messages.keys()) > 0: # if there is a message
                 for agent in self.agents:
                     f.write(self.messages[agent]) # write the message to the file
         

@@ -98,9 +98,9 @@ def encode_setup_data(config) -> dict:
 
     setup_data = {} 
     with open(domain, "r") as f:
-        setup_data["domain"] = f.readlines()
+        setup_data["domain"] = "".join(f.readlines())
     with open(initial_state, "r") as f:
-        setup_data["initial_state"] = f.readlines()
+        setup_data["initial_state"] = "".join(f.readlines())
     setup_data["interest"] = interested_atoms 
 
     return json.dumps(setup_data)
@@ -110,6 +110,7 @@ def decode_setup_data(config):
     for key in result.keys():
         if type(result[key]) is str:
             result[key] = "".join(result[key])
+
     return result
 
 if __name__ == "__main__":

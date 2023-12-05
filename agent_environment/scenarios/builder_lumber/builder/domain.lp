@@ -2,6 +2,14 @@
 % fluents: availablard_board, available_funds, 
 % actions: receive, pay, loan 
 
+fluent(available_board(Quantity, Quality)) :- number(Quantity), quality(Quality).
+fluent(delivered(Quantity, Quality)) :- number(Quantity), quality(Quality).
+fluent(available_funds(Amount)) :- number(Amount).
+fluent(total_payment(Amount, PaymentType)) :- number(Amount), paymentType(PaymentType).
+
+% actions
+action(builder, receive(Quantity, Quality)) :- number(Quantity), quality(Quality).
+action(builder, pay(Amount, PaymentType)) :- number(Amount), paymentType(PaymentType).
 % executability laws
 % delivery
 :- occur(pay(Amount, PaymentType), Time), h(available_funds(Available), Time), not Available >= Amount.  

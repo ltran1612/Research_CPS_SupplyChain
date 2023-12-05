@@ -21,7 +21,7 @@ next_subscribe_topic = f"next/{config['id']}"
 action = ""
 
 # target step 
-target_step = 0 
+upcoming_step = 0 
 
 # variable to identify if we're connecting for the first time or not
 # with a Lock/mutex
@@ -53,7 +53,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
     global action
-    global target_step
+    global upcoming_step 
 
     # get the topic and messages
     topic: str = msg.topic
@@ -64,26 +64,27 @@ def on_message(client: mqtt.Client, userdata, msg):
     if topic == subscribe_topic:
         # received the information for this state
         logging.debug(f"{topic} - {message}")
-        logging.info(f"The state at the start of step {target_step} is: {message}")
+        logging.info(f"The state at the start of step {upcoming_step} is: {message}")
         observations = get_atoms([message])
         # do some reasoning
-        actions = planner.next_step(target_step, observations)
+        actions = planner.next_step(upcoming_step, observations)
         # assemble the actions to do into a message to send
         action = " ".join(actions)
         logging.debug(f"the next action is {action}")
-        logging.info(f"the action to do in {target_step} is: {action}")
+        logging.info(f"the action to do in {upcoming_step} is: {action}")
         # received the state information
         client.publish(received_publish_topic, "")
         logging.debug("notified the env that the agent received the environment information")
     elif topic == next_subscribe_topic:
         # send the action then wait again till we can do it
         client.publish(publish_topic, action)
-        step = int(message)-1
-        target_step = step+1
-        if step == -1:
+        
+        # get the step number
+        upcoming_step = int(message)
+        if upcoming_step == 0:
             logging.info(f"the env realized this agent existence")
         else:
-            logging.info(f"sent the action done at step {step} to the env")
+            logging.info(f"sent the action done at step {upcoming_step-1} to the env")
 
 # set the logging
 log_handler = logging.StreamHandler(sys.stdout)

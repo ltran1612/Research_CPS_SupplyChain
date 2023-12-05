@@ -21,7 +21,7 @@ received = Received(agents)
 step = -1
 
 # set up
-state = StateManger(agents, config)
+state = StateManger(agents, config, config["global_domain"])
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -64,17 +64,20 @@ def custom_loop():
     while True:
         global step
 
-        # setup
-        if state.is_setup() and step == -1:
-            # state
-            # handle conflict here
-            state.calculate_state()
-
-            step = 0
-            logging.info(f"start step {step}")
+        # all users have received the information we sent
+        # sent them the message to do the next step
+        if received.received_all() or (state.is_setup() and step == -1): 
+            # environment control the signal for the next step
+            # increase the step
+            step += 1 
+            logging.info(f"start the next step {step}")
+            input()
+            # send a message to each agent so they will send the action for this step
             for agent in agents:
                 client.publish(f"next/{agent}", str(step), qos=2, retain=False)
-            continue
+
+            # reset received array
+            received.reset()
 
         # we received fully everything
         # compile information
@@ -88,21 +91,6 @@ def custom_loop():
                 # take the message from the agent that concerns this agent.
                 client.publish(f"for/{agent}", state.get_state(agent), qos=2)
                 logging.info(f"sent state information to {agent}")
-
-        # all users have received the information we sent
-        # sent them the message to do the next step
-        if received.received_all(): 
-            # environment control the signal for the next step
-            # increase the step
-            step += 1 
-            logging.info(f"received all, start the next step {step}")
-            input()
-            # send a message to each agent so they will send the action for this step
-            for agent in agents:
-                client.publish(f"next/{agent}", str(step), qos=2, retain=False)
-
-            # reset received array
-            received.reset()
 
         # sleep for 1 second
         sleep(1)
