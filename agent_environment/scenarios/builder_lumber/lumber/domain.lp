@@ -3,6 +3,12 @@
 % fluents: board, abnormal, received, total_delivered
 % conditions: we can only deliver if there is enough board. 
 
+fluent(board(Quantity, Quality)) :- number(Quantity), quality(Quality).
+fluent(received(Quantity, Quality)) :- number(Quantity), quality(Quality).
+fluent(total_produced(Quantity, Quality)) :- number(Quantity), quality(Quality).
+fluent(total_delivered(Quantity, Quality)) :- number(Quantity), quality(Quality).
+fluent(total_received(Quantity, PaymentType)) :- number(Quantity), paymentType(PaymentType).
+
 :-  occur(deliver(Quantity, Quality), Time), 
     h(board(Available, Quality), Time), not Available>=Quantity,
     step(Time) 

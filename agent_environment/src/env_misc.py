@@ -110,7 +110,7 @@ class StateManger:
         
         
         # run the program to calcualte the state
-        files = [messages, self.global_state, self.domain]
+        files = [messages, self.global_state, self.domain, self.global_domain]
         (run_success, output) = run_clingo(files)
         if run_success:
             # saves the global state
