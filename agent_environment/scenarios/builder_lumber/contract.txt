@@ -1,0 +1,16 @@
+1. Lumber Yard A will produce a total of 144,000 board feet of lumber for XYZ
+Homes. This constraint addresses the functionality concern of XYZ Homes.
+
+2. Lumber Yard A guarantees to schedule the transport and delivery of 14-16 tractor
+trailers worth of lumber in one month to XYZ Homes. This constraint addresses
+the time to market concern.
+
+3. The lumber delivered to XYZ Homes will be at or above Number 2 Common grade.
+This constraint addresses several concerns including physical, reliability, quality
+and trustworthiness. For example, if Lumber Yard A were to provide lumber that
+is of a lesser quality than Number 2 Common grade, then from XYZ Home’s per-
+spective, Lumber Yard A would no longer be trustworthy.
+
+4. The agreed upon cost of lumber is at $122,000 for 144,000 board feet and the
+transport and delivery cost will be at or below $500,000 for 144,000 board feet.
+This constraint addresses the cost concern.

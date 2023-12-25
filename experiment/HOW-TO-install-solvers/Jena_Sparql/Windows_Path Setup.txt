@@ -1,2 +1,0 @@
-SET JENAROOT=C:\Users\NickSenatore\Documents\Balduccini_Workstudy\apache-jena-3.9.0
-SET PATH=%PATH%;%JENAROOT%\bat
