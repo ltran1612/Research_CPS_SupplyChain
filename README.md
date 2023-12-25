@@ -45,9 +45,15 @@ The src folder contains the following files:
 
 1. Start the MQTT broker (if not running yet, the instructions will be displayed at the time of install). You can run:
 
-    a. 
+    MacOS: 
 
-    b. 
+        brew services start mosquitto
+
+    or MacOs: 
+
+        mosquitto -c /usr/local/etc/mosquitto/mosquitto.conf
+
+
 
 2. Start the environment:
 
