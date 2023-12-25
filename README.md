@@ -31,4 +31,48 @@ The src folder contains the following files:
 
 #### Prerequisites
 
-#### 
+1. Install mosquitto following the instruction at https://mosquitto.org/download/: 
+    
+    Mosquitto is a MQTT broker (pubish-subscriber model) used to handle communication between agent and environemnt.  
+
+2. Install paho-mqtt module for agent and environment to talk to the broker:  
+
+        pip install paho-mqtt
+
+    Link: https://pypi.org/project/paho-mqtt/
+
+#### How to run 
+
+1. Start the MQTT broker (if not running yet, the instructions will be displayed at the time of install). You can run:
+
+    a. 
+
+    b. 
+
+2. Start the environment:
+
+    a. In a different terminal tab/session, go to the src folder of agent_environment. 
+
+    b. Run:
+
+        python3 env.py <path_to_env_config>
+
+    For example:
+
+        python3 env.py ../env_config.json
+
+1. Start the agent
+    
+    a. In a different terminal tab/session, go to the src folder of agent_environment. 
+
+    b. Run:
+
+        python3 agent.py <path_to_agent_config> 
+    
+    For example: 
+
+        python3 agent.py ../agent1_config.json
+
+    and 
+
+        python3 agent.py ../agent2_config.json
