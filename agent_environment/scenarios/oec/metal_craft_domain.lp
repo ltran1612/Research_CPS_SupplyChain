@@ -11,10 +11,14 @@ fluent(iron_spring(X)) :- number(X).
 fluent(polyamides(X)) :- number(X). 
 
 % actions
-action(produce(X), Time) :- fluent(X), time(Time).
-action(deliver(X), Time) :- fluent(X), time(Time). 
+action(produce(steel_wire(X), Time)) :- number(X), time(Time).
+action(deliver(steel_wire(X), Time)) :- number(X), time(Time). 
 
+action(produce(titanium_oxide(X), Time)) :- number(X), time(Time).
+action(deliver(titanium_oxide(X), Time)) :- number(X), time(Time). 
 
+action(produce(iron_spring(X), Time)) :- number(X), time(Time).
+action(deliver(iron_spring(X), Time)) :- number(X), time(Time). 
 
-
-
+action(produce(polyamides(X), Time)) :- number(X), time(Time).
+action(deliver(polyamides(X), Time)) :- number(X), time(Time). 

@@ -8,6 +8,5 @@ number(1..3).
 fluent(combustion_engine(X, Quality)) :- number(X), quality(Quality).
 
 % actions
-action(produce(X), Time) :- fluent(X), time(Time).
-action(deliver(X), Time) :- fluent(X), time(Time). 
-
+action(produce(combustion_engine(X, Quality), Time)) :- number(X), quality(Quality), time(Time).
+action(deliver(combustion_engine(X, Quality), Time)) :- number(X), quality(Quality), time(Time). 

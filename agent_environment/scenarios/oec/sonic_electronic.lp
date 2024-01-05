@@ -8,8 +8,8 @@ number(1..3).
 fluent(radio_receiver(X, Quality)) :- number(X), quality(Quality).
 
 % actions
-action(produce(X), Time) :- fluent(X), time(Time).
-action(deliver(X), Time) :- fluent(X), time(Time). 
+action(produce(radio_receiver(X), Time)) :- number(X), time(Time).
+action(deliver(radio_receiver(X), Time)) :- number(X), time(Time). 
 
 
 

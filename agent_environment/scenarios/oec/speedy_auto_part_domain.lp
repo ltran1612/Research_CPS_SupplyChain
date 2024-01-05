@@ -11,5 +11,6 @@ fluent(leather_article(X)) :- number(X).
 fluent(vehicle_part(X)) :- number(X).
 
 % action
-action(produce(X, Time)) :- fluent(X), time(Time).
-action(deliver(X, Time)) :- fluent(X), time(Time).
+action(produce(vehicle_part(X), Time)) :- number(X), time(Time).
+action(deliver(vehicle_part(X), Time)) :- number(X), time(Time).
+action(pay(X, Time)) :- number(X), time(Time).
