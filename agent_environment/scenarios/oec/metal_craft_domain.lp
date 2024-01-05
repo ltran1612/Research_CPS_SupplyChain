@@ -26,11 +26,11 @@ hold(iron_spring(A), Time+1) :- hold(iron_spring(A), Time), not_changing(iron_sp
 % static casual laws
 
 % initial states
-hold(iron_spring(0), 1).
+% hold(iron_spring(0), 1).
 
 % actions to do
-occur(produce(iron_spring(1000)), 1).
-occur(deliver(iron_spring(1000)), 3).
+% occur(produce(iron_spring(1000)), 1).
+% occur(deliver(iron_spring(1000)), 3).
 
-#show hold/2.
+% #show hold/2.
 % #show not_changing/2.

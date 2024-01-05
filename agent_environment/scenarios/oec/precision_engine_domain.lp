@@ -21,12 +21,12 @@ hold(combustion_engine(A), Time+1) :- hold(combustion_engine(A), Time), not_chan
 
 % static casual laws
 
-% initial states
-hold(combustion_engine(0), 1).
+% % initial states
+% hold(combustion_engine(0), 1).
 
-% actions to do
-occur(produce(combustion_engine(1000)), 1).
-occur(deliver(combustion_engine(1000)), 3).
+% % actions to do
+% occur(produce(combustion_engine(1000)), 1).
+% occur(deliver(combustion_engine(1000)), 3).
 
-#show hold/2.
+% #show hold/2.
 % #show not_changing/2.

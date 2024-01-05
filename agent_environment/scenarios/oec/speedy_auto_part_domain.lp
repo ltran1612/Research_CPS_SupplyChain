@@ -32,11 +32,11 @@ hold(vehicle_part(A), Time+1) :- hold(vehicle_part(A), Time), not_changing(vehic
 % static casual laws
 
 % initial states
-hold(vehicle_part(0), 1).
+% hold(vehicle_part(0), 1).
 
 % actions to do
-occur(produce(vehicle_part(1000)), 1).
-occur(deliver(vehicle_part(1000)), 3).
+% occur(produce(vehicle_part(1000)), 1).
+% occur(deliver(vehicle_part(1000)), 3).
 
-#show hold/2.
+% #show hold/2.
 % #show not_changing/2.

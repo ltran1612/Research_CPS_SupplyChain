@@ -21,15 +21,12 @@ hold(radio_receiver(A), Time+1) :- hold(radio_receiver(A), Time), not_changing(r
 
 % static casual laws
 
-% initial states
-hold(radio_receiver(0), 1).
+% % initial states
+% hold(radio_receiver(0), 1).
 
-% actions to do
-occur(produce(radio_receiver(1000)), 1).
-occur(deliver(radio_receiver(1000)), 3).
+% % actions to do
+% occur(produce(radio_receiver(1000)), 1).
+% occur(deliver(radio_receiver(1000)), 3).
 
-#show hold/2.
+% #show hold/2.
 % #show not_changing/2.
-
-
-
