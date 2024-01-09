@@ -196,5 +196,66 @@ class Received:
 
         return result
 
+# a different version of state manager
+class StateMangerIndividual(StateManger): 
+    agent_state = {}
+
+    def __init__(self, agents):
+        self.agents = agents
+        for agent in agents:
+            self.agent_state[agent] = f"{agent}_state_temp.lp"
+
+    def calculate_state(self, step=None):
+        self.lock.acquire()
+        for agent in self.agents:
+            message = self.messages[agent] if agent in self.messages else ""
+
+            # write the message
+            message_temp = self.temp_file
+            with open(message_temp, "w") as f:
+                if not step is None:
+                    f.write(f"step({step}).")
+                f.write(message)
+
+            # get the domain of each agent
+            domain_temp = "domain_temp.lp"
+            with open(domain_temp, "w") as f:
+                f.write(self.setup_info[agent]["domain"])
+            
+            # run clingo with the message, domain, and the state 
+            files = [message_temp, domain_temp, self.agent_state[agent]]
+            (run_success, output) = run_clingo(files)
+            if run_success: 
+                # write the result
+                with open(self.agent_state[agent], "w") as f:
+                    f.write(output)
+            else:
+                return False
+        
+        # reset message buffer
+        self.messages = {}
+        self.lock.release()
+
+        return True
+
+    def get_state(self, agent):
+        self.lock.acquire()
+
+        # get the state of the agent
+        agent_state = None
+        agent_state_file = self.agent_state[agent]
+        with open(agent_state_file, "r") as f:
+            agent_state = f.readlines()
+
+        # get atoms from it
+        agent_state_atoms = get_atoms(agent_state)
+
+        # TODO: maybe do some filtering on the atoms to get the right atoms. 
+
+        self.lock.release()
+
+        return atoms_to_str(agent_state_atoms) 
+
+# create a regex for catching the fluent
 def create_fluent_regex(fluent):
    return r"h\(" + re.escape(fluent) + r"\(.*\),\d+\)\."
