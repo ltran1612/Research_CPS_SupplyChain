@@ -4,7 +4,7 @@ from threading import Thread
 from time import sleep
 import logging
 import sys
-from env_misc import StateManger, Received
+from env_misc import StateManger, Received, StateMangerIndividual
 from queue import Queue
 
 # load and display the config
@@ -21,7 +21,7 @@ received = Received(agents)
 step = -1
 
 # set up
-state = StateManger(agents, config, config["global_domain"])
+state = StateMangerIndividual(agents) 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
