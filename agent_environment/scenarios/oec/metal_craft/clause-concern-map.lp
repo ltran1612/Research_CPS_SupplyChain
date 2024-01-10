@@ -1,12 +1,11 @@
-% placeholder
-%PH = {
-% C1 : sufficient-material-for-building, 
-% C2 : material-safe-for-building, 
-% C2 :material-sufficiently-durable, 
-% C4 : promptly-send-payment, 
-% C3 : acceptable-shipping-cost}
-addressedBy("cpsf:sufficient-material-for-building", "C1").
-addressedBy("cpsf:material-safe-for-building", "C2").
-addressedBy("cpsf:material-sufficiently-durable", "C2").
-addressedBy("cpsf:promptly-send-payment", "C4").
-addressedBy("cpsf:acceptable-shipping-cost", "C3").
+% PMK2 = {C4: on-time-production,
+% C4: material-safe-for-production,
+% C4: product-sufficiently-durable,
+% C5: on-time-delivery}
+addressedBy("cpsf:on-time-production", "C4").
+addressedBy("cpsf:material-safe-for-production", "C4").
+addressedBy("cpsf:product-sufficiently-durable", "C4").
+addressedBy("cpsf:on-time-delivery", "C5").
+
+% PMK3 = {C8: on-time-payment}
+addressedBy("cpsf:on-time-delivery", "C8").
