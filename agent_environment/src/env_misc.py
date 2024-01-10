@@ -225,7 +225,15 @@ class StateManagerGlobal(StateManger):
         return atoms_to_str(agent_interested_info) 
     
 # a different version of state manager
-class StateMangerIndividual(StateManger): 
+# we will compute the state for each agent individually
+# Problems:
+# 1) How to maps related fluents of different agents?: Write a script that maps the fluents of one to the other. For example, delivery:
+#   - delivery(1000, 1) -> delivery(1000, 1)
+# 2) How to have certain global fluents?: Treat the env as an agent. Copies the fluents of this "env agent" to each agent. This special env agent has to be executed first along with the messages from each agent.    
+# 4) How to maintain certain global constraints: Have a script that checks for that. Similar to 2. If it is unsatisfiable, then we need to make a decision:
+#    a) The actions are not executed: meaning we do not return occur(...) to the corresponding agent.  
+#    b) Choose only one action to execute. 
+# 3) Handle external actions that interact with the environment. class StateMangerIndividual(StateManger): 
     agent_state = {}
 
     def __init__(self, agents):
