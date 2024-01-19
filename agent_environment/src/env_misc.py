@@ -233,7 +233,8 @@ class StateManagerGlobal(StateManger):
 # 4) How to maintain certain global constraints: Have a script that checks for that. Similar to 2. If it is unsatisfiable, then we need to make a decision:
 #    a) The actions are not executed: meaning we do not return occur(...) to the corresponding agent.  
 #    b) Choose only one action to execute. 
-# 3) Handle external actions that interact with the environment. class StateMangerIndividual(StateManger): 
+# 3) Handle external actions that interact with the environment. 
+class StateMangerIndividual(StateManger): 
     agent_state = {}
 
     def __init__(self, agents):

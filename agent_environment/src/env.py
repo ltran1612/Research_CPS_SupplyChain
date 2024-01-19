@@ -4,7 +4,7 @@ from threading import Thread
 from time import sleep
 import logging
 import sys
-from env_misc import StateManger, Received, StateMangerIndividual
+from env_misc import StateManagerGlobal, Received, StateMangerIndividual
 from queue import Queue
 
 # load and display the config
