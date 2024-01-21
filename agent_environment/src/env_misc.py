@@ -281,13 +281,12 @@ class StateMangerIndividual(StateManger):
             
             # run clingo with the message, domain, and the state 
             files = [message_temp, domain_temp, self.agent_state[agent], self.global_domain]
-            print(files)
             (run_success, output) = run_clingo(files)
             if run_success: 
-                print("the state calculated is ", output)
                 # write the result
                 with open(self.agent_state[agent], "w") as f:
                     f.write("".join(output))
+                # TODO: run parsing to map atoms from one to another and apply constraints between atoms among agents. 
             else:
                 logging.error(f"cannot calculate the state for {agent}")
                 return False
@@ -303,18 +302,24 @@ class StateMangerIndividual(StateManger):
 
         # get the state of the agent
         agent_state = None
-        agent_state_file = self.agent_state[agent]
-        with open(agent_state_file, "r") as f:
-            agent_state = f.readlines()
+        # agent_state_file = self.agent_state[agent]
 
-        # get atoms from it
-        agent_state_atoms = get_atoms(agent_state)
+        temp_file = self.temp_file
+        with open(temp_file, "w") as f:
+            f.write(f"#show hold/2.")
+            f.write(f"#show occur/2.")
 
-        # TODO: maybe do some filtering on the atoms to get the right atoms. 
+        files = [temp_file, self.agent_state[agent]]
+        (run_success, output) = run_clingo(files)
+        if run_success: 
+            agent_state = "".join(output)
+        else:
+            logging.error(f"cannot filter the state for only fluents and actions {agent}")
+            return False
 
         self.lock.release()
 
-        return atoms_to_str(agent_state_atoms) 
+        return agent_state 
 
 # create a regex for catching the fluent
 def create_fluent_regex(fluent):
