@@ -1,8 +1,6 @@
 % speedy auto parts
 % other stuffs
 quality(1..3).
-% number(1..3).
-% time(0..10).
 
 % fluents   
 % fluent(iron_spring(X, Quality)) :- number(X), quality(Quality). 
@@ -11,6 +9,7 @@ quality(1..3).
 fluent(vehicle_part(X)) :- number(X).
 fluent(money(X)) :- number(X). 
 fluent(payment(vehicle_parts, X)) :- number(X). 
+fluent(delivered(vehicle_parts, X)) :- number(X). 
 
 % action
 action(produce(vehicle_part(X))) :- number(X).
@@ -27,16 +26,17 @@ action(receive(X)) :- number(X).
 % constraint to only deliver when there is more than enough vehicl part
 :- occur(deliver(vehicle_part(A)), Time), 
     hold(vehicle_part(B), Time), 
-    A <= B.
+    not A <= B.
 
 % constraint to only pay when there is enough money to pay
 :- occur(pay(A), Time), 
     hold(money(B), Time), 
-    A <= B.
+    not A <= B.
 
 % dynamic laws
 hold(vehicle_part(A+B), Time+1) :- hold(vehicle_part(A), Time), occur(produce(vehicle_part(B)), Time). 
 hold(vehicle_part(A-B), Time+1) :- hold(vehicle_part(A), Time), occur(deliver(vehicle_part(B)), Time). 
+hold(delivered(vehicle_parts, A+B), Time+1) :- hold(delivered(vehicle_parts, A), Time), occur(deliver(vehicle_part(B)), Time). 
 
 % pay money
 hold(money(A-B), Time+1) :- hold(money(A), Time), occur(pay(B), Time), A >= B.
@@ -46,8 +46,14 @@ hold(money(A+B), Time+1) :- hold(money(A), Time), occur(receive(B), Time).
 hold(payment(vehicle_parts, A+B), Time+1) :- hold(payment(vehicle_parts, A), Time), occur(receive(B), Time).
 
 % inertial laws
-not_changing(vehicle_part, Time) :- not occur(produce(vehicle_part(_)), Time), not occur(deliver(vehicle_part(_)), Time), time(Time).
+% vehicle part
+no_delivery(Time) :- not occur(deliver(vehicle_part(_)), Time), time(Time).
+not_changing(vehicle_part, Time) :- not occur(produce(vehicle_part(_)), Time), no_delivery(Time). 
 hold(vehicle_part(A), Time+1) :- hold(vehicle_part(A), Time), not_changing(vehicle_part, Time). 
+
+% delivered
+hold(delivered(vehicle_parts, A), Time+1) :- hold(delivered(vehicle_parts, A), Time), 
+    no_delivery(Time).
 
 % money
 not_receive_money(Time) :- not occur(receive(_), Time), time(Time).
