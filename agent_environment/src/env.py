@@ -13,6 +13,7 @@ show_config(config)
 # parse the config
 
 agents = list(config['parsers'])
+global_domain = config["global_domain"]
 
 # initialized the received queue  
 received = Received(agents) 
@@ -21,7 +22,7 @@ received = Received(agents)
 step = -1
 
 # set up
-state = StateMangerIndividual(agents) 
+state = StateMangerIndividual(agents, global_domain) 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):

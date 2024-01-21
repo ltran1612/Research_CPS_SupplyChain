@@ -7,7 +7,6 @@ import re
 # manage the global state information 
 # thread-safe
 class StateManger:
-    global_state = "global_state_temp.lp" 
     messages = {}
     setup_info = {}
     agents = []
@@ -29,7 +28,7 @@ class StateManger:
         with open(domain_filename, "w") as f:
             f.write(agent_setup_data["domain"])
             agent_setup_data["domain"] = domain_filename
-
+        
         # set up the data for each agent  
         self.setup_info[agent] = agent_setup_data
         self.lock.release()
@@ -110,6 +109,8 @@ class Received:
         return result
 
 class StateManagerGlobal(StateManger):
+    global_state = "global_state_temp.lp" 
+
     def __init__(self, agents, config, global_domain):
         super().__init__(agents)
         self.parsers = config["parsers"]
@@ -237,10 +238,28 @@ class StateManagerGlobal(StateManger):
 class StateMangerIndividual(StateManger): 
     agent_state = {}
 
-    def __init__(self, agents):
+    def __init__(self, agents, global_domain):
         super().__init__(agents)
+
+        # set up temp file for the state of agents
         for agent in agents:
             self.agent_state[agent] = f"{agent}_state_temp.lp"
+        
+        # set up temp file for global domain
+        self.global_domain = "global_domain_temp.lp"
+        with open(global_domain, "r") as f:
+            with open(self.global_domain, "w") as f2:
+                f2.write("".join(f.readlines()))
+    
+    def setup(self, agent, agent_setup_info):
+        super().setup(agent, agent_setup_info)
+
+        # set upt init
+        self.lock.acquire()
+        state_filename = self.agent_state[agent]
+        with open(state_filename, "w") as f:
+            f.write(self.setup_info[agent]["initial_state"])
+        self.lock.release()
 
     def calculate_state(self, step=None):
         self.lock.acquire()
@@ -251,22 +270,26 @@ class StateMangerIndividual(StateManger):
             message_temp = self.temp_file
             with open(message_temp, "w") as f:
                 if not step is None:
-                    f.write(f"step({step}).")
+                    f.write(f"time({step}).")
                 f.write(message)
 
             # get the domain of each agent
             domain_temp = "domain_temp.lp"
             with open(domain_temp, "w") as f:
-                f.write(self.setup_info[agent]["domain"])
+                with open(self.setup_info[agent]["domain"], "r") as f2:
+                    f.write("".join(f2.readlines()))
             
             # run clingo with the message, domain, and the state 
-            files = [message_temp, domain_temp, self.agent_state[agent]]
+            files = [message_temp, domain_temp, self.agent_state[agent], self.global_domain]
+            print(files)
             (run_success, output) = run_clingo(files)
             if run_success: 
+                print("the state calculated is ", output)
                 # write the result
                 with open(self.agent_state[agent], "w") as f:
                     f.write("".join(output))
             else:
+                logging.error(f"cannot calculate the state for {agent}")
                 return False
         
         # reset message buffer
