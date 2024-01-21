@@ -1,15 +1,15 @@
 {
-    "id": "builder",
+    "id": "car_producer",
     "brokerAddress": "localhost",
-    "domain": "../scenarios/builder_lumber/builder/domain.lp",
-    "initial_state": "../scenarios/builder_lumber/builder/test_init.lp",
-    "planner": "../scenarios/builder_lumber/builder/plan.lp",
-    "clause_concern_map": "../scenarios/builder_lumber/builder/clause-concern-map.lp",
-    "plan_checking": "../scenarios/builder_lumber/builder/plan_checking.lp",
-    "global_domain": "../scenarios/builder_lumber/global_domain.lp",
-    "clauses": "../scenarios/builder_lumber/clauses.lp",
-    "contract_cps": "../scenarios/builder_lumber/cps/contract-cps.lp",
-    "cps": "../scenarios/builder_lumber/cps/cps.lp",
+    "domain": "../scenarios/oec/car_producer/domain.lp",
+    "initial_state": "../scenarios/oec/car_producer/test_init.lp",
+    "planner": "../scenarios/oec/car_producer/plan.lp",
+    "clause_concern_map": "../scenarios/oec/car_producer/clause-concern-map.lp",
+    "plan_checking": "../scenarios/oec/car_producer/plan_checking.lp",
+    "global_domain": "../scenarios/oec/global_domain.lp",
+    "clauses": "../scenarios/oec/clauses.lp",
+    "contract_cps": "../scenarios/oec/cps/contract-cps.lp",
+    "cps": "../scenarios/oec/cps/cps.lp",
     "interest": [] 
 
 }
