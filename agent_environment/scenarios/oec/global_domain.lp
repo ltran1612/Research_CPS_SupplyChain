@@ -1,8 +1,11 @@
 % maximum number of steps 
-#const maxTime = 10000.
+#const lastTimeStep = 10.
 
 % time declaration
-time(0..maxTime).
+time(0..lastTimeStep).
 
 % number
-number(1000).
+number(10000).
+number(20000).
+number(3000).
+number(4000).

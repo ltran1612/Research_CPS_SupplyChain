@@ -16,7 +16,7 @@ action(pay(vehicle_parts, X)) :- number(X).
 action(receive(Fluent, Time)) :- fluent(Fluent), time(Time).
 
 % constraints
-:- occur(pay(_, A), T), hold(money(B), T), B >= A.
+:- occur(pay(_, A), T), hold(money(B), T), not B >= A.
 
 % dynamic law
 hold(vehicle_part(A+B), T+1) :- hold(vehicle_part(A), T), occur(receive(vehicle_part(B), T)).
@@ -24,14 +24,14 @@ hold(vehicle_part(A+B), T+1) :- hold(vehicle_part(A), T), occur(receive(vehicle_
 % money 
 hold(money(A-B), T+1) :- hold(money(A), T), occur(pay(vehicle_parts, B), T).
 hold(payment(vehicle_parts, A+B), T+1) :- hold(payment(vehicle_parts, A), T), 
-    hold(pay(vehicle_parts, B), T).
+    occur(pay(vehicle_parts, B), T).
 
 % inertial rules
 not_changing(vehicle_part, T) :- not occur(receive(vehicle_part(_), T)), time(T).
 hold(vehicle_part(A), T+1) :- hold(vehicle_part(A), T), not_changing(vehicle_part, T).
 
 % money
-not_changing(money, T) :- not occur(pay(_, _), T), time(T).
+not_changing(money, T) :- not occur(pay(vehicle_parts, _), T), time(T).
 hold(money(A), T+1) :- hold(money(A), T), not_changing(money, T).
 hold(payment(vehicle_parts, A), T+1) :- hold(payment(vehicle_parts, A), T), not_changing(money, T).
 

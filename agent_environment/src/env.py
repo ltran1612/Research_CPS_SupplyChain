@@ -70,8 +70,9 @@ def custom_loop():
             # environment control the signal for the next step
             # increase the step
             step += 1 
-            logging.info(f"start the next step {step}")
+            logging.info(f"starting the next step {step}")
             input()
+            logging.info(f"started the next step {step}")
             # send a message to each agent so they will send the action for this step
             for agent in agents:
                 client.publish(f"next/{agent}", str(step), qos=2, retain=False)
