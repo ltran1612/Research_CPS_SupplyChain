@@ -34,34 +34,34 @@ action(receive(X)) :- number(X).
     not A <= B.
 
 % dynamic laws
-hold(vehicle_part(A+B), Time+1) :- hold(vehicle_part(A), Time), occur(produce(vehicle_part(B)), Time). 
-hold(vehicle_part(A-B), Time+1) :- hold(vehicle_part(A), Time), occur(deliver(vehicle_part(B)), Time). 
-hold(delivered(vehicle_parts, A+B), Time+1) :- hold(delivered(vehicle_parts, A), Time), occur(deliver(vehicle_part(B)), Time). 
+hold(vehicle_part(A+B), Time+1) :- hold(vehicle_part(A), Time), occur(produce(vehicle_part(B)), Time), time(Time+1). 
+hold(vehicle_part(A-B), Time+1) :- hold(vehicle_part(A), Time), occur(deliver(vehicle_part(B)), Time), time(Time+1). 
+hold(delivered(vehicle_parts, A+B), Time+1) :- hold(delivered(vehicle_parts, A), Time), occur(deliver(vehicle_part(B)), Time), time(Time+1). 
 
 % pay money
-hold(money(A-B), Time+1) :- hold(money(A), Time), occur(pay(B), Time), A >= B.
+hold(money(A-B), Time+1) :- hold(money(A), Time), occur(pay(B), Time), A >= B, time(Time+1).
 
 % receive money
-hold(money(A+B), Time+1) :- hold(money(A), Time), occur(receive(B), Time).
-hold(payment(vehicle_parts, A+B), Time+1) :- hold(payment(vehicle_parts, A), Time), occur(receive(B), Time).
+hold(money(A+B), Time+1) :- hold(money(A), Time), occur(receive(B), Time), time(Time+1).
+hold(payment(vehicle_parts, A+B), Time+1) :- hold(payment(vehicle_parts, A), Time), occur(receive(B), Time), time(Time+1).
 
 % inertial laws
 % vehicle part
-no_delivery(Time) :- not occur(deliver(vehicle_part(_)), Time), time(Time).
-not_changing(vehicle_part, Time) :- not occur(produce(vehicle_part(_)), Time), no_delivery(Time). 
-hold(vehicle_part(A), Time+1) :- hold(vehicle_part(A), Time), not_changing(vehicle_part, Time). 
+no_delivery(Time) :- not occur(deliver(vehicle_part(_)), Time), time(Time), time(Time+1).
+not_changing(vehicle_part, Time) :- not occur(produce(vehicle_part(_)), Time), no_delivery(Time), time(Time+1). 
+hold(vehicle_part(A), Time+1) :- hold(vehicle_part(A), Time), not_changing(vehicle_part, Time), time(Time+1). 
 
 % delivered
 hold(delivered(vehicle_parts, A), Time+1) :- hold(delivered(vehicle_parts, A), Time), 
-    no_delivery(Time).
+    no_delivery(Time), time(Time+1).
 
 % money
 not_receive_money(Time) :- not occur(receive(_), Time), time(Time).
 not_changing(money, Time) :- not occur(pay(_), Time), not_receive_money(Time), time(Time).
-hold(money(A), Time+1) :- hold(money(A), Time), not_changing(money, Time).
+hold(money(A), Time+1) :- hold(money(A), Time), not_changing(money, Time), time(Time+1).
 % payment
 hold(payment(vehicle_parts, A), Time+1) :- hold(payment(vehicle_parts, A), Time), 
-    not_receive_money(Time).
+    not_receive_money(Time), time(Time+1).
 
 % static casual laws
 
