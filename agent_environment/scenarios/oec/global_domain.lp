@@ -2,7 +2,6 @@
 #const lastTimeStep = 10.
 
 % time declaration
-time(0..lastTimeStep).
 
 % number
 number(10000).
