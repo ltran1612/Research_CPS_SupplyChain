@@ -1,8 +1,8 @@
 % speedy auto parts
 % other stuffs
 quality(1..3).
-number(1..3).
-time(0..10).
+% number(1..3).
+% time(0..10).
 
 % fluents   
 % fluent(iron_spring(X, Quality)) :- number(X), quality(Quality). 

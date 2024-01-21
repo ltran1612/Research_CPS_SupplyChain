@@ -1,8 +1,8 @@
 % domain for car producer
 % other stuffs
 quality(1..3).
-time(1..10).
-number(0..10000).
+% time(1..10).
+% number(0..10000).
 
 % fluents
 fluent(vehicle_part(X)) :- number(X).

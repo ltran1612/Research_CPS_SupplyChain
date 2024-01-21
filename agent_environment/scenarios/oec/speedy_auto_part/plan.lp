@@ -1,9 +1,3 @@
-% maximum number of steps 
-#const maxTime = 10.
-
-% time declaration
-time(0..maxTime).
-
 % numbers
 number(1000).
 
