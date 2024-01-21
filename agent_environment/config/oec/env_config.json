@@ -1,0 +1,8 @@
+{
+    "brokerAddress": "localhost",
+    "parsers": {
+        "builder": "../scenarios/oec/env/lumber_builder_env.lp",
+        "lumber": "../scenarios/oec/env/builder_lumber_env.lp"
+    },
+    "global_domain": "../scenarios/oec/global_domain.lp"
+}
