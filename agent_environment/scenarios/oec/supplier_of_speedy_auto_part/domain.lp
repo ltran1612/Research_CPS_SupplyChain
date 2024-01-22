@@ -1,42 +1,37 @@
-% speedy auto parts
-% other stuffs
+% supplier of speedy auto parts
 quality(1..3).
-time(1..10).
-number(1..3).
 
 % fluents   
-fluent(iron_spring(X, Quality)) :- number(X), quality(Quality). 
-fluent(inter_tool_part(X)) :- number(X).
-fluent(leather_article(X)) :- number(X).
-fluent(vehicle_part(X)) :- number(X).
+fluent(tool_part(X, Q)) :- number(X), quality(Q).
+fluent(payment(tool_parts, X)) :- number(X). 
+fluent(delivered(tool_parts, X, Q)) :- number(X), quality(Q). 
 
 % action
-action(produce(vehicle_part(X), Time)) :- number(X), time(Time).
-action(deliver(vehicle_part(X), Time)) :- number(X), time(Time).
-action(pay(X, Time)) :- number(X), time(Time).
+action(produce(tool_part(X, Q))) :- number(X), quality(Q).
+action(deliver(tool_part(X, Q))) :- number(X), quality(Q).
 
 % constraints
-% :- occur(produce(vehicle_part(A), Time)), 
-%     hold(inter_tool_part(Y), Time), 
-%     hold(leather_article(Z), Time), 
-%     hold(iron_spring(X), Time).
+hold(tool_part(A+B, Q), Time+1) :- hold(tool_part(A, Q), Time), occur(produce(tool_part(B, Q)), Time), time(Time+1). 
+hold(tool_part(A-B, Q), Time+1) :- hold(tool_part(A, Q), Time), occur(deliver(tool_part(B, Q)), Time), time(Time+1). 
+hold(delivered(tool_parts, A+B, Q), Time+1) :- hold(delivered(tool_parts, A, Q), Time), occur(deliver(tool_part(B, Q)), Time), time(Time+1). 
 
-% dynamic laws
-hold(vehicle_part(A+B), Time+1) :- hold(vehicle_part(A), Time), occur(produce(vehicle_part(B)), Time). 
-hold(vehicle_part(A-B), Time+1) :- hold(vehicle_part(A), Time), occur(deliver(vehicle_part(B)), Time). 
+% receive money
+hold(money(A+B), Time+1) :- hold(money(A), Time), occur(receive(B), Time), time(Time+1).
+hold(payment(tool_parts, A+B), Time+1) :- hold(payment(tool_parts, A), Time), occur(receive(B), Time), time(Time+1).
 
 % inertial laws
-not_changing(vehicle_part, Time) :- not occur(produce(vehicle_part(_)), Time), not occur(deliver(vehicle_part(_)), Time), time(Time).
-hold(vehicle_part(A), Time+1) :- hold(vehicle_part(A), Time), not_changing(vehicle_part, Time). 
+% vehicle part
+no_delivery(Q, Time) :- not occur(deliver(tool_part(_, Q)), Time), time(Time), time(Time+1), quality(Q).
+not_changing(tool_part(Q), Time) :- not occur(produce(tool_part(_, Q)), Time), no_delivery(Q, Time), time(Time+1), quality(Q). 
+hold(tool_part(A, Q), Time+1) :- hold(tool_part(A, Q), Time), not_changing(tool_part(Q), Time), time(Time+1). 
 
-% static casual laws
+% delivered
+hold(delivered(tool_parts, A, Q), Time+1) :- hold(delivered(tool_parts, A, Q), Time), 
+    no_delivery(Q, Time), time(Time+1).
 
-% initial states
-% hold(vehicle_part(0), 1).
-
-% actions to do
-% occur(produce(vehicle_part(1000)), 1).
-% occur(deliver(vehicle_part(1000)), 3).
-
-% #show hold/2.
-% #show not_changing/2.
+% money
+not_receive_money(Time) :- not occur(receive(_), Time), time(Time).
+hold(money(A), Time+1) :- hold(money(A), Time), not_receive_money(Time), time(Time+1).
+% payment
+hold(payment(tool_parts, A), Time+1) :- hold(payment(tool_parts, A), Time), 
+    not_receive_money(Time), time(Time+1).
