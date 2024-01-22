@@ -1,0 +1,7 @@
+1. use "hold"
+2. use "occur"
+3. use "time" for time
+4. domain needs to handle doing multiple different actions at the same time. 
+6. It cannot handle doing multiple same actions at the same time. 
+
+some actions that can be created by the parser

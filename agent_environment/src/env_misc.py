@@ -237,8 +237,9 @@ class StateManagerGlobal(StateManger):
 # 3) Handle external actions that interact with the environment. 
 class StateMangerIndividual(StateManger): 
     agent_state = {}
+    global_domain = "global_domain_temp.lp"
 
-    def __init__(self, agents, global_domain):
+    def __init__(self, agents, global_domain, parsers):
         super().__init__(agents)
 
         # set up temp file for the state of agents
@@ -246,10 +247,12 @@ class StateMangerIndividual(StateManger):
             self.agent_state[agent] = f"{agent}_state_temp.lp"
         
         # set up temp file for global domain
-        self.global_domain = "global_domain_temp.lp"
         with open(global_domain, "r") as f:
             with open(self.global_domain, "w") as f2:
                 f2.write("".join(f.readlines()))
+        
+        # parsers
+        self.parsers = parsers
     
     def setup(self, agent, agent_setup_info):
         super().setup(agent, agent_setup_info)
@@ -263,34 +266,107 @@ class StateMangerIndividual(StateManger):
 
     def calculate_state(self, step=None):
         self.lock.acquire()
-        for agent in self.agents:
-            message = self.messages[agent] if agent in self.messages else ""
+        finished = False 
+        
+        if not step is None:
+            with open(self.global_domain, "a") as f:
+                f.write(f"time({step}).")
 
-            # write the message
-            message_temp = self.temp_file
-            with open(message_temp, "w") as f:
-                if not step is None:
-                    f.write(f"time({step}).")
-                f.write(message)
+        while not finished:
+            # compute individual state
+            for agent in self.agents:
+                message = self.messages[agent] if agent in self.messages else ""
 
-            # get the domain of each agent
-            domain_temp = "domain_temp.lp"
-            with open(domain_temp, "w") as f:
-                with open(self.setup_info[agent]["domain"], "r") as f2:
-                    f.write("".join(f2.readlines()))
+                # write the message
+                message_temp = self.temp_file
+                with open(message_temp, "w") as f:
+                    f.write(message)
+
+                # get the domain of each agent
+                domain_temp = "domain_temp.lp"
+                with open(domain_temp, "w") as f:
+                    with open(self.setup_info[agent]["domain"], "r") as f2:
+                        f.write("".join(f2.readlines()))
+                
+                # run clingo with the message, domain, and the state 
+                files = [message_temp, domain_temp, self.agent_state[agent], self.global_domain]
+                (run_success, output) = run_clingo(files)
+                if run_success: 
+                    # write the result
+                    with open(self.agent_state[agent], "w") as f:
+                        f.write("".join(output))
+                    # TODO: run parsing to map atoms from one to another and apply constraints between atoms among agents. 
+                else:
+                    logging.error(f"cannot calculate the state for {agent}")
+                    return False
+                
+            # get individual state in global form
+            atoms_num_before = 0
+            # step 1: get individual state of of each agent and convert it to global form and write it to a file
+            env_state = "env_global_temp.lp"  
+            with open(env_state, "w") as f:
+                f.write("")
+            for agent in self.agents:
+                temp_file = self.temp_file
+                with open(temp_file, "w") as f:
+                    f.write(f"agent({agent}).")
+                    f.write("hold_env(A, F, T) :- hold(F, T), agent(A), time(T).")
+                    f.write("occur_env(A, B, T) :- occur(B, T), agent(A), time(T).")
+                    f.write(f"#show hold_env/3.")
+                    f.write(f"#show occur_env/3.")
+                
+                files = [temp_file, self.agent_state[agent], self.global_domain]
+                (run_success, output) = run_clingo(files)
+                if run_success: 
+                    # write the result
+                    with open(env_state, "a") as f:
+                        f.write("".join(output))
+                    atoms = get_atoms(output)
+                    atoms_num_before += len(atoms)
+                else:
+                    logging.error(f"cannot filter the state for only fluents and actions {agent}")
+                    return False
             
-            # run clingo with the message, domain, and the state 
-            files = [message_temp, domain_temp, self.agent_state[agent], self.global_domain]
+            # step 2: run the parser script
+            # write all the parser scripts into one file
+            temp_file = self.temp_file
+            with open(temp_file, "w") as f: 
+                f.write("#show hold_env/2.")
+                f.write(f"#show occur_env/2.")
+            for agent in self.agents:
+                with open(temp_file, "a") as f:
+                    f.write(self.parsers[agent])
+
+            # run the env state with the parser scripts 
+            atoms_num_after = 0
+            files = [temp_file, env_state, self.global_domain]
             (run_success, output) = run_clingo(files)
             if run_success: 
-                # write the result
-                with open(self.agent_state[agent], "w") as f:
+                # write the new env state
+                with open(env_state, "w") as f:
                     f.write("".join(output))
-                # TODO: run parsing to map atoms from one to another and apply constraints between atoms among agents. 
+                
+                atoms = get_atoms(output)
+                atoms_num_after += len(atoms)
             else:
-                logging.error(f"cannot calculate the state for {agent}")
+                logging.error(f"there is some conflict between the states of agents")
                 return False
-        
+
+            # step 3: distill new stuffs for each agent (if any)
+            if atoms_num_before == atoms_num_after:
+                finished = True
+                break
+            
+            # distill back for each agent
+            for agent in self.agents:
+                temp_file = self.temp_file
+                with open(temp_file, "w") as f:
+                    f.write(f"agent({agent}).")
+                    f.write("hold(B, T) :- hold_env(A, B, T), time(T), agent(A).")
+                    f.write("occur(B, T) :- occur_env(A, B, T), time(T), agent(A).")
+                    f.write(f"#show hold/2.")
+                    f.write(f"#show occur/2.")
+
         # reset message buffer
         self.messages = {}
         self.lock.release()
