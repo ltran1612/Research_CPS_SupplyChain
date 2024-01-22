@@ -281,6 +281,8 @@ class StateMangerIndividual(StateManger):
                 message_temp = self.temp_file
                 with open(message_temp, "w") as f:
                     f.write(message)
+                    f.write("#show hold/2.")
+                    f.write("#show occur/2.")
 
                 # get the domain of each agent
                 domain_temp = "domain_temp.lp"
@@ -295,7 +297,6 @@ class StateMangerIndividual(StateManger):
                     # write the result
                     with open(self.agent_state[agent], "w") as f:
                         f.write("".join(output))
-                    # TODO: run parsing to map atoms from one to another and apply constraints between atoms among agents. 
                 else:
                     logging.error(f"cannot calculate the state for {agent}")
                     return False
@@ -331,11 +332,12 @@ class StateMangerIndividual(StateManger):
             # write all the parser scripts into one file
             temp_file = self.temp_file
             with open(temp_file, "w") as f: 
-                f.write("#show hold_env/2.")
-                f.write(f"#show occur_env/2.")
+                f.write("#show hold_env/3.")
+                f.write("#show occur_env/3.")
             for agent in self.agents:
                 with open(temp_file, "a") as f:
-                    f.write(self.parsers[agent])
+                    with open(self.parsers[agent], "r") as f2:
+                        f.write("".join(f2.readlines()))
 
             # run the env state with the parser scripts 
             atoms_num_after = 0
@@ -345,7 +347,7 @@ class StateMangerIndividual(StateManger):
                 # write the new env state
                 with open(env_state, "w") as f:
                     f.write("".join(output))
-                
+
                 atoms = get_atoms(output)
                 atoms_num_after += len(atoms)
             else:
@@ -356,6 +358,10 @@ class StateMangerIndividual(StateManger):
             if atoms_num_before == atoms_num_after:
                 finished = True
                 break
+
+            if atoms_num_before > atoms_num_after:
+                logging.error(f"something is wrong when computing env state, atoms after parsing is greater than atoms before")
+                return False
             
             # distill back for each agent
             for agent in self.agents:
@@ -366,6 +372,16 @@ class StateMangerIndividual(StateManger):
                     f.write("occur(B, T) :- occur_env(A, B, T), time(T), agent(A).")
                     f.write(f"#show hold/2.")
                     f.write(f"#show occur/2.")
+                # distilling 
+                files = [temp_file, env_state, self.global_domain]
+                (run_success, output) = run_clingo(files)
+                if run_success: 
+                    # write the result
+                    with open(self.agent_state[agent], "w") as f:
+                        f.write("".join(output))
+                else:
+                    logging.error(f"cannot distill from env state to individual state")
+                    return False
 
         # reset message buffer
         self.messages = {}
