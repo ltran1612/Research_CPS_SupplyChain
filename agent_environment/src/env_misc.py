@@ -1,8 +1,9 @@
 from threading import Lock 
-from misc import decode_setup_data, run_clingo, get_atoms, atoms_to_str
+from misc import run_clingo, get_atoms, atoms_to_str
 from parser_factory import ParserFactory
 import logging
 import re
+import json
 
 # manage the global state information 
 # thread-safe
@@ -416,3 +417,29 @@ class StateMangerIndividual(StateManger):
         self.lock.release()
 
         return agent_state 
+
+# encode the setup data to a JSON string to send 
+# precondition: the config object 
+def encode_setup_data(config) -> dict:
+    domain = config["domain"]
+    initial_state = config['initial_state']
+    interested_atoms = config["interest"]
+
+    setup_data = {} 
+    with open(domain, "r") as f:
+        setup_data["domain"] = "".join(f.readlines())
+    with open(initial_state, "r") as f:
+        setup_data["initial_state"] = "".join(f.readlines())
+    setup_data["interest"] = interested_atoms 
+
+    return json.dumps(setup_data)
+
+# decode the setup data to an object from the JSON string
+# precondition: the JSON string as input
+def decode_setup_data(config):
+    result = json.loads(config)
+    for key in result.keys():
+        if type(result[key]) is str:
+            result[key] = "".join(result[key])
+
+    return result

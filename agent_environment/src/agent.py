@@ -1,7 +1,8 @@
 import paho.mqtt.client as mqtt
 from threading import Lock
 from subprocess import CompletedProcess
-from misc import load_config, show_config, get_atoms, encode_setup_data
+from misc import load_config, show_config, get_atoms 
+from env_misc import encode_setup_data
 from planner import Planner 
 import logging, sys
 

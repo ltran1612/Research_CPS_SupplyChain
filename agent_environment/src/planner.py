@@ -3,7 +3,8 @@ import logging
 from subprocess import CompletedProcess
 import sys
 import re
-from misc import parse_clingo_output, run_clingo_raw, write_to_temp_file, encode_setup_data, decode_setup_data
+from misc import parse_clingo_output, run_clingo_raw, write_to_temp_file 
+from env_misc import encode_setup_data 
 
 class Planner:
     theplan: list
