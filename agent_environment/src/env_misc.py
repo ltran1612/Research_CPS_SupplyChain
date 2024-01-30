@@ -108,6 +108,10 @@ class Received:
 
         return result
 
+# create a regex for catching the fluent
+def create_fluent_regex(fluent):
+   return r"h\(" + re.escape(fluent) + r"\(.*\),\d+\)\."
+# a prototype for a state manager using a single domain file
 class StateManagerGlobal(StateManger):
     global_state = "global_state_temp.lp" 
 
@@ -412,7 +416,3 @@ class StateMangerIndividual(StateManger):
         self.lock.release()
 
         return agent_state 
-
-# create a regex for catching the fluent
-def create_fluent_regex(fluent):
-   return r"h\(" + re.escape(fluent) + r"\(.*\),\d+\)\."
