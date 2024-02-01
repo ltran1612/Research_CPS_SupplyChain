@@ -37,8 +37,6 @@ class StateManger:
     # function to receive the message 
     def receive_message(self, agent, message):
         self.lock.acquire()
-        # TODO: parse the message to a form that the environment uses
-
         # store the message
         self.messages[agent] = message
         self.lock.release()
