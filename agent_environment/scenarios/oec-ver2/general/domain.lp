@@ -1,8 +1,26 @@
-% domain for all
-% This file is only used for the purpose of backup. 
-% other stuffs
-quality(1..3).
+% base domain for all agents
+% Author: Long Tran
+% need to supply the following predicates:
+% 1) produce_item(Item): 1 or more.
+% 2) deliver_item(Item): 1 or more.
+% 3) pay_item(Item): 1 or more, items that we make payment.
+% 4) reason(Reason): 0 or more, any reason for payment either receiving payment or make payments. However, if the reason for paying is an item, put it in pay_item instead. This should strictly be used only when we receive payment for items. 
+% 5) item(Item): 0 or more, any items that we want to store in the inventory as an agent.
+% And any other predicates or laws that are used along with the above, like quality(Quality), and executability laws for produce.
+% By default, any pay, deliver, or produce items are an item.
+% examples:
+% produce_item(wood).
+% deliver_item(wood).
+% pay_item(saw).
 
+% ITEMS
+item(Item) :- deliver_item(Item).
+item(Item) :- produce_item(Item).
+item(Item) :- pay_item(Item). 
+reason(Item) :- pay_item(Item). 
+
+% When we deliver items, we typically want payment for it, so it's part of the reason for payment. 
+reason(delivery(Item)) :- deliver_item(Item).
 % FLUENTS
 fluent(payment(Reason, Amount)) :- number(Amount), reason(Reason).
 fluent(available_funds(Amount)) :- number(Amount).
@@ -12,13 +30,6 @@ fluent(delivered(Item, Amount, Quality)) :- deliver_item(Item), number(Amount), 
 fluent(delivered(Item, Amount)) :- deliver_item(Item), number(Amount).
 fluent(available_item(Item, Amount)) :- item(Item), number(Amount).
 fluent(available_item(Item, Amount, Quality)) :- item(Item), number(Amount), quality(Quality). 
-
-% ITEMS
-item(Item) :- deliver_item(Item).
-item(Item) :- produce_item(Item).
-item(Item) :- pay_item(Item). 
-reason(Item) :- pay_item(Item). 
-reason(delivery(Item)) :- deliver_item(Item).
 
 % ACTIONS
 action(pay(Reason, Amount)) :- number(Amount), reason(Reason). 
@@ -49,8 +60,8 @@ hold(produced(Item, Amount + OldAmount), T+1) :- produce_item(Item), hold(produc
 hold(produced(Item, Amount + OldAmount, Quality), T+1) :- produce_item(Item), hold(produced(Item, OldAmount, Quality), T), occur(produce(Item, Amount, Quality), T). 
 
 % deliver available_item
-hold(available_item(Item, Amount - OldAmount), T+1) :- deliver_item(Item), hold(available_item(Item, OldAmount), T), OldAmount >= Amount, occur(deliver(Item, Amount), T).  
-hold(available_item(Item, Amount - OldAmount, Quality), T+1) :- deliver_item(Item), hold(available_item(Item, OldAmount, Quality), T), OldAmount >= Amount, occur(deliver(Item, Amount, Quality), T). 
+hold(available_item(Item, OldAmount - Amount), T+1) :- deliver_item(Item), hold(available_item(Item, OldAmount), T), OldAmount >= Amount, occur(deliver(Item, Amount), T).  
+hold(available_item(Item, OldAmount - Amount, Quality), T+1) :- deliver_item(Item), hold(available_item(Item, OldAmount, Quality), T), OldAmount >= Amount, occur(deliver(Item, Amount, Quality), T). 
 hold(delivered(Item, Amount + OldAmount), T+1) :- deliver_item(Item), hold(delivered(Item, OldAmount), T), occur(deliver(Item, Amount), T). 
 hold(delivered(Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Item), hold(delivered(Item, OldAmount, Quality), T), occur(deliver(Item, Amount, Quality), T). 
 
@@ -73,7 +84,11 @@ not_changing(deliver(Item), T) :- not occur(deliver(Item, _), T), deliver_item(I
 not_changing(deliver(Item, Quality), T) :- not occur(deliver(Item, _, Quality), T), deliver_item(Item), time(T), quality(Quality).
 % item quantity not changing
 not_changing(amount(Item), T) :- not_changing(produce(Item), T), not_changing(deliver(Item), T).
+not_changing(amount(Item), T) :- not_changing(produce(Item), T), not deliver_item(Item). 
+not_changing(amount(Item), T) :- not_changing(deliver(Item), T), not produce_item(Item). 
 not_changing(amount(Item, Quality), T) :- not_changing(produce(Item, Quality), T), not_changing(deliver(Item, Quality), T).
+not_changing(amount(Item, Quality), T) :- not_changing(produce(Item, Quality), T), not deliver_item(Item, Quality).
+not_changing(amount(Item, Quality), T) :- not_changing(deliver(Item, Quality), T), not produce_item(Item, Quality).
 
 % pay
 hold(payment(Reason, Amount), T+1) :- hold(payment(Reason, Amount), T), not_changing(pay(Reason), T).
