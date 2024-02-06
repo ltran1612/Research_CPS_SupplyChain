@@ -1,9 +1,10 @@
-% test 4 - test money 
+% test 4 - test pay money 
 % test state
-% expect no sati
+% expect satisfaction.
 time(0..10).
 hold(available_funds(100), 0).
 pay_item(the_item).
+recv_agent(1..2).
 
 % test condition
 % test dynamic law 

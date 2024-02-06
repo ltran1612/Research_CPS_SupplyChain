@@ -21,3 +21,6 @@ occur(produce(wood, 100), 5).
 
 % test inertial rules
 :- not hold(produced(wood, 200), 7..10). 
+:- not hold(produced(wood, 100), 2..4). 
+:- hold(produced(wood, 0), 7..10). 
+:- hold(produced(wood, 100), 7..10). 

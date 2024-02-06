@@ -12,12 +12,19 @@
 % produce_item(wood).
 % deliver_item(wood).
 % pay_item(saw).
+% Assumptions: only one action occurs at a time, and the time is discrete.
+
+% RECEIVING FROM AGENTS
 
 % ITEMS
 item(Item) :- deliver_item(Item).
 item(Item) :- produce_item(Item).
 item(Item) :- pay_item(Item). 
+item(Item) :- recv_item(Item). 
+
+% REASONS
 reason(Item) :- pay_item(Item). 
+reason(Item) :- recv_item(Item). 
 
 % When we deliver items, we typically want payment for it, so it's part of the reason for payment. 
 reason(delivery(Item)) :- deliver_item(Item).
@@ -30,12 +37,15 @@ fluent(delivered(Item, Amount, Quality)) :- deliver_item(Item), number(Amount), 
 fluent(delivered(Item, Amount)) :- deliver_item(Item), number(Amount).
 fluent(available_item(Item, Amount)) :- item(Item), number(Amount).
 fluent(available_item(Item, Amount, Quality)) :- item(Item), number(Amount), quality(Quality). 
+fluent(notification((Agent, Time), Item, Amount)) :- number(Amount), recv_agent(Agent), time(Time), item(Item).
+fluent(notification((Agent, Time), Item, Amount, Quality)) :- number(Amount), recv_agent(Agent), time(Time), item(Item), quality(Quality).
+fluent(notification((Agent, Time), payment, Reason, Amount)) :- number(Amount), recv_agent(Agent), time(Time), reason(Reason).
 
 % ACTIONS
 action(pay(Reason, Amount)) :- number(Amount), reason(Reason). 
-action(receive_money(Reason, Amount)) :- number(Amount), reason(Reason).
-action(receive(Item, Amount)) :- item(Item), number(Amount).
-action(receive(Item, Amount, Quality)) :- item(Item), number(Amount), quality(Quality).
+action(receive_money((Agent, Time), Reason, Amount)) :- number(Amount), reason(Reason), time(Time), recv_agent(Agent). 
+action(receive((Agent, Time), Item, Amount)) :- item(Item), number(Amount), time(Time), recv_agent(Agent). 
+action(receive((Agent, Time), Item, Amount, Quality)) :- item(Item), number(Amount), quality(Quality), time(Time), recv_agent(Agent). 
 action(produce(Item, Amount)) :- produce_item(Item), number(Amount).
 action(produce(Item, Amount, Quality)) :- produce_item(Item), number(Amount), quality(Quality).
 action(deliver(Item, Amount)) :- deliver_item(Item), number(Amount).
@@ -47,11 +57,11 @@ hold(payment(Reason, Amount + OldAmount), T+1) :- hold(payment(Reason, OldAmount
 
 % available_funds
 hold(available_funds(OldAmount - Amount), T+1) :- hold(available_funds(OldAmount), T), OldAmount >= Amount, occur(pay(Reason, Amount), T). 
-hold(available_funds(OldAmount + Amount), T+1) :- hold(available_funds(OldAmount), T), occur(receive_money(Reason, Amount), T). 
+hold(available_funds(OldAmount + Amount), T+1) :- hold(available_funds(OldAmount), T), occur(receive_money(_, Reason, Amount), T). 
 
 % receive items 
-hold(available_item(Item, Amount + OldAmount), T+1) :- item(Item), hold(available_item(Item, OldAmount), T), occur(receive(Item, Amount), T). 
-hold(available_item(Item, Amount + OldAmount, Quality), T+1) :- item(Item), hold(available_item(Item, OldAmount, Quality), T), occur(receive(Item, Amount, Quality), T).
+hold(available_item(Item, Amount + OldAmount), T+1) :- item(Item), hold(available_item(Item, OldAmount), T), occur(receive((Agent, TimeMark), Item, Amount), T). 
+hold(available_item(Item, Amount + OldAmount, Quality), T+1) :- item(Item), hold(available_item(Item, OldAmount, Quality), T), occur(receive((Agent, TimeMark), Item, Amount, Quality), T).
 
 % produce items 
 hold(available_item(Item, Amount + OldAmount), T+1) :- produce_item(Item), hold(available_item(Item, OldAmount), T), occur(produce(Item, Amount), T). 
@@ -69,26 +79,41 @@ hold(delivered(Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Item), h
 :- occur(pay(Reason, Amount), T), hold(available_fund(Fund), T), not Fund >= Amount.
 :- occur(deliver(Item, Amount), T), hold(available_item(Item, CurrentAmount), T), deliver_item(Item), not CurrentAmount >= Amount.
 :- occur(deliver(Item, Amount, Quality), T), hold(available_item(Item, CurrentAmount, Quality), T), deliver_item(Item), not CurrentAmount >= Amount.
+:- occur(receive((Agent, TimeMark), Item, Amount), T), not hold(notification((Agent, TimeMark), Item, Amount), T). 
+:- occur(receive((Agent, TimeMark), Item, Amount, Quality), T), not hold(notification((Agent, TimeMark), Item, Amount, Quality), T). 
+:- occur(receive_money(A, Reason, Amount), T), not hold(notification(A, payment, Reason, Amount), T), A=(Agent, TimeMark). 
+
 
 % STATIC CASUAL LAWS
 
 % INERTIAL RULES
 % not changing stuffs
 not_changing(pay(Reason), T) :- not occur(pay(Reason, _), T), reason(Reason), time(T).
-not_changing(receive_money(Reason), T) :- not occur(receive_money(Reason, _), T), reason(Reason), time(T).
-not_changing(fund, T) :- not_changing(pay(_), T), not_changing(receive_money(_), T).
+%
+changing(fund, T) :- occur(pay(_, _), T), time(T).
+changing(fund, T) :- occur(receive_money(_, _, _), T), time(T).
+not_changing(fund, T) :- not changing(fund, T), time(T).
 % 
 not_changing(produce(Item), T) :- not occur(produce(Item, _), T), produce_item(Item), time(T).
+not_changing(produce(Item), T) :- not produce_item(Item), item(Item), time(T). 
+%
 not_changing(produce(Item, Quality), T) :- not occur(produce(Item, _, Quality), T), produce_item(Item), time(T), quality(Quality).
+not_changing(produce(Item, Quality), T) :- not produce_item(Item), item(Item), quality(Quality), time(T).
+%
 not_changing(deliver(Item), T) :- not occur(deliver(Item, _), T), deliver_item(Item), time(T).
+not_changing(deliver(Item), T) :- not deliver_item(Item), item(Item), time(T).
+%
 not_changing(deliver(Item, Quality), T) :- not occur(deliver(Item, _, Quality), T), deliver_item(Item), time(T), quality(Quality).
+not_changing(deliver(Item, Quality), T) :- not deliver_item(Item), item(Item), quality(Quality), time(T).
+%
+not_changing(receive(Item), T) :- not occur(receive(_, Item, _), T), item(Item), time(T). 
+not_changing(receive(Item), T) :- not recv_item(Item), item(Item), time(T). 
+%
+not_changing(receive(Item, Quality), T) :- not occur(receive(_, Item, _, Quality), T), item(Item), time(T), quality(Quality).
+not_changing(receive(Item, Quality), T) :- not recv_item(Item), item(Item), time(T), quality(Quality).
 % item quantity not changing
-not_changing(amount(Item), T) :- not_changing(produce(Item), T), not_changing(deliver(Item), T).
-not_changing(amount(Item), T) :- not_changing(produce(Item), T), not deliver_item(Item). 
-not_changing(amount(Item), T) :- not_changing(deliver(Item), T), not produce_item(Item). 
-not_changing(amount(Item, Quality), T) :- not_changing(produce(Item, Quality), T), not_changing(deliver(Item, Quality), T).
-not_changing(amount(Item, Quality), T) :- not_changing(produce(Item, Quality), T), not deliver_item(Item, Quality).
-not_changing(amount(Item, Quality), T) :- not_changing(deliver(Item, Quality), T), not produce_item(Item, Quality).
+not_changing(amount(Item), T) :- not_changing(produce(Item), T), not_changing(deliver(Item), T), not_changing(receive(Item), T).
+not_changing(amount(Item, Quality), T) :- not_changing(produce(Item, Quality), T), not_changing(deliver(Item, Quality), T), not_changing(receive(Item, Quality), T).
 
 % pay
 hold(payment(Reason, Amount), T+1) :- hold(payment(Reason, Amount), T), not_changing(pay(Reason), T).
@@ -105,3 +130,10 @@ hold(delivered(Item, Amount), T+1) :- hold(delivered(Item, Amount), T), not_chan
 % available items
 hold(available_item(Item, Amount), T+1) :- hold(available_item(Item, Amount), T), not_changing(amount(Item), T).
 hold(available_item(Item, Amount, Quality), T+1) :- hold(available_item(Item, Amount, Quality), T), not_changing(amount(Item, Quality), T).
+
+% notifications
+hold(notification((Agent, Time), Item, Amount), T+1) :- hold(notification((Agent, Time), Item, Amount), T), not_changing(receive((Agent, Time), Item), T).
+hold(notification((Agent, Time), Item, Amount, Quality), T+1) :- hold(notification((Agent, Time), Item, Amount, Quality), T), not_changing(receive((Agent, Time), Item, Quality), T).
+hold(notification((Agent, Time), payment, Reason, Amount), T+1) :- hold(notification((Agent, Time), payment, Reason, Amount), T), not_changing(receive_money((Agent, Time), Reason), T).
+
+% OTHER CONSTRAINTS TO MAKE THE DOMAIN CONSISTENT
