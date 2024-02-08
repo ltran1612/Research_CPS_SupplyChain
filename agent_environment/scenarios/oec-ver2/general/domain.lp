@@ -107,10 +107,9 @@ not_changing(deliver(Item, Quality), T) :- not occur(deliver(Item, _, Quality), 
 not_changing(deliver(Item, Quality), T) :- not deliver_item(Item), item(Item), quality(Quality), time(T).
 %
 not_changing(receive(Item), T) :- not occur(receive(_, Item, _), T), item(Item), time(T). 
-not_changing(receive(Item), T) :- not recv_item(Item), item(Item), time(T). 
 %
 not_changing(receive(Item, Quality), T) :- not occur(receive(_, Item, _, Quality), T), item(Item), time(T), quality(Quality).
-not_changing(receive(Item, Quality), T) :- not recv_item(Item), item(Item), time(T), quality(Quality).
+%
 % item quantity not changing
 not_changing(amount(Item), T) :- not_changing(produce(Item), T), not_changing(deliver(Item), T), not_changing(receive(Item), T).
 not_changing(amount(Item, Quality), T) :- not_changing(produce(Item, Quality), T), not_changing(deliver(Item, Quality), T), not_changing(receive(Item, Quality), T).
