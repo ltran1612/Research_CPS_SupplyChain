@@ -137,3 +137,5 @@ hold(notification((Agent, Time), Item, Amount, Quality), T+1) :- hold(notificati
 hold(notification((Agent, Time), payment, Reason, Amount), T+1) :- hold(notification((Agent, Time), payment, Reason, Amount), T), not_changing(receive_money((Agent, Time), Reason), T).
 
 % OTHER CONSTRAINTS TO MAKE THE DOMAIN CONSISTENT
+% 1) Only one action occurs at a time
+:- time(T), occur(A, T), occur(B, T), B != A.

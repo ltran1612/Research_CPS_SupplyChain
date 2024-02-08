@@ -1,7 +1,7 @@
 DOMAIN = general/domain.lp 
 INIT = general/init.lp
 HIDE_WARNING = -q2,2,2 --warn no-atom-undefined -V0
-all: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10
+all: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11
 
 .SILENT:
 test1:
@@ -71,4 +71,12 @@ test10:
 	echo $@
 	echo "->satisfaction."
 	@-clingo ${DOMAIN} tests/test10.lp ${HIDE_WARNING}
+	echo ""
+
+# test other constraints
+.SILENT:
+test11:
+	echo $@
+	echo "->unsatisfaction."
+	@-clingo ${DOMAIN} tests/test11.lp ${HIDE_WARNING}
 	echo ""
