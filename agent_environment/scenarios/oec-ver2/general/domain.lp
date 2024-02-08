@@ -6,6 +6,8 @@
 % 3) pay_item(Item): 1 or more, items that we make payment.
 % 4) reason(Reason): 0 or more, any reason for payment either receiving payment or make payments. However, if the reason for paying is an item, put it in pay_item instead. This should strictly be used only when we receive payment for items. 
 % 5) item(Item): 0 or more, any items that we want to store in the inventory as an agent.
+% 6) recv_item(Item): 0 or more, any items that we receive from other agents.
+% 7) recv_agent(Agent): 0 or more, any agents that we receive items from.
 % And any other predicates or laws that are used along with the above, like quality(Quality), and executability laws for produce.
 % By default, any pay, deliver, or produce items are an item.
 % examples:
