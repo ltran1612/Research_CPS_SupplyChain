@@ -12,12 +12,15 @@ occur(deliver(wood, 100), 1).
 :- not hold(available_item(wood, 101), 2). 
 :- not hold(delivered(wood, 0), 1). 
 :- not hold(delivered(wood, 100), 2). 
+:- hold(delivered(wood, 0), 2). 
 %
 occur(deliver(wood, 100), 5).
 :- not hold(available_item(wood, 101), 5). 
 :- not hold(available_item(wood, 1), 6). 
 :- not hold(delivered(wood, 100), 5). 
 :- not hold(delivered(wood, 200), 6). 
+:- hold(delivered(wood, 100), 6). 
+:- hold(delivered(wood, 0), 6). 
 
 % inertial rules
 :- not hold(available_item(wood, 1), 7..10). 
