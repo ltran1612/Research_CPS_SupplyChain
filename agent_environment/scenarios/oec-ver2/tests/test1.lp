@@ -13,11 +13,15 @@ occur(produce(wood, 100), 1).
 :- not hold(available_item(wood, 0), 1). 
 :- not hold(available_item(wood, 100), 2). 
 :- not hold(produced(wood, 100), 2). 
+:- hold(produced(wood, 0), 2). 
+:- hold(produced(wood, 200), 2). 
 %
 occur(produce(wood, 100), 5).
 :- not hold(available_item(wood, 100), 5). 
 :- not hold(available_item(wood, 200), 6). 
 :- not hold(produced(wood, 200), 6). 
+:- hold(produced(wood, 0), 6). 
+:- hold(produced(wood, 100), 6). 
 
 % test inertial rules
 :- not hold(produced(wood, 200), 7..10). 

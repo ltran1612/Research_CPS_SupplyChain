@@ -1,4 +1,4 @@
-% test case 15 - test planning with receive.
+% test case 15 - test planning with receive with quality.
 time(0..10).
 recv_item(apple).
 recv_agent(0..2).
