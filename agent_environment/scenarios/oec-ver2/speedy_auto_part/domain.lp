@@ -2,7 +2,6 @@
 produce_item(vehicle_parts).
 deliver_item(vehicle_parts).
 
-% ITEMS
 % base domain for all agents
 % Author: Long Tran
 % need to supply the following predicates:
@@ -32,9 +31,9 @@ item(Item) :- recv_item(Item).
 % REASONS
 reason(Item) :- pay_item(Item). 
 reason(Item) :- recv_item(Item). 
-
 % When we deliver items, we typically want payment for it, so it's part of the reason for payment. 
 reason(delivery(Item)) :- deliver_item(Item).
+
 % FLUENTS
 fluent(payment(Reason, Amount)) :- number(Amount), reason(Reason).
 fluent(available_funds(Amount)) :- number(Amount).
@@ -61,6 +60,8 @@ action(deliver(Item, Amount, Quality)) :- deliver_item(Item), number(Amount), qu
 % DYNAMIC LAWS
 % payment
 hold(payment(Reason, Amount + OldAmount), T+1) :- hold(payment(Reason, OldAmount), T), occur(pay(Reason, Amount), T).
+% 
+hold(payment(Reason, OldAmount + Amount), T+1) :- hold(payment(Reason, OldAmount), T), occur(receive_money(_, Reason, Amount), T). 
 
 % available_funds
 hold(available_funds(OldAmount - Amount), T+1) :- hold(available_funds(OldAmount), T), OldAmount >= Amount, occur(pay(Reason, Amount), T). 
@@ -99,7 +100,10 @@ not_changing(pay(Reason), T) :- not occur(pay(Reason, _), T), reason(Reason), ti
 %
 changing(fund, T) :- occur(pay(_, _), T), time(T).
 changing(fund, T) :- occur(receive_money(_, _, _), T), time(T).
+%
 not_changing(receive_money(A, Reason), T) :- A=(Agent, TimeMark), not occur(receive_money(A, Reason, _), T), recv_agent(Agent), reason(Reason), time(T), time(TimeMark).
+not_changing(receive_money(Reason), T) :- not occur(receive_money(_, Reason, _), T), reason(Reason), time(T). 
+%
 not_changing(fund, T) :- not changing(fund, T), time(T).
 
 % 
@@ -128,7 +132,7 @@ not_changing(amount(Item), T) :- not_changing(produce(Item), T), not_changing(de
 not_changing(amount(Item, Quality), T) :- not_changing(produce(Item, Quality), T), not_changing(deliver(Item, Quality), T), not_changing(receive(Item, Quality), T).
 
 % pay
-hold(payment(Reason, Amount), T+1) :- hold(payment(Reason, Amount), T), not_changing(pay(Reason), T).
+hold(payment(Reason, Amount), T+1) :- hold(payment(Reason, Amount), T), not_changing(pay(Reason), T), not_changing(receive_money(Reason), T).
 hold(available_funds(Amount), T+1) :- hold(available_funds(Amount), T), not_changing(fund, T).
 
 % producing items
