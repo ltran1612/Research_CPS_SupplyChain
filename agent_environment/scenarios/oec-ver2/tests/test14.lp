@@ -8,6 +8,7 @@ occur(receive((0, 0), apple, 100), 0).
 %
 hold(notification((1, 1), apple, 400), 0).
 %
+:- not hold(available_item(apple, 100), 1..4). 
 :- hold(available_item(apple, 200), 1..4). 
 :- hold(available_item(apple, 300), 1..4). 
 :- hold(available_item(apple, 400), 1..4). 
