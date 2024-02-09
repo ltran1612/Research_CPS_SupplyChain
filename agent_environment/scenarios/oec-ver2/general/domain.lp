@@ -78,7 +78,7 @@ hold(delivered(Item, Amount + OldAmount), T+1) :- deliver_item(Item), hold(deliv
 hold(delivered(Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Item), hold(delivered(Item, OldAmount, Quality), T), occur(deliver(Item, Amount, Quality), T). 
 
 % EXECUTABILITY LAWS
-:- occur(pay(Reason, Amount), T), hold(available_fund(Fund), T), not Fund >= Amount.
+:- occur(pay(Reason, Amount), T), hold(available_funds(Fund), T), not Fund >= Amount.
 :- occur(deliver(Item, Amount), T), hold(available_item(Item, CurrentAmount), T), deliver_item(Item), not CurrentAmount >= Amount.
 :- occur(deliver(Item, Amount, Quality), T), hold(available_item(Item, CurrentAmount, Quality), T), deliver_item(Item), not CurrentAmount >= Amount.
 :- occur(receive((Agent, TimeMark), Item, Amount), T), not hold(notification((Agent, TimeMark), Item, Amount), T). 
