@@ -94,7 +94,9 @@ not_changing(pay(Reason), T) :- not occur(pay(Reason, _), T), reason(Reason), ti
 %
 changing(fund, T) :- occur(pay(_, _), T), time(T).
 changing(fund, T) :- occur(receive_money(_, _, _), T), time(T).
+not_changing(receive_money(A, Reason), T) :- A=(Agent, TimeMark), not occur(receive_money(A, Reason, _), T), recv_agent(Agent), reason(Reason), time(T), time(TimeMark).
 not_changing(fund, T) :- not changing(fund, T), time(T).
+
 % 
 not_changing(produce(Item), T) :- not occur(produce(Item, _), T), produce_item(Item), time(T).
 not_changing(produce(Item), T) :- not produce_item(Item), item(Item), time(T). 
