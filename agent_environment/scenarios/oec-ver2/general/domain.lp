@@ -108,9 +108,13 @@ not_changing(deliver(Item), T) :- not deliver_item(Item), item(Item), time(T).
 not_changing(deliver(Item, Quality), T) :- not occur(deliver(Item, _, Quality), T), deliver_item(Item), time(T), quality(Quality).
 not_changing(deliver(Item, Quality), T) :- not deliver_item(Item), item(Item), quality(Quality), time(T).
 %
-not_changing(receive(Item), T) :- not occur(receive(_, Item, _), T), item(Item), time(T). 
+changing(receive(A, Item), T) :- occur(receive(A, Item, _), T), A=(Agent, TimeMark). 
+not_changing(receive(A, Item), T) :- A=(Agent, TimeMark), not changing(receive(A, Item), T), item(Item), time(T), recv_agent(Agent), time(TimeMark).
+not_changing(receive(Item), T) :- not changing(receive(_, Item), T), item(Item), time(T).
 %
-not_changing(receive(Item, Quality), T) :- not occur(receive(_, Item, _, Quality), T), item(Item), time(T), quality(Quality).
+changing(receive(A, Item, Quality), T) :- occur(receive(A, Item, _, Quality), T), A=(Agent, TimeMark). 
+not_changing(receive(A, Item, Quality), T) :- A=(Agent, TimeMark), not changing(receive(A, Item, Quality), T), item(Item), time(T), recv_agent(Agent), time(TimeMark), quality(Quality).
+not_changing(receive(Item, Quality), T) :- not changing(receive(_, Item, Quality), T), item(Item), time(T), quality(Quality).
 %
 % item quantity not changing
 not_changing(amount(Item), T) :- not_changing(produce(Item), T), not_changing(deliver(Item), T), not_changing(receive(Item), T).
@@ -133,9 +137,9 @@ hold(available_item(Item, Amount), T+1) :- hold(available_item(Item, Amount), T)
 hold(available_item(Item, Amount, Quality), T+1) :- hold(available_item(Item, Amount, Quality), T), not_changing(amount(Item, Quality), T).
 
 % notifications
-hold(notification((Agent, Time), Item, Amount), T+1) :- hold(notification((Agent, Time), Item, Amount), T), not_changing(receive((Agent, Time), Item), T).
-hold(notification((Agent, Time), Item, Amount, Quality), T+1) :- hold(notification((Agent, Time), Item, Amount, Quality), T), not_changing(receive((Agent, Time), Item, Quality), T).
-hold(notification((Agent, Time), payment, Reason, Amount), T+1) :- hold(notification((Agent, Time), payment, Reason, Amount), T), not_changing(receive_money((Agent, Time), Reason), T).
+hold(notification(A, Item, Amount), T+1) :- A=(Agent, TimeMark), hold(notification(A, Item, Amount), T), not_changing(receive(A, Item), T).
+hold(notification(A, Item, Amount, Quality), T+1) :- A=(Agent, TimeMark), hold(notification(A, Item, Amount, Quality), T), not_changing(receive(A, Item, Quality), T).
+hold(notification(A, payment, Reason, Amount), T+1) :- A=(Agent, TimeMark), hold(notification(A, payment, Reason, Amount), T), not_changing(receive_money(A, Reason), T).
 
 % OTHER CONSTRAINTS TO MAKE THE DOMAIN CONSISTENT
 % 1) Only one action occurs at a time

@@ -24,9 +24,13 @@ occur(receive((2, 0), receiving_item, 102), 5).
 :- not hold(available_item(receiving_item, 151), 5).
 :- not hold(available_item(receiving_item, 253), 6).
 
-% % no same signature
-% % test intertial rules
+% no same signature
+% test intertial rules
 :- hold(notification((0, 0), receiving_item, 50), 2..10). 
 :- hold(notification((0, 0), receiving_item, 101), 4..10). 
 :- hold(available_item(receiving_item, 151), 6..10).
 :- not hold(available_item(receiving_item, 253), 6..10).
+
+% % this notification should hold
+hold(notification((0, 1), receiving_item, 50), 1). 
+:- not hold(notification((0, 1), receiving_item, 50), 2..10). 
