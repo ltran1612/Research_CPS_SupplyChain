@@ -2,7 +2,7 @@ DOMAIN = general/domain.lp
 INIT = general/init.lp
 PLAN = general/plan.lp
 HIDE_WARNING = -q2,2,2 --warn no-atom-undefined -V0
-all: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12 test13
+all: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12 test13 test14
 
 .SILENT:
 test1:
@@ -101,5 +101,5 @@ test13:
 test14:
 	echo $@
 	echo "->satisfaction."
-	@-clingo ${DOMAIN} ${PLAN} ${INIT} tests/test14.lp 
+	@-clingo ${DOMAIN} ${PLAN} ${INIT} tests/test14.lp ${HIDE_WARNING}
 	echo ""
