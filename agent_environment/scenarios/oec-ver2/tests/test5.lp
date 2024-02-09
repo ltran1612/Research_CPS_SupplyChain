@@ -30,4 +30,7 @@ occur(receive_money((2, 0), receiving_item, 102), 5).
 :- hold(notification((0, 0), payment, receiving_item, 50), 2..10). 
 :- hold(notification((0, 0), payment, receiving_item, 101), 4..10). 
 :- not hold(available_funds(151), 4..5).
-% :- hold(available_funds(151), 6..10).
+
+% 
+hold(notification((2, 1), payment, receiving_item, 102), 0). 
+:- not hold(notification((2, 1), payment, receiving_item, 102), 0..10). 
