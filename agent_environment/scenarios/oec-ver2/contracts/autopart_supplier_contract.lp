@@ -7,7 +7,7 @@ clause("C12").
 hold(sat("C10"), lastTimeStep) :-  hold(produced(tool_parts, 11000, Q), 3), Q >= 3. 
 
 % C11: As responsible_for delivered(tool_parts,11K, Q) ∧ 3 ≤ Q when by_week 3 
-hold(sat("C10"), lastTimeStep) :-  hold(delivered(tool_parts, 11000, Q), 3), Q >= 3. 
+hold(sat("C11"), lastTimeStep) :-  hold(delivered(tool_parts, 11000, Q), 3), Q >= 3. 
 
 % C12: A responsible_for payment(tool_parts, 30K) when by_week 3
-hold(sat("C10"), lastTimeStep) :-  hold(payment(tool_parts, 30000), 3).
+hold(sat("C12"), lastTimeStep) :-  hold(payment(tool_parts, 30000), 3).

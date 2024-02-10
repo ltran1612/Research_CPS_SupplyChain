@@ -1,0 +1,2 @@
+hold_env(speedy_auto_part, notification((supplier_of_speedy_auto_part, speedy_auto_part, T), tool_parts, A, Q), T)
+    :- occur_env(supplier_of_speedy_auto_part, deliver(tool_parts, A, Q), T), time(T).
