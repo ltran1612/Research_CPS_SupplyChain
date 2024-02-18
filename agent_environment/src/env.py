@@ -1,29 +1,31 @@
+import logging, sys
 import paho.mqtt.client as mqtt
-from misc import load_config, show_config 
+
+# custom libraries
+from config import load_config, show_config 
 from threading import Thread 
 from time import sleep
-import logging
-import sys
-from env_misc import StateManagerGlobal, Received, StateMangerIndividual
-from queue import Queue
+from env_misc import Received, StateMangerIndividual
 
 # load and display the config
-config = load_config()
+config = load_config(sys.argv)
 show_config(config)
-# parse the config
 
-agents = list(config['parsers'])
-global_domain = config["global_domain"]
+# parse the config
+# get the parsers
 parsers = config['parsers']
+# get the list of agents
+agents = list(parsers)
+# get the file path to the global domain 
+global_domain_filepath = config["global_domain"]
 
 # initialized the received queue  
 received = Received(agents) 
-
 # step
 step = -1
 
 # set up
-state = StateMangerIndividual(agents, global_domain, parsers) 
+state = StateMangerIndividual(agents, global_domain_filepath, parsers) 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):

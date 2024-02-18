@@ -330,6 +330,11 @@ class StateMangerIndividual(StateManger):
                 else:
                     logging.error(f"cannot filter the state for only fluents and actions {agent}")
                     return False
+
+            # DEBUG: see the condition of each state before transitioning 
+            with open(env_state, "r") as f:
+                logging.info(f"time is {step}")
+                logging.info("".join(f.readlines()))
             
             # step 2: run the parser script
             # write all the parser scripts into one file
@@ -382,9 +387,13 @@ class StateMangerIndividual(StateManger):
                     # write the result
                     with open(self.agent_state[agent], "w") as f:
                         f.write("".join(output))
+                    with open(self.agent_state[agent], "r") as f:
+                        logging.info(f"time is {step} for agent {agent}")
+                        logging.info("".join(f.readlines()))
                 else:
                     logging.error(f"cannot distill from env state to individual state")
                     return False
+
 
         # reset message buffer
         self.messages = {}

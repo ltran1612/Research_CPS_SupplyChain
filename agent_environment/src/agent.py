@@ -1,16 +1,28 @@
+import sys, logging
 import paho.mqtt.client as mqtt
 from threading import Lock
-from subprocess import CompletedProcess
-from misc import load_config, show_config, get_atoms 
+
+# custom libraries 
+from misc import get_atoms 
 from env_misc import encode_setup_data
+from config import show_config, load_config
 from planner import Planner 
-import logging, sys
+
+# set the logging
+log_handler = logging.StreamHandler(sys.stdout)
+log_handler.setLevel(logging.INFO)
+log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+logger = logging.getLogger()
+logger.handlers = []
+logger.setLevel(logging.INFO)
+logger.addHandler(log_handler)
 
 # load config and display it
-config = load_config()
+config = load_config(sys.argv)
 show_config(config)
+
+# set up planner
 planner: Planner = Planner(config)
-planner.plan([])
 
 # agent topics
 publish_topic = f"env/{config['id']}" 
@@ -20,30 +32,29 @@ next_subscribe_topic = f"next/{config['id']}"
 
 # store the action for the step
 action = ""
-
 # target step 
 upcoming_step = 0 
 
 # variable to identify if we're connecting for the first time or not
 # with a Lock/mutex
 startLock = Lock()
-start = True
+started = False
 
 logging.debug(f"Publish to {publish_topic}")
 logging.debug(f"Subscribe to {subscribe_topic}")
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
-    global start
+    global started
     logging.debug("Connected with result code "+str(rc))
 
     # connectting for the first time, notified the environment
     startLock.acquire()
-    if start:
+    if not started:
         # send setup information 
         client.publish(publish_topic, encode_setup_data(config), qos=2, retain=False)
         logging.info("agent notified to the env of its existence")
-        start = False
+        started = True 
     startLock.release()
 
     # Subscribing in on_connect() means that if we lose the connection and
@@ -87,14 +98,11 @@ def on_message(client: mqtt.Client, userdata, msg):
         else:
             logging.info(f"sent the action done at step {upcoming_step-1} to the env")
 
-# set the logging
-log_handler = logging.StreamHandler(sys.stdout)
-log_handler.setLevel(logging.INFO)
-log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logger = logging.getLogger()
-logger.handlers = []
-logger.setLevel(logging.INFO)
-logger.addHandler(log_handler)
+
+#
+logging.info("initial planning...")
+planner.plan([])
+logging.info("planning done.")
 
 # start the agent 
 client = mqtt.Client()
