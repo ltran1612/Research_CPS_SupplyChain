@@ -14,7 +14,7 @@ class Planner:
         self.initial_state = config['initial_state']
         self.planner = config['planner']
         self.clause_concern_map = config['clause_concern_map']
-        self.clauses = config['clauses']
+        self.contracts = config['contracts']
         self.global_domain = config['global_domain']
         self.contract_cps = config['contract_cps']
         self.cps = config['cps']
@@ -54,8 +54,10 @@ class Planner:
         
         # get the plan
         files = [self.domain, self.initial_state, self.planner, self.clause_concern_map,\
-                 self.clauses, self.global_domain, self.cps, self.contract_cps,\
+                 self.global_domain, self.cps, self.contract_cps,\
                  temp_file]  
+        files.extend(self.contracts)
+
         result: CompletedProcess[bytes] = run_clingo_raw(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
 
         return_code = result.returncode
