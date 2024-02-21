@@ -79,9 +79,8 @@ def on_message(client: mqtt.Client, userdata, msg):
         logging.info(f"The state at the start of step {upcoming_step} is: {message}")
         observations = get_atoms([message])
         # do some reasoning
-        actions = planner.next_step(upcoming_step, observations)
-        # assemble the actions to do into a message to send
-        action = " ".join(actions)
+        actions = planner.next_step(upcoming_step, "".join(observations))
+        action = actions
         logging.debug(f"the next action is {action}")
         logging.info(f"the action to do in {upcoming_step} is: {action}")
         # received the state information
@@ -100,9 +99,9 @@ def on_message(client: mqtt.Client, userdata, msg):
 
 
 #
-logging.info("initial planning...")
-planner.plan()
-logging.info("planning done.")
+# logging.info("initial planning...")
+# planner.plan()
+# logging.info("planning done.")
 
 # start the agent 
 client = mqtt.Client()

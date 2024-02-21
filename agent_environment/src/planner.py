@@ -39,6 +39,7 @@ class Planner:
     # check if the observation matches with the plan
     # precondition: the plan is stored in self.theplan 
     def observation_matches_plan(self, observation: str) -> bool:
+        logging.info("Check if the observation matches the plan")
         # write the observation to a temporary file
         with open(self.temp_file, "w") as f:
             f.write(observation)
@@ -54,7 +55,7 @@ class Planner:
         return self.plan_with_observation(self.get_state())
 
     # plan based on the observation
-    def plan_with_observation(self, observation) -> bool:
+    def plan_with_observation(self, observation: str) -> bool:
         # write observations to a temporary file
         write_to_temp_file(self.temp_file, observation)
 
@@ -135,17 +136,16 @@ class Planner:
     # get the next step in the plan based on this current observation
     # if the observation does not match the plan, replan
     def next_step(self, target_step, observation:str):
-        logging.debug("getting next step...")
         # compare the observation with the plan
         if self.observation_matches_plan(observation):
-            logging.debug(f"plan is the same at step {target_step}")
+            logging.info(f"observation matches plan, get the action for {target_step}")
             return self.get_actions_at_step(target_step)
         
-        logging.debug("replanning...")
+        logging.info("replanning...")
         # else replan if different
         self.save_observations(observation)
         self.plan()
-        logging.debug("replanning done")
+        logging.info("replanning done")
         # recursively run next_step again after replanning
         return self.next_step(target_step, observation)
 
