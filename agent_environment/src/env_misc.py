@@ -1,3 +1,5 @@
+# the state manager for the environment
+
 from threading import Lock 
 from misc import run_clingo, get_atoms, atoms_to_str
 from parser_factory import ParserFactory
@@ -5,7 +7,7 @@ import logging
 import re
 import json
 
-# manage the global state information 
+# base class for individual approach for state manager
 # thread-safe
 class StateManger:
     messages = {}
@@ -71,7 +73,7 @@ class StateManger:
     def get_state(self, agent):
         pass
 
-# a thread-safe way to check the number of messages that the user responded.
+# a thread-safe object to check the number of messages that the user responded.
 class Received:
     received = {}
     receiveLock = Lock()
@@ -230,16 +232,10 @@ class StateManagerGlobal(StateManger):
     
 # a different version of state manager
 # we will compute the state for each agent individually
-# Problems:
-# 1) How to maps related fluents of different agents?: Write a script that maps the fluents of one to the other. For example, delivery:
-#   - delivery(1000, 1) -> delivery(1000, 1)
-# 2) How to have certain global fluents?: Treat the env as an agent. Copies the fluents of this "env agent" to each agent. This special env agent has to be executed first along with the messages from each agent.    
-# 4) How to maintain certain global constraints: Have a script that checks for that. Similar to 2. If it is unsatisfiable, then we need to make a decision:
-#    a) The actions are not executed: meaning we do not return occur(...) to the corresponding agent.  
-#    b) Choose only one action to execute. 
-# 3) Handle external actions that interact with the environment. 
 class StateMangerIndividual(StateManger): 
     agent_state = {}
+    # store the global domain that the all agents share.
+    # something like the numbers that we can use. 
     global_domain = "global_domain_temp.lp"
 
     def __init__(self, agents, global_domain, parsers):
@@ -256,7 +252,8 @@ class StateMangerIndividual(StateManger):
         
         # parsers
         self.parsers = parsers
-    
+
+    # save the setup information for each agent
     def setup(self, agent, agent_setup_info):
         super().setup(agent, agent_setup_info)
 
@@ -267,20 +264,23 @@ class StateMangerIndividual(StateManger):
             f.write(self.setup_info[agent]["initial_state"])
         self.lock.release()
 
+    # calculate the state for the entire environment
     def calculate_state(self, step=None):
         self.lock.acquire()
-        finished = False 
-        
+
+        # write the next step to the global domain 
         if not step is None:
             with open(self.global_domain, "a") as f:
                 f.write(f"time({step}).")
 
+        # while we have not finished with calculating the state of each agent
+        finished = False 
         while not finished:
             # compute individual state
             for agent in self.agents:
+                # get the message of the agent
                 message = self.messages[agent] if agent in self.messages else ""
-
-                # write the message
+                # write the message to a temporary file
                 message_temp = self.temp_file
                 with open(message_temp, "w") as f:
                     f.write(message)
@@ -293,55 +293,68 @@ class StateMangerIndividual(StateManger):
                     with open(self.setup_info[agent]["domain"], "r") as f2:
                         f.write("".join(f2.readlines()))
                 
-                # run clingo with the message, domain, and the state 
+                # run clingo with the message, domain, global domain, and the previous state 
                 files = [message_temp, domain_temp, self.agent_state[agent], self.global_domain]
                 (run_success, output) = run_clingo(files)
+                # if we succesfully compute the state, save the state to self.agent_state
                 if run_success: 
-                    # write the result
                     with open(self.agent_state[agent], "w") as f:
                         f.write("".join(output))
                 else:
                     logging.error(f"cannot calculate the state for {agent}")
                     return False
                 
-            # get individual state in global form
+            # number of atoms before and after parsing 
             atoms_num_before = 0
-            # step 1: get individual state of of each agent and convert it to global form and write it to a file
+
+            # convert the individual state of of each agent to global form 
+            # initialize the file for the global state
             env_state = "env_global_temp.lp"  
             with open(env_state, "w") as f:
                 f.write("")
+            # write the global form of the state of each agent
             for agent in self.agents:
                 temp_file = self.temp_file
                 with open(temp_file, "w") as f:
+                    # write the agent of quesetion
                     f.write(f"agent({agent}).")
+                    # parsing rule to map the individual state to the global state
                     f.write("hold_env(A, F, T) :- hold(F, T), agent(A), time(T).")
                     f.write("occur_env(A, B, T) :- occur(B, T), agent(A), time(T).")
                     f.write(f"#show hold_env/3.")
                     f.write(f"#show occur_env/3.")
-                
+
+                # map the state with:
+                # 1. the global domain
+                # 2. the individual state of the agent
+                # 3. the temporary file containing the mapping rules
                 files = [temp_file, self.agent_state[agent], self.global_domain]
                 (run_success, output) = run_clingo(files)
                 if run_success: 
-                    # write the result
+                    # if successfull:
+                    # 1: save the global state result 
                     with open(env_state, "a") as f:
                         f.write("".join(output))
+                    
+                    # get the number of atoms in the state
                     atoms = get_atoms(output)
                     atoms_num_before += len(atoms)
                 else:
                     logging.error(f"cannot filter the state for only fluents and actions {agent}")
                     return False
 
-            # DEBUG: see the condition of each state before transitioning 
-            with open(env_state, "r") as f:
-                logging.info(f"time is {step}")
-                logging.info("".join(f.readlines()))
+            # # DEBUG: see the condition of each state before transitioning 
+            # with open(env_state, "r") as f:
+            #     logging.info(f"time is {step}")
+            #     logging.info("".join(f.readlines()))
             
-            # step 2: run the parser script
-            # write all the parser scripts into one file
+            # run the parsing rules (mapping rules) 
             temp_file = self.temp_file
+            # write the show rules first
             with open(temp_file, "w") as f: 
                 f.write("#show hold_env/3.")
                 f.write("#show occur_env/3.")
+            # write all the parser scripts into one file
             for agent in self.agents:
                 with open(temp_file, "a") as f:
                     with open(self.parsers[agent], "r") as f2:
@@ -356,44 +369,55 @@ class StateMangerIndividual(StateManger):
                 with open(env_state, "w") as f:
                     f.write("".join(output))
 
+                # get the number of atoms after parsing
                 atoms = get_atoms(output)
                 atoms_num_after += len(atoms)
             else:
                 logging.error(f"there is some conflict between the states of agents")
                 return False
 
-            # step 3: distill new stuffs for each agent (if any)
+            # if the number of atoms before and after parsing is the same, nothing was added, we are done
             if atoms_num_before == atoms_num_after:
                 finished = True
                 break
-
+            
+            # error catching, if the number of atoms before is greater than the number of atoms after, error. 
             if atoms_num_before > atoms_num_after:
                 logging.error(f"something is wrong when computing env state, atoms after parsing is greater than atoms before")
                 return False
-            
-            # distill back for each agent
+
+            # here we know that there are more atoms than before. 
+            # distill new stuffs back for each agent
             for agent in self.agents:
+                # the mapping rules to map back from the environment form to individual form.
                 temp_file = self.temp_file
                 with open(temp_file, "w") as f:
+                    # the agent to distill back
                     f.write(f"agent({agent}).")
                     f.write("hold(B, T) :- hold_env(A, B, T), time(T), agent(A).")
                     f.write("occur(B, T) :- occur_env(A, B, T), time(T), agent(A).")
+                    # show only the hold and occur
                     f.write(f"#show hold/2.")
                     f.write(f"#show occur/2.")
-                # distilling 
+
+                # distill with:
+                # 1. the global domain
+                # 2. the entire environment state
+                # 3. the temporary file containing the mapping rules
                 files = [temp_file, env_state, self.global_domain]
                 (run_success, output) = run_clingo(files)
                 if run_success: 
-                    # write the result
+                    # write the result for each agent
                     with open(self.agent_state[agent], "w") as f:
                         f.write("".join(output))
-                    with open(self.agent_state[agent], "r") as f:
-                        logging.info(f"time is {step} for agent {agent}")
-                        logging.info("".join(f.readlines()))
+                    
+                    # # DEBUG: see the condition of each agent after distilling 
+                    # with open(self.agent_state[agent], "r") as f:
+                    #     logging.info(f"time is {step} for agent {agent}")
+                    #     logging.info("".join(f.readlines()))
                 else:
                     logging.error(f"cannot distill from env state to individual state")
                     return False
-
 
         # reset message buffer
         self.messages = {}

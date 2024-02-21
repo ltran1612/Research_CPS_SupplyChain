@@ -101,7 +101,7 @@ def on_message(client: mqtt.Client, userdata, msg):
 
 #
 logging.info("initial planning...")
-planner.plan([])
+planner.plan()
 logging.info("planning done.")
 
 # start the agent 
