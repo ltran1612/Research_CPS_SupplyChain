@@ -7,6 +7,9 @@ env:
 agent: 
 	python3 agent.py ${SCENARIO_FOLDER}/${ID}_config.json
 
+test:
+	python3 -m unittest tests/test_planner.py
+
 clean:
 	sh clean.sh
 

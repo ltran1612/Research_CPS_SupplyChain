@@ -6,6 +6,7 @@ import sys
 import re
 from misc import parse_clingo_output, run_clingo, run_clingo_raw, write_to_temp_file 
 from env_misc import encode_setup_data 
+import unittest
 
 class Planner:
     # initialize the planner with domain
@@ -96,12 +97,12 @@ class Planner:
         with open(self.observations, "w") as f:
             f.write(observations)
 
-    # see the plan 
+    # see the plan, including the actions and the expected state.
     def see_plan(self):
         # parse the plan from plan form back to domain form
         with open(self.temp_file, "w") as f:
             f.write(f"occur(A, T) :- occur_plan(A, T).")
-            f.write("#show occur/2.")
+            f.write(f"hold(A, T) :- hold_plan(A, T).")
         # choose the files 
         files = [self.temp_file, self.theplan]
         # run the parsing process
@@ -149,52 +150,3 @@ class Planner:
         # recursively run next_step again after replanning
         return self.next_step(target_step, observation)
 
-if __name__ == "__main__":
-    # set the logging
-    debug_handler = logging.StreamHandler(sys.stdout)
-    debug_handler.setLevel(logging.DEBUG)
-    #
-    info_handler = logging.StreamHandler(sys.stdout)
-    info_handler.setLevel(logging.INFO)
-    #
-    debug_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-    info_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-    #
-    logger = logging.getLogger()
-    logger.handlers = []
-    logger.setLevel(logging.DEBUG)
-    logger.addHandler(debug_handler)
-    logger.addHandler(info_handler)
-
-    # config file for planner
-    config = {
-        "id": "speedy_auto_part",
-        "brokerAddress": "localhost",
-        "domain": "../scenarios/oec-ver2/speedy_auto_part/domain.lp",
-        "initial_state": "../scenarios/oec-ver2/speedy_auto_part/init.lp",
-        "planner": "../scenarios/oec-ver2/speedy_auto_part/plan.lp",
-        "clause_concern_map": "../scenarios/oec-ver2/speedy_auto_part/clause-concern-map.lp",
-        "plan_checking": "../scenarios/oec-ver2/speedy_auto_part/plan_checking.lp",
-        "global_domain": "../scenarios/oec-ver2/global_domain.lp",
-        "contracts": [
-            "../scenarios/oec-ver2/contracts/carprod_autopart_contract.lp",
-            "../scenarios/oec-ver2/contracts/autopart_supplier_contract.lp"
-
-        ],
-        "contract_cps": "../scenarios/oec-ver2/cps/contract-cps.lp",
-        "cps": "../scenarios/oec-ver2/cps/cps.lp",
-        "interest": [] 
-    } # end config
-    plan = Planner(config)
-    plan.plan()
-    print("initial plan", plan.see_plan())
-
-    state = plan.get_state()
-    state += "occur(produce(vehicle_parts, 9001), 0)."
-    plan.next_step(1, state)
-    print("new plan", plan.see_plan())
-
-    # check the encoder and decoder
-    config = encode_setup_data(config) 
-    # print(config)
-    # print(decode_setup_data(config))
