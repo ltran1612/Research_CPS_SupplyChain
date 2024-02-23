@@ -108,7 +108,7 @@ not_changing(pay(Reason), T) :- not occur(pay(Reason, _), T), paying_reason(Reas
 changing(fund, T) :- occur(pay(_, _), T), time(T).
 changing(fund, T) :- occur(receive_money(_, _, _), T), time(T).
 %
-not_changing(receive_money(A, Reason), T) :- A=(Agent, TimeMark), not occur(receive_money(A, Reason, _), T), recv_agent(Agent), receiving_reason(Reason), time(T), time(TimeMark).
+not_changing(receive_money(A, Reason), T) :- hold(notification(A, payment, Reason, _), T), not occur(receive_money(A, Reason, _), T), receiving_reason(Reason), time(T).
 not_changing(receive_money(Reason), T) :- not occur(receive_money(_, Reason, _), T), receiving_reason(Reason), time(T). 
 %
 not_changing(fund, T) :- not changing(fund, T), time(T).
