@@ -27,6 +27,14 @@ class Planner:
         self.observations =  f"{self.id}_obs_temp.lp"
         self.temp_file = f"{self.id}_temp.lp" 
 
+        # initialize temp file
+        with open(self.theplan, "w") as f:
+            f.write("")
+        with open(self.observations, "w") as f:
+            f.write("")
+        with open(self.temp_file, "w") as f:
+            f.write("")
+
         # initial state
         # set the initial state
         files = [self.initial_state, self.domain]

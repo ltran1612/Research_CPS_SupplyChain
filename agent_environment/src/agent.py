@@ -80,7 +80,11 @@ def on_message(client: mqtt.Client, userdata, msg):
         observations = get_atoms([message])
         # do some reasoning
         actions = planner.next_step(upcoming_step, "".join(observations))
-        action = actions
+        if actions is None:
+            logging.info("replan failed, cannot do anything")
+            action = ""
+        else:
+            action = actions
         logging.debug(f"the next action is {action}")
         logging.info(f"the action to do in {upcoming_step} is: {action}")
         # received the state information
@@ -99,9 +103,9 @@ def on_message(client: mqtt.Client, userdata, msg):
 
 
 #
-# logging.info("initial planning...")
-# planner.plan()
-# logging.info("planning done.")
+logging.info("initial planning...")
+planner.plan()
+logging.info("planning done.")
 
 # start the agent 
 client = mqtt.Client()
