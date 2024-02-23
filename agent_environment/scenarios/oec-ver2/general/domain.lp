@@ -103,13 +103,13 @@ hold(delivered(Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Item, Qu
 
 % INERTIAL RULES
 % not changing stuffs
-not_changing(pay(Reason), T) :- not occur(pay(Reason, _), T), paying_reason(Reason), time(T).
+not_changing(pay(Reason), T) :- not occur(pay(Reason, _), T), reason(Reason), time(T).
 %
 changing(fund, T) :- occur(pay(_, _), T), time(T).
 changing(fund, T) :- occur(receive_money(_, _, _), T), time(T).
 %
 not_changing(receive_money(A, Reason), T) :- hold(notification(A, payment, Reason, _), T), not occur(receive_money(A, Reason, _), T), receiving_reason(Reason), time(T).
-not_changing(receive_money(Reason), T) :- not occur(receive_money(_, Reason, _), T), receiving_reason(Reason), time(T). 
+not_changing(receive_money(Reason), T) :- not occur(receive_money(_, Reason, _), T), reason(Reason), time(T). 
 %
 not_changing(fund, T) :- not changing(fund, T), time(T).
 
@@ -127,11 +127,11 @@ not_changing(deliver(Item, Quality), T) :- not occur(deliver(Item, _, Quality), 
 not_changing(deliver(Item, Quality), T) :- not deliver_item(Item, Quality), item(Item, Quality), time(T).
 %
 changing(receive(A, Item), T) :- occur(receive(A, Item, _), T), A=(Agent, TimeMark). 
-not_changing(receive(A, Item), T) :- A=(Agent, TimeMark), not changing(receive(A, Item), T), item(Item), time(T), recv_agent(Agent), time(TimeMark).
+not_changing(receive(A, Item), T) :- hold(notification(A, Item, _), T), not changing(receive(A, Item), T), recv_item(Item), time(T).
 not_changing(receive(Item), T) :- not changing(receive(_, Item), T), item(Item), time(T).
 %
 changing(receive(A, Item, Quality), T) :- occur(receive(A, Item, _, Quality), T), A=(Agent, TimeMark). 
-not_changing(receive(A, Item, Quality), T) :- A=(Agent, TimeMark), not changing(receive(A, Item, Quality), T), item(Item, Quality), time(T), recv_agent(Agent), time(TimeMark). 
+not_changing(receive(A, Item, Quality), T) :- hold(notification(A, Item, _, Quality), T), not changing(receive(A, Item, Quality), T), recv_item(Item, Quality), time(T). 
 not_changing(receive(Item, Quality), T) :- not changing(receive(_, Item, Quality), T), item(Item, Quality), time(T).
 %
 % item quantity not changing
@@ -139,8 +139,6 @@ not_changing(amount(Item), T) :- not_changing(produce(Item), T), not_changing(de
 not_changing(amount(Item, Quality), T) :- not_changing(produce(Item, Quality), T), not_changing(deliver(Item, Quality), T), not_changing(receive(Item, Quality), T).
 
 % pay
-hold(payment(Reason, Amount), T+1) :- hold(payment(Reason, Amount), T), not_changing(pay(Reason), T), not receiving_reason(Reason), time(T+1).
-hold(payment(Reason, Amount), T+1) :- hold(payment(Reason, Amount), T), not_changing(receive_money(Reason), T), not paying_reason(Reason), time(T+1).
 hold(payment(Reason, Amount), T+1) :- hold(payment(Reason, Amount), T), not_changing(receive_money(Reason), T), not_changing(pay(Reason), T), time(T+1).
 hold(available_funds(Amount), T+1) :- hold(available_funds(Amount), T), not_changing(fund, T), time(T+1).
 
