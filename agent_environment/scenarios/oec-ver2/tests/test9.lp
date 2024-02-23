@@ -1,8 +1,8 @@
 % test 9 - test produce + deliver
 % test state
 % expect no satisfaction
-produce_item(wood).
-deliver_item(wood).
+produce_item(wood, Quality) :- quality(Quality).
+deliver_item(wood, Quality) :- quality(Quality).
 quality(1..10).
 time(0..10).
 

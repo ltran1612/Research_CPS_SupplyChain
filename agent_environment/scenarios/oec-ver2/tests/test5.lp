@@ -4,8 +4,8 @@ time(0..10).
 hold(available_funds(0), 0).
 hold(payment(receiving_item, 0), 0).
 hold(payment(receiving_apple, 0), 0).
-recv_item(receiving_item).
-recv_item(receiving_apple).
+receiving_reason(receiving_item).
+receiving_reason(receiving_apple).
 recv_agent(0..4).
 
 % test condition

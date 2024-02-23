@@ -1,6 +1,6 @@
 % test case 15 - test planning with receive with quality.
 time(0..10).
-recv_item(apple).
+recv_item(apple, Quality) :- quality(Quality).
 recv_agent(0..2).
 quality(0..10).
 %

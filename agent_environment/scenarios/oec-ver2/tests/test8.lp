@@ -1,6 +1,6 @@
 % test 8 - test deliver 
 % test state
-deliver_item(wood).
+deliver_item(wood, Quality) :- quality(Quality).
 time(0..10).
 quality(1..10).
 hold(available_item(wood, 201, 1), 0).

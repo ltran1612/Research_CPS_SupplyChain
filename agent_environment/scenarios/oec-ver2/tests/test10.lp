@@ -2,8 +2,8 @@
 % test state
 time(0..10).
 hold(available_item(receiving_item, 0, 1), 0).
-pay_item(the_item).
-recv_item(receiving_item).
+pay_item(the_item, Quality) :- quality(Quality).
+recv_item(receiving_item, Quality) :- quality(Quality).
 quality(1..10).
 recv_agent(0..4).
 

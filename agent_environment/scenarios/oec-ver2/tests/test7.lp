@@ -1,9 +1,9 @@
 % test 7 - test produce
 % test state
 % expect no sati
-produce_item(wood).
-time(0..10).
 quality(1..2).
+produce_item(wood, Quality) :- quality(Quality).
+time(0..10).
 
 % test condition
 % test initial state
