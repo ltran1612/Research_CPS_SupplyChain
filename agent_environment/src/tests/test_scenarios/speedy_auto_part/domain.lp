@@ -1,9 +1,6 @@
 % RECEIVING FROM AGENTS
 produce_item(vehicle_parts).
 deliver_item(vehicle_parts).
-recv_item(tool_parts).
-pay_item(tool_parts).
-quality(1..5).
 recv_agent(car_producer).
 recv_agent(supplier_of_auto_part).
 % base domain for all agents

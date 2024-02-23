@@ -133,6 +133,24 @@ class Planner:
     def get_state(self):
         with open(self.observations, "r") as f:
             return "".join(f.readlines())
+    
+    # get the differences between plan and observation
+    def get_diff(self):
+        with open(self.temp_file, "w") as f:
+            f.write("target_time(T) :- hold(A, T).")
+            f.write("target_time(T) :- occur(A, T).")
+            f.write("max_time(A) :- A = #max{T: target_time(T)}.")
+            f.write("non_max_time(T) :- not max_time(T), target_time(T).") 
+            f.write("#show not_have_fluent(A) : not hold(A, T), hold_plan(A, T), target_time(T).")
+            f.write("#show not_have_action(A) : not occur(A, T), occur_plan(A, T), non_max_time(T).")
+
+        files = [self.observations, self.theplan, self.temp_file]
+        (result, output) = run_clingo(files)
+        if result:
+            return "".join(output)
+        else:
+            return None
+        
 
     # get the next step in the plan based on this current observation
     # if the observation does not match the plan, replan
@@ -147,6 +165,12 @@ class Planner:
         self.save_observations(observation)
         self.plan()
         logging.info("replanning done")
-        # recursively run next_step again after replanning
-        return self.next_step(target_step, observation)
+
+        # check it again
+        if self.observation_matches_plan(observation):
+            logging.info(f"observation matches plan, get the action for {target_step}")
+            return self.get_actions_at_step(target_step)
+        
+        # else show the differences
+        return None 
 

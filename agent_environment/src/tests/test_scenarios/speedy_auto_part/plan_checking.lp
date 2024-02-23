@@ -1,4 +1,5 @@
-hold_target_time(T) :- hold(A, T).
+target_time(T) :- hold(A, T).
+target_time(T) :- occur(A, T).
 max_time(A) :- A = #max{T: target_time(T)}.
 non_max_time(T) :- not max_time(T), target_time(T).
 
