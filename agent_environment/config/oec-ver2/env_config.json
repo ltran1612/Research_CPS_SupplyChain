@@ -1,0 +1,9 @@
+{
+    "brokerAddress": "localhost",
+    "parsers": {
+        "car_producer": "../scenarios/oec-ver2/env/car_producer_parser.lp",
+        "speedy_auto_part": "../scenarios/oec-ver2/env/speedy_auto_part_parser.lp",
+        "supplier_of_speedy_auto_part": "../scenarios/oec-ver2/env/speedy_auto_part_parser.lp"
+    },
+    "global_domain": "../scenarios/oec/global_domain.lp"
+}

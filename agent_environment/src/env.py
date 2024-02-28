@@ -1,27 +1,31 @@
+import logging, sys
 import paho.mqtt.client as mqtt
-from misc import load_config, show_config 
+
+# custom libraries
+from config import load_config, show_config 
 from threading import Thread 
 from time import sleep
-import logging
-import sys
-from env_misc import StateManger, Received
-from queue import Queue
+from env_misc import Received, StateMangerIndividual
 
 # load and display the config
-config = load_config()
+config = load_config(sys.argv)
 show_config(config)
-# parse the config
 
-agents = list(config['parsers'])
+# parse the config
+# get the parsers
+parsers = config['parsers']
+# get the list of agents
+agents = list(parsers)
+# get the file path to the global domain 
+global_domain_filepath = config["global_domain"]
 
 # initialized the received queue  
 received = Received(agents) 
-
 # step
 step = -1
 
 # set up
-state = StateManger(agents, config, config["global_domain"])
+state = StateMangerIndividual(agents, global_domain_filepath, parsers) 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -70,9 +74,10 @@ def custom_loop():
             # environment control the signal for the next step
             # increase the step
             step += 1 
-            logging.info(f"start the next step {step}")
+            logging.info(f"starting the next step {step}")
             input()
-            # send a message to each agent so they will send the action for this step
+            logging.info(f"started the next step {step}")
+            # send a message to each agent so they will send the action for previous step
             for agent in agents:
                 client.publish(f"next/{agent}", str(step), qos=2, retain=False)
 

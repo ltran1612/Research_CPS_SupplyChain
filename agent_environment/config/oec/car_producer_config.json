@@ -1,0 +1,15 @@
+{
+    "id": "car_producer",
+    "brokerAddress": "localhost",
+    "domain": "../scenarios/oec/car_producer/domain.lp",
+    "initial_state": "../scenarios/oec/car_producer/init.lp",
+    "planner": "../scenarios/oec/car_producer/plan.lp",
+    "clause_concern_map": "../scenarios/oec/car_producer/clause-concern-map.lp",
+    "plan_checking": "../scenarios/oec/car_producer/plan_checking.lp",
+    "global_domain": "../scenarios/oec/global_domain.lp",
+    "clauses": "../scenarios/oec/contracts/carprod_autopart_contract.lp",
+    "contract_cps": "../scenarios/oec/cps/contract-cps.lp",
+    "cps": "../scenarios/oec/cps/cps.lp",
+    "interest": [] 
+
+}

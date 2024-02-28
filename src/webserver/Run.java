@@ -1,16 +1,18 @@
-// the Java code to run the logic processing process
+// the Java code for the HybridCPSASP that accepts the arguments differently
+// 
+
 package webserver;
 
 import java.io.*;
-
 import asklab.cpsf.CPSReasoner;
 
 public class Run {
     private final static String SPARQL_FILE = "asklab/querypicker/dump.sparql";
 
-    // given a directory containing the ontologies, the asp file. 
-    // given the asp file path in the temporary directory
-    // given the solver
+    // preconditions:
+    // 1) given a directory containing the ontologies, the asp file. 
+    // 2) given the asp file path in the temporary directory
+    // 3) given the solver
     public static void main(String[] args) {
         Info info = new Info(args);
         System.err.println("dir path: " + info.dirPath);
@@ -29,7 +31,6 @@ public class Run {
         } // end catch
        
     } // end main
-
 } // end Run class
 
 // read file
