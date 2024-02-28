@@ -44,7 +44,7 @@ logging.debug(f"Publish to {publish_topic}")
 logging.debug(f"Subscribe to {subscribe_topic}")
 
 # The callback for when the client receives a CONNACK response from the server.
-def on_connect(client: mqtt.Client, userdata, flags, rc):
+def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
     global started
     logging.debug("Connected with result code "+str(rc))
 
@@ -108,7 +108,7 @@ planner.plan()
 logging.info("planning done.")
 
 # start the agent 
-client = mqtt.Client()
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.on_connect = on_connect
 client.on_message = on_message
 

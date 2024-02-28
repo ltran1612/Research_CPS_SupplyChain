@@ -82,3 +82,21 @@ The src folder contains the following files:
     and 
 
         python3 agent.py ../agent2_config.json
+    
+#### Run OEC
+
+1. Run environment. 
+
+    make env
+
+2. Run car producer
+
+    make ID=car_producer agent
+
+3. Run speedy auto part
+
+    make ID=speedy_auto_part agent
+
+4. Run supplier of speedy auto part. 
+
+    make ID=supplier_of_speedy_auto_part agent
