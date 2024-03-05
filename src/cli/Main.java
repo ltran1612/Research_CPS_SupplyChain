@@ -8,7 +8,7 @@ import java.util.LinkedList;
 import asklab.cpsf.CPSClingoReasoner; 
 
 public class Main {
-    private final static String SPARQL_FILE = "asklab/querypicker/dump.sparql";
+    private final static String SPARQL_FILE = "./dump.sparql";
 
     // preconditions, given the file paths to:
     // 1) ontologies.
@@ -16,7 +16,7 @@ public class Main {
     // 3) given the solver (default is Clingo)
     public static void main(String[] args) {
         Info info = new Info(args);
-        ArrayList<File> ontoFiles = null;
+        ArrayList<File> ontoFiles = new ArrayList<File>(info.aspPaths.size());
         ArrayList<File> aspFiles = new ArrayList<File>(info.aspPaths.size()); 
 
         for (String ontoPath : info.ontoPaths) {
@@ -24,7 +24,8 @@ public class Main {
                 continue;
             
             File file = new File(ontoPath);
-            ontoFiles = new ArrayList<File>(Arrays.asList(file.listFiles()));
+            ontoFiles.add(file);
+            // ontoFiles = new ArrayList<File>(Arrays.asList(file.listFiles()));
 
             if (ontoFiles.size() == 0) {
                 throw new RuntimeException("The files supplied do not exist");
@@ -33,7 +34,7 @@ public class Main {
     
         try {
             // query
-            String res = CPSClingoReasoner.query(new File(SPARQL_FILE), aspFiles, ontoFiles, "");
+            String res = CPSClingoReasoner.query(new File(SPARQL_FILE), ontoFiles, aspFiles, "");
             System.out.println(res);
             // print out the response
         } catch (IOException excp) {
@@ -83,7 +84,7 @@ class Info {
     public LinkedList<String> options = null;
 
     public Info(String[] args) {
-        if (args.length < 3) {
+        if (args.length == 0) {
             throw new RuntimeException("Not enough arguments");
         } // end if
 

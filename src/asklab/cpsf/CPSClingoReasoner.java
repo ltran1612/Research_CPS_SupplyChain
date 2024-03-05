@@ -1,21 +1,28 @@
 package asklab.cpsf;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class CPSClingoReasoner {
 	// put the path of all ontologies in a single string with space in between them 
-	private static String ontologyFileList(List<File> ontologyFileList, String prefix) throws IOException, Exception {
+	private static ArrayList<String> ontologyFileList(List<File> ontologyFileList, String prefix) throws IOException, Exception {
 		// get a list  of files in the ontology folder
-		File[] ontologyFiles = (File[]) ontologyFileList.toArray();
+		Object[] ontologyFiles = (Object[]) ontologyFileList.toArray();
 		// sort the list
 		Arrays.sort(ontologyFiles);
 
-		String list = "";
+		ArrayList<String> list = new ArrayList<String>(ontologyFiles.length);
 		// for each file in the folder
-		for (File f : ontologyFiles) {
+		for (Object object : ontologyFiles) {
+			File f = (File) object;
 			String filePath = f.toString();
 
 			// check if the file is an ontology file
@@ -40,17 +47,19 @@ public class CPSClingoReasoner {
 			} // end if
 				
 			// append it to the final result with a space
-			list += prefix + filePath+ " ";
+			list.add(prefix + filePath);
 		} // end for file
 
 		return (list);
 	} // end ontologyFileList
 	
 	public static String ontologyToASP(File sparqlQueryFile, List<File> ontologyFiles) throws IOException, Exception {
-		String tmpFileSPARQL = "./tmpfile.sparql";
 		// query the ontologies with the SPARQL query.
-		String arguments = ontologyFileList(ontologyFiles, "--data=").replace("\\", "/");
-		String cmd = jenaCmd(tmpFileSPARQL, arguments);
+		List<String> arguments = ontologyFileList(ontologyFiles, "--data=");
+		arguments = arguments.stream().map(
+			(String argument) -> argument.replace("\\", "/").trim()
+		).collect(Collectors.toList());
+		String[] cmd = jenaCmd(sparqlQueryFile.getAbsolutePath(), arguments);
 		Vector<String> lines = runCmdRaw(cmd);
 		/* map jena's output to ASP facts */
 		String aspProg = jenaToASP(lines);
@@ -59,29 +68,31 @@ public class CPSClingoReasoner {
 
 	public static String runClingo(List<File> aspFiles, String clingoOptions) throws Exception {
 		// TODO: 
-		String out = runCmd(clingoCmd(""));
+		// String out = runCmd(clingoCmd(""));
+		String out = "";
 		return out;
 	} // end asp
 
 	// query the CPS + Ontology
 	public static String query(File sparqlQueryFile, List<File> ontologyFiles, List<File> aspFiles, String clingoOptions) throws IOException {
 		// name of the temporary file for sparql
-		String tmpFile= "./tmpfileASP.sparql";
+		Path tmpFile= Files.createTempFile("", ".lp");
+		tmpFile.toFile().deleteOnExit();
 		String res = "";
-		writeToFile(tmpFile, "");
 
 		try {
 // STEP 1			
 			String aspProg = "";
-			if (ontologyFiles != null) {
+			if (ontologyFiles.size() != 0) {
 				aspProg = ontologyToASP(sparqlQueryFile, ontologyFiles);
-				writeToFile(tmpFile, aspProg);
+				res = aspProg;
+				writeToFile(tmpFile.toFile().getAbsolutePath(), aspProg);
 			} // end if
 			// write this to a temp file
 // STEP 2
 			// write the completed ASP program to the temp file
-			if (aspFiles != null) {
-				aspFiles.add(new File(tmpFile));
+			if (aspFiles.size() != 0) {
+				aspFiles.add(tmpFile.toFile());
 				res = runClingo(aspFiles, clingoOptions);
 			} // end if
 		} catch (Exception x) {
@@ -93,12 +104,15 @@ public class CPSClingoReasoner {
 	} // end query
 
 	// get the package path that is stored in this same module/package	
-	static String pkgPath(String p) {
-		if (CPSReasoner.class.getResource(p) == null) {
-			System.err.println("ERROR: path does not exist: " + p);
-			return ("");
+	static void copyResourceFromClassFolderToFile(String inFilePath, Path outFilePath) {
+		if (CPSClingoReasoner.class.getResource(inFilePath) == null) {
+			throw new RuntimeException("Path does not exist");
 		} // end if
-		return (CPSReasoner.class.getResource(p).getPath());
+		try (InputStream in = CPSClingoReasoner.class.getResourceAsStream(inFilePath)) {
+			Files.copy(in, outFilePath,StandardCopyOption.REPLACE_EXISTING);
+		} catch(IOException exception) {
+			throw new RuntimeException(exception.getMessage());
+		}
 	} // get the path to a package
 
 	// write a string to a file
@@ -110,9 +124,8 @@ public class CPSClingoReasoner {
 
 	// convert jena output to ASP
 	static String jenaToASP(Vector<String> in) {
-		String aspProg;
+		String aspProg = "";
 
-		aspProg = "";
 		for (int i = 3; /* first 4 lines are headers */
 				i < in.size() - 1; /* last line is footer */
 				i++) {
@@ -140,18 +153,16 @@ public class CPSClingoReasoner {
 	} // end jenaToASP
 
 	// run a command with no data
-	static Vector<String> runCmdRaw(String cmd) throws IOException {
+	static Vector<String> runCmdRaw(String[] cmd) throws IOException {
 		return (runCmdRaw(cmd, null));
 	} // end runCmdRaw
 
 	// run a command with data
-	static Vector<String> runCmdRaw(String cmd, String inData) throws IOException {
+	static Vector<String> runCmdRaw(String[] cmdParts, String inData) throws IOException {
 		Runtime r = Runtime.getRuntime();
 
-		//System.out.println("Executing: " + cmd);
 		// execute the command
-		// TODO: Fix this with proper method
-		Process p = r.exec(cmd);
+		Process p = r.exec(cmdParts);
 
 		Thread outputFiller = null;
 		if (inData != null) {
@@ -164,10 +175,11 @@ public class CPSClingoReasoner {
 
 		/* retrieve the output */
 		Vector<String> res = new Vector<String>();
+		Vector<String> error = new Vector<String>();
 		try {
 			ReadStream s1, s2;
 			s1 = new ReadStream("stdout", p.getInputStream(), res, false);
-			s2 = new ReadStream("stderr", p.getErrorStream(), res, true);
+			s2 = new ReadStream("stderr", p.getErrorStream(), error, false);
 			s1.start();
 			s2.start();
 			p.waitFor();
@@ -182,16 +194,20 @@ public class CPSClingoReasoner {
 				p.destroy();
 		} // end finally
 
+		if (res.isEmpty() && !error.isEmpty()) {
+			throw new RuntimeException(error.stream().collect(Collectors.joining((""))));
+		} // end if
+
 		return (res);
 	} // end runCmdRaw
 
 	// run a command with no data
-	static String runCmd(String cmd) throws IOException {
+	static String runCmd(String[] cmd) throws IOException {
 		return (runCmd(cmd, null));
 	}  // end runCmd
 
 	// run a command with data
-	static String runCmd(String cmd, String inData) throws IOException {
+	static String runCmd(String[] cmd, String inData) throws IOException {
 		String res;
 
 		res = "";
@@ -202,36 +218,30 @@ public class CPSClingoReasoner {
 	} // end runCmd
 
 	// get a command to run a jena on the ontology files with a query 
-	static String jenaCmd(String queryFile, String ontologies) throws IOException {
-		// get the path to jena folder
-		String cmd = pkgPath("");
-
-		// add the command to run jena
-		if (isWindows())
-			cmd += "runjena.bat";
-		else
-			cmd += "./runjena.sh";
+	static String[] jenaCmd(String queryFile, List<String> ontologies) throws IOException {
+		ArrayList<String> cmdParts = new ArrayList<String>();
+		// add the command to run sparql 
+		cmdParts.add("sparql");
 
 		// pass in the query file in the cmd
-		cmd += " --file=" + queryFile;
+		cmdParts.add("--file=" + queryFile.trim()); 
 
 		// pass in the ontologies files to the cmd
-		cmd += " ";
-		cmd += ontologies; 
+		cmdParts.addAll(ontologies); 
 
 		// set the result of jena
-		cmd += "--results=text ";
+		cmdParts.add("--results=text");
 
-		return (cmd);
+		return cmdParts.toArray(new String[0]);
 	} // end jenaCmd
 
 	// get a command to run clingo on a particular asp file
 	static String clingoCmd(String arguments) {
-		String cmd;
+		String cmd = "";
 
 		// cmd="./clingo-4.4.0/";
 		// get the path to clingo folder
-		cmd = pkgPath("clingo-4.4.0/");
+		// cmd = pkgPath("clingo-4.4.0/");
 
 		// choose the right executable
 		if (isWindows())
