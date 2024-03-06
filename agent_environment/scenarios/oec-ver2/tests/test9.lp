@@ -3,6 +3,7 @@
 % expect no satisfaction
 produce_item(wood, Quality) :- quality(Quality).
 deliver_item(wood, Quality) :- quality(Quality).
+deliver_agent(agent1, wood).
 quality(1..10).
 time(0..10).
 
@@ -16,7 +17,7 @@ occur(produce(wood, 100, 1), 1).
 :- not hold(available_item(wood, 100, 1), 2). 
 :- not hold(produced(wood, 100, 1), 2). 
 %
-occur(deliver(wood, 100, 1), 2).
+occur(deliver(agent1, wood, 100, 1), 2).
 :- not hold(available_item(wood, 100, 1), 2). 
 :- not hold(available_item(wood, 0, 1), 3). 
 :- not hold(delivered(wood, 0, 1), 2). 

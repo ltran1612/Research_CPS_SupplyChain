@@ -3,6 +3,7 @@
 % expect no sati
 produce_item(wood).
 deliver_item(wood).
+deliver_agent(agent1, wood).
 time(0..10).
 
 % test condition
@@ -17,7 +18,7 @@ occur(produce(wood, 100), 1).
 :- hold(produced(wood, 0), 2). 
 :- not hold(delivered(wood, 0), 2). 
 %
-occur(deliver(wood, 100), 2).
+occur(deliver(agent1, wood, 100), 2).
 :- not hold(available_item(wood, 100), 2). 
 :- not hold(available_item(wood, 0), 3). 
 :- not hold(delivered(wood, 0), 2). 

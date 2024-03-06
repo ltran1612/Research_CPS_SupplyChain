@@ -2,6 +2,7 @@
 time(0..10).
 produce_item(apple).
 deliver_item(apple).
+deliver_agent(agent1, apple).
 number(500).
 :- not hold(available_item(apple, 500), 2). 
 :- not hold(delivered(apple, 500), 3). 

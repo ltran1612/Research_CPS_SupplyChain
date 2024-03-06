@@ -10,7 +10,8 @@
 % 5) item(Item): 0 or more, any items that we want to store in the inventory as an agent.
 % 6) recv_item(Item[,Quality]): 0 or more, any items that we receive from other agents with optional quality.
 % 7) recv_agent(Agent): 0 or more, any agents that we receive items from.
-% 8) time(Time): 0 or more, any time that we want to use in the domain. Time has to be able to be advanced by arithmetic +1 in Clingo.
+% 8) deliver_agent(Agent, Item): 0 or more, any agents that we deliver with item.
+% 9) time(Time): 0 or more, any time that we want to use in the domain. Time has to be able to be advanced by arithmetic +1 in Clingo.
 % And any other predicates or laws that are used along with the above, like quality(Quality), and executability laws for produce.
 % By default, any pay, deliver, or produce items are an item.
 % examples:
@@ -58,6 +59,10 @@ fluent(notification((Agent, Time), Item, Amount)) :- number(Amount), recv_agent(
 fluent(notification((Agent, Time), Item, Amount, Quality)) :- number(Amount), recv_agent(Agent), time(Time), recv_item(Item, Quality).
 fluent(notification((Agent, Time), payment, Reason, Amount)) :- number(Amount), recv_agent(Agent), time(Time), receiving_reason(Reason).
 
+% CONSTRAINTS ABOUT AGENT AND ITEMS
+:- deliver_agent(Agent, Item), not deliver_item(Item), not deliver_item(Item, _).
+:- deliver_item(Item), deliver_item(Item, _).
+
 % ACTIONS
 action(pay(Reason, Amount)) :- number(Amount), paying_reason(Reason). 
 action(receive_money((Agent, Time), Reason, Amount)) :- number(Amount), receiving_reason(Reason), time(Time), recv_agent(Agent). 
@@ -65,8 +70,8 @@ action(receive((Agent, Time), Item, Amount)) :- recv_item(Item), number(Amount),
 action(receive((Agent, Time), Item, Amount, Quality)) :- recv_item(Item, Quality), number(Amount), quality(Quality), time(Time), recv_agent(Agent). 
 action(produce(Item, Amount)) :- produce_item(Item), number(Amount).
 action(produce(Item, Amount, Quality)) :- produce_item(Item, Quality), number(Amount).
-action(deliver(Item, Amount)) :- deliver_item(Item), number(Amount).
-action(deliver(Item, Amount, Quality)) :- deliver_item(Item, Quality), number(Amount).
+action(deliver(Agent, Item, Amount)) :- deliver_agent(Agent, Item), number(Amount).
+action(deliver(Agent, Item, Amount, Quality)) :- deliver_agent(Agent, Item), deliver_item(Item, Quality), number(Amount).
 
 % DYNAMIC LAWS
 % payment
@@ -89,15 +94,19 @@ hold(produced(Item, Amount + OldAmount), T+1) :- produce_item(Item), hold(produc
 hold(produced(Item, Amount + OldAmount, Quality), T+1) :- produce_item(Item, Quality), hold(produced(Item, OldAmount, Quality), T), occur(produce(Item, Amount, Quality), T), time(T+1). 
 
 % deliver available_item
-hold(available_item(Item, OldAmount - Amount), T+1) :- deliver_item(Item), hold(available_item(Item, OldAmount), T), OldAmount >= Amount, occur(deliver(Item, Amount), T), time(T+1).  
-hold(available_item(Item, OldAmount - Amount, Quality), T+1) :- deliver_item(Item, Quality), hold(available_item(Item, OldAmount, Quality), T), OldAmount >= Amount, occur(deliver(Item, Amount, Quality), T), time(T+1). 
-hold(delivered(Item, Amount + OldAmount), T+1) :- deliver_item(Item), hold(delivered(Item, OldAmount), T), occur(deliver(Item, Amount), T), time(T+1). 
-hold(delivered(Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Item, Quality), hold(delivered(Item, OldAmount, Quality), T), occur(deliver(Item, Amount, Quality), T), time(T+1). 
+hold(available_item(Item, OldAmount - Amount), T+1) :- deliver_agent(Agent, Item), hold(available_item(Item, OldAmount), T), OldAmount >= Amount, occur(deliver(Agent, Item, Amount), T), time(T+1).  
+hold(available_item(Item, OldAmount - Amount, Quality), T+1) :- deliver_agent(Agent, Item), deliver_item(Item, Quality), hold(available_item(Item, OldAmount, Quality), T), OldAmount >= Amount, occur(deliver(Agent, Item, Amount, Quality), T), time(T+1). 
+hold(delivered(Item, Amount + OldAmount), T+1) :- deliver_item(Item), hold(delivered(Item, OldAmount), T), occur(deliver(_, Item, Amount), T), time(T+1). 
+hold(delivered(Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Item, Quality), hold(delivered(Item, OldAmount, Quality), T), occur(deliver(_, Item, Amount, Quality), T), time(T+1). 
 
 % EXECUTABILITY LAWS
 :- occur(pay(Reason, Amount), T), paying_reason(Reason), hold(available_funds(Fund), T), not Fund >= Amount.
-:- occur(deliver(Item, Amount), T), deliver_item(Item), hold(available_item(Item, CurrentAmount), T), deliver_item(Item), not CurrentAmount >= Amount.
-:- occur(deliver(Item, Amount, Quality), T), deliver_item(Item, Quality), hold(available_item(Item, CurrentAmount, Quality), T), deliver_item(Item, Quality), not CurrentAmount >= Amount.
+:- occur(deliver(_, Item, Amount), T), deliver_item(Item), hold(available_item(Item, CurrentAmount), T), deliver_item(Item), not CurrentAmount >= Amount.
+:- occur(deliver(_, Item, Amount, Quality), T), deliver_item(Item, Quality), hold(available_item(Item, CurrentAmount, Quality), T), deliver_item(Item, Quality), not CurrentAmount >= Amount.
+:- occur(deliver(Agent, Item, Amount), T), deliver_item(Item), not deliver_agent(Agent, Item).
+:- occur(deliver(Agent, Item, Amount, Quality), T), deliver_item(Item, Quality), not deliver_agent(Agent, Item).
+:- occur(deliver(Agent, Item, Amount), T), deliver_agent(Agent, Item), not deliver_item(Item).
+:- occur(deliver(Agent, Item, Amount, Quality), T), deliver_agent(Agent, Item), not deliver_item(Item, Quality).
 :- occur(receive((Agent, TimeMark), Item, Amount), T), recv_item(Item), not hold(notification((Agent, TimeMark), Item, Amount), T). 
 :- occur(receive((Agent, TimeMark), Item, Amount, Quality), T), recv_item(Item, Quality), not hold(notification((Agent, TimeMark), Item, Amount, Quality), T). 
 :- occur(receive_money(A, Reason, Amount), T), receiving_reason(Reason), not hold(notification(A, payment, Reason, Amount), T), A=(Agent, TimeMark). 
@@ -105,7 +114,7 @@ hold(delivered(Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Item, Qu
 % STATIC CASUAL LAWS
 
 % INERTIAL RULES
-% not changing stuffs
+% auxiliary atoms to determine whether a fluent is changing or not
 not_changing(pay(Reason), T) :- not occur(pay(Reason, _), T), reason(Reason), time(T).
 %
 changing(fund, T) :- occur(pay(_, _), T), time(T).
@@ -123,10 +132,10 @@ not_changing(produce(Item), T) :- not produce_item(Item), item(Item), time(T).
 not_changing(produce(Item, Quality), T) :- not occur(produce(Item, _, Quality), T), produce_item(Item, Quality), time(T).
 not_changing(produce(Item, Quality), T) :- not produce_item(Item, Quality), item(Item, Quality), time(T).
 %
-not_changing(deliver(Item), T) :- not occur(deliver(Item, _), T), deliver_item(Item), time(T).
+not_changing(deliver(Item), T) :- not occur(deliver(_, Item, _), T), deliver_item(Item), time(T).
 not_changing(deliver(Item), T) :- not deliver_item(Item), item(Item), time(T).
 %
-not_changing(deliver(Item, Quality), T) :- not occur(deliver(Item, _, Quality), T), deliver_item(Item, Quality), time(T).
+not_changing(deliver(Item, Quality), T) :- not occur(deliver(_, Item, _, Quality), T), deliver_item(Item, Quality), time(T).
 not_changing(deliver(Item, Quality), T) :- not deliver_item(Item, Quality), item(Item, Quality), time(T).
 %
 changing(receive(A, Item), T) :- occur(receive(A, Item, _), T), A=(Agent, TimeMark). 
