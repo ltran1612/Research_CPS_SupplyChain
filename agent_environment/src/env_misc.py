@@ -286,6 +286,7 @@ class StateMangerIndividual(StateManger):
             with open(self.temp_file, "w") as f:
                 f.write(self.actions[agent])
                 f.write(f"agent_env({agent}).")
+                f.write(f"current_env_time({step}).")
                 f.write("occur_env(Ag, A, T) :- occur(A, T), agent_env(Ag).")
                 f.write("hold_env(Ag, A, T) :- hold(A, T), agent_env(Ag).")
                 f.write("#show occur_env/3.")
@@ -302,8 +303,8 @@ class StateMangerIndividual(StateManger):
         # write the global actions to a file 
         with open(self.temp_file, "w") as f:
             f.write("#show occur_env_success/3.")
-            f.write(f"current_time_env({step}).")
-            f.write(f":- occur_env_success(Ag, A, T), not current_time_env(T).")
+            f.write(f"current_env_time({step}).")
+            f.write(f":- occur_env_success(Ag, A, T), not current_env_time(T).")
 
         files = [self.temp_file, self.temp_file2, self.actions_success_rules]
         (run_success, output) = run_clingo(files)
@@ -319,8 +320,8 @@ class StateMangerIndividual(StateManger):
             with open(self.temp_file, "w") as f:
                 f.write(succeeded_actions)
                 f.write(f"agent_env({agent}).")
-                f.write(f"current_time_env({step}).")
-                f.write(f"occur(A, T) :- occur_env_success(Ag, A, T), agent_env(Ag), current_time_env({step}).")
+                f.write(f"current_env_time({step}).")
+                f.write(f"occur(A, T) :- occur_env_success(Ag, A, T), agent_env(Ag), current_env_time({step}).")
                 f.write(f"#show occur/2.")
 
             files = [self.temp_file]
@@ -391,7 +392,7 @@ class StateMangerIndividual(StateManger):
             atoms_num_after = 0
             # write the show rules first
             with open(self.temp_file, "w") as f: 
-                f.write(f"current_time_env({step}).")
+                f.write(f"current_env_time({step}).")
                 f.write("#show hold_env/3.")
                 f.write("#show occur_env/3.")
             # write all the parser scripts into one file
