@@ -12,4 +12,4 @@ def success(a):
         return N(1)
     return N(0)
 #end.
-occur_env_success(Ag, A, T) :- occur_env(Ag, A, T), current_time_env(T), 1==@success(A).
+occur_env_attempt_success(Ag, A, T) :- occur_env_attempt(Ag, A, T), 1==@success(A).

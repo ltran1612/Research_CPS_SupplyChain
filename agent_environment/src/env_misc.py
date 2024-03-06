@@ -287,9 +287,11 @@ class StateMangerIndividual(StateManger):
                 f.write(self.actions[agent])
                 f.write(f"agent_env({agent}).")
                 f.write(f"current_env_time({step}).")
-                f.write("occur_env(Ag, A, T) :- occur(A, T), agent_env(Ag).")
+                f.write("occur_env(Ag, A, T) :- occur(A, T), agent_env(Ag), not current_env_time(T).")
+                f.write("occur_env_attempt(Ag, A, T) :- occur(A, T), agent_env(Ag), current_env_time(T).")
                 f.write("hold_env(Ag, A, T) :- hold(A, T), agent_env(Ag).")
                 f.write("#show occur_env/3.")
+                f.write("#show occur_env_attempt/3.")
                 f.write("#show hold_env/3.")
             
             # run clingo with only temp file
@@ -302,9 +304,8 @@ class StateMangerIndividual(StateManger):
 
         # write the global actions to a file 
         with open(self.temp_file, "w") as f:
-            f.write("#show occur_env_success/3.")
+            f.write("#show occur_env_attempt_success/3.")
             f.write(f"current_env_time({step}).")
-            f.write(f":- occur_env_success(Ag, A, T), not current_env_time(T).")
 
         files = [self.temp_file, self.temp_file2, self.actions_success_rules]
         (run_success, output) = run_clingo(files)
@@ -321,7 +322,7 @@ class StateMangerIndividual(StateManger):
                 f.write(succeeded_actions)
                 f.write(f"agent_env({agent}).")
                 f.write(f"current_env_time({step}).")
-                f.write(f"occur(A, T) :- occur_env_success(Ag, A, T), agent_env(Ag), current_env_time({step}).")
+                f.write(f"occur(A, T) :- occur_env_attempt_success(Ag, A, T), agent_env(Ag), current_env_time({step}).")
                 f.write(f"#show occur/2.")
 
             files = [self.temp_file]
@@ -330,11 +331,14 @@ class StateMangerIndividual(StateManger):
                 raise Exception(f"cannot get the succeeded actions for {agent} at step {step} with error {''.join(output)}")
 
             executed_action = "".join(output)
-            answer = input(f"Do not let action {attempted_action} to be executed (yes='y'/no=other answer):")
-            if answer == "y":
-                executed_action = "" 
+            answer = input(f"Allow the action {attempted_action} to be executed fully (yes='y'/no='n'/decide with the specified rules=other answers):")
             if attempted_action != "":
                 result = "but failed"
+                if answer == "y":
+                    executed_action = attempted_action 
+                elif answer == "n": 
+                    executed_action = "" 
+
                 if executed_action != "":
                     result = f"the action executed is {executed_action}" 
                 if executed_action == attempted_action:

@@ -1,6 +1,6 @@
 {
     "brokerAddress": "localhost",
-    "agents": ["car_producer"], 
+    "agents": ["car_producer", "speedy_auto_part", "supplier_of_speedy_auto_part"], 
     "global_state_rules": "../scenarios/oec-ver2/env/global_state_rules.lp",
     "actions_success_rules": "../scenarios/oec-ver2/env/actions_success_rules.lp",
     "global_domain": "../scenarios/oec-ver2/global_domain.lp"
