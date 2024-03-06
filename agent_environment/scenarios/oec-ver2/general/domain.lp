@@ -3,10 +3,10 @@
 % need to supply the following predicates:
 % 1) produce_item(Item[, Quality]): 1 or more with optional quality.
 % 2) deliver_item(Item)[, Quality]): 1 or more with optional quality.
-% 3) pay_item(Item)[, Quality]): 1 or more, items that we make payment with optional quality.
+% 3) pay_item(Agent, Item)[, Quality]): 1 or more, items that we make payment with optional quality.
 % 4) reason(Reason): 0 or more, any reason for payment either receiving payment or make payments. 
 %   a) receiving_reason(Reason): 0 or more, any reason for receiving payment. deliver_item(Item) will lead to a receiving_reason.
-%   b) paying_reason(Reason): 0 or more, if the reason for paying is an item, put it in pay_item instead. 
+%   b) paying_reason(Agent, Reason): 0 or more, if the reason for paying is an item, put it in pay_item instead. 
 % 5) item(Item): 0 or more, any items that we want to store in the inventory as an agent.
 % 6) recv_item(Item[,Quality]): 0 or more, any items that we receive from other agents with optional quality.
 % 7) recv_agent(Agent): 0 or more, any agents that we receive items from.
@@ -17,7 +17,7 @@
 % examples:
 % produce_item(wood) or produce_item(wood, 1) or produce_item(wood, Quality) :- quality(1..3).
 % deliver_item(wood) or deliver_item(wood, 1).
-% pay_item(saw) or pay_item(saw, 1).
+% pay_item(agent1, saw) or pay_item(agent1, saw, 1).
 % Assumptions: only one action occurs at a time, and the time is discrete.
 
 % RECEIVING FROM AGENTS
@@ -27,8 +27,8 @@ item(Item) :- deliver_item(Item).
 item(Item, Quality) :- deliver_item(Item, Quality).
 item(Item) :- produce_item(Item).
 item(Item, Quality) :- produce_item(Item, Quality).
-item(Item) :- pay_item(Item). 
-item(Item, Quality) :- pay_item(Item, Quality). 
+item(Item) :- pay_item(_, Item). 
+item(Item, Quality) :- pay_item(_, Item, Quality). 
 item(Item) :- recv_item(Item). 
 item(Item, Quality) :- recv_item(Item, Quality). 
 general_item(Item) :- item(Item).
@@ -36,10 +36,10 @@ general_item(Item) :- item(Item, Quality).
 
 % REASONS FOR RECEIPT 
 % payment reason for paying to others
-paying_reason(Item) :- pay_item(Item). 
-paying_reason(Item) :- pay_item(Item, Quality). 
+paying_reason(Agent, Item) :- pay_item(Agent, Item). 
+paying_reason(Agent, Item) :- pay_item(Agent, Item, Quality). 
 %
-reason(Reason) :- paying_reason(Reason).
+reason(Reason) :- paying_reason(_, Reason).
 % When we deliver items, we typically want payment for it, so it's part of the reason for payment. 
 receiving_reason(delivery(Item)) :- deliver_item(Item).
 receiving_reason(delivery(Item)) :- deliver_item(Item, Quality).
@@ -64,7 +64,7 @@ fluent(notification((Agent, Time), payment, Reason, Amount)) :- number(Amount), 
 :- deliver_item(Item), deliver_item(Item, _).
 
 % ACTIONS
-action(pay(Reason, Amount)) :- number(Amount), paying_reason(Reason). 
+action(pay(Agent, Reason, Amount)) :- number(Amount), paying_reason(Agent, Reason). 
 action(receive_money((Agent, Time), Reason, Amount)) :- number(Amount), receiving_reason(Reason), time(Time), recv_agent(Agent). 
 action(receive((Agent, Time), Item, Amount)) :- recv_item(Item), number(Amount), time(Time), recv_agent(Agent). 
 action(receive((Agent, Time), Item, Amount, Quality)) :- recv_item(Item, Quality), number(Amount), quality(Quality), time(Time), recv_agent(Agent). 
@@ -75,12 +75,12 @@ action(deliver(Agent, Item, Amount, Quality)) :- deliver_agent(Agent, Item), del
 
 % DYNAMIC LAWS
 % payment
-hold(payment(Reason, Amount + OldAmount), T+1) :- hold(payment(Reason, OldAmount), T), occur(pay(Reason, Amount), T), time(T+1).
+hold(payment(Reason, Amount + OldAmount), T+1) :- hold(payment(Reason, OldAmount), T), occur(pay(_, Reason, Amount), T), time(T+1).
 % 
 hold(payment(Reason, OldAmount + Amount), T+1) :- hold(payment(Reason, OldAmount), T), occur(receive_money(_, Reason, Amount), T), time(T+1). 
 
 % available_funds
-hold(available_funds(OldAmount - Amount), T+1) :- hold(available_funds(OldAmount), T), OldAmount >= Amount, occur(pay(Reason, Amount), T), time(T+1). 
+hold(available_funds(OldAmount - Amount), T+1) :- hold(available_funds(OldAmount), T), OldAmount >= Amount, occur(pay(_, Reason, Amount), T), time(T+1). 
 hold(available_funds(OldAmount + Amount), T+1) :- hold(available_funds(OldAmount), T), occur(receive_money(_, Reason, Amount), T), time(T+1). 
 
 % receive items 
@@ -100,7 +100,7 @@ hold(delivered(Item, Amount + OldAmount), T+1) :- deliver_item(Item), hold(deliv
 hold(delivered(Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Item, Quality), hold(delivered(Item, OldAmount, Quality), T), occur(deliver(_, Item, Amount, Quality), T), time(T+1). 
 
 % EXECUTABILITY LAWS
-:- occur(pay(Reason, Amount), T), paying_reason(Reason), hold(available_funds(Fund), T), not Fund >= Amount.
+:- occur(pay(Agent, Reason, Amount), T), paying_reason(Agent, Reason), hold(available_funds(Fund), T), not Fund >= Amount.
 :- occur(deliver(_, Item, Amount), T), deliver_item(Item), hold(available_item(Item, CurrentAmount), T), deliver_item(Item), not CurrentAmount >= Amount.
 :- occur(deliver(_, Item, Amount, Quality), T), deliver_item(Item, Quality), hold(available_item(Item, CurrentAmount, Quality), T), deliver_item(Item, Quality), not CurrentAmount >= Amount.
 :- occur(deliver(Agent, Item, Amount), T), deliver_item(Item), not deliver_agent(Agent, Item).
@@ -115,9 +115,9 @@ hold(delivered(Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Item, Qu
 
 % INERTIAL RULES
 % auxiliary atoms to determine whether a fluent is changing or not
-not_changing(pay(Reason), T) :- not occur(pay(Reason, _), T), reason(Reason), time(T).
+not_changing(pay(Reason), T) :- not occur(pay(_, Reason, _), T), reason(Reason), time(T).
 %
-changing(fund, T) :- occur(pay(_, _), T), time(T).
+changing(fund, T) :- occur(pay(_, _, _), T), time(T).
 changing(fund, T) :- occur(receive_money(_, _, _), T), time(T).
 %
 not_changing(receive_money(A, Reason), T) :- hold(notification(A, payment, Reason, _), T), not occur(receive_money(A, Reason, _), T), receiving_reason(Reason), time(T).
