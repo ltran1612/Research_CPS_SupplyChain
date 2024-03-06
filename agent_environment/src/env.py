@@ -12,10 +12,11 @@ config = load_config(sys.argv)
 show_config(config)
 
 # parse the config
+actions_success_rules = config['actions_success_rules']
 # get the parsers
-parsers = config['parsers']
+global_state_rules = config['global_state_rules']
 # get the list of agents
-agents = list(parsers)
+agents = config['agents']
 # get the file path to the global domain 
 global_domain_filepath = config["global_domain"]
 
@@ -25,7 +26,7 @@ received = Received(agents)
 step = -1
 
 # set up
-state = StateMangerIndividual(agents, global_domain_filepath, parsers) 
+state = StateMangerIndividual(agents, global_domain_filepath, actions_success_rules, global_state_rules) 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -48,7 +49,7 @@ def on_message(client: mqtt.Client, userdata, msg):
         logging.error(e)
 
     if topic == f"env/{agent}":
-        logging.info(f"received from {agent}")
+        logging.info(f"received from {agent} for time {step}")
         if not state.is_setup():
             state.setup(agent, message)
             return
@@ -95,7 +96,7 @@ def custom_loop():
             for agent in agents:
                 # take the message from the agent that concerns this agent.
                 client.publish(f"for/{agent}", state.get_state(agent), qos=2)
-                logging.info(f"sent state information to {agent}")
+                logging.info(f"sent state information to {agent} for time {step}")
 
         # sleep for 1 second
         sleep(1)

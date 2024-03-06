@@ -1,9 +1,7 @@
 {
     "brokerAddress": "localhost",
-    "parsers": {
-        "car_producer": "../scenarios/oec-ver2/env/car_producer_parser.lp",
-        "speedy_auto_part": "../scenarios/oec-ver2/env/speedy_auto_part_parser.lp",
-        "supplier_of_speedy_auto_part": "../scenarios/oec-ver2/env/speedy_auto_part_parser.lp"
-    },
-    "global_domain": "../scenarios/oec/global_domain.lp"
+    "agents": ["car_producer"], 
+    "global_state_rules": "../scenarios/oec-ver2/env/global_state_rules.lp",
+    "actions_success_rules": "../scenarios/oec-ver2/env/actions_success_rules.lp",
+    "global_domain": "../scenarios/oec-ver2/global_domain.lp"
 }
