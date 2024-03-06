@@ -22,10 +22,13 @@ def run_clingo(files: list, flags=["-V0", "--out-atom=%s."]):
     parsed_message = parsed_message.strip()
     # parse the lines
     lines = parsed_message.split("\n")
-    status = lines.pop(-1)
-    if "UNSATISFIABLE" == status: 
+    return_code = result.returncode
+    if return_code != 10 and return_code != 30: 
+        error = result.stderr.decode("utf-8")
+        if error != "":
+            lines.append(error)
         return (False, lines)
-
+    lines.pop(-1)
     return (True, lines)
 
 # parse the output of running clingo on subprocess to get the list of atoms in the answer set 
@@ -67,4 +70,6 @@ def write_to_temp_file(filename: str, message:str):
 if __name__ == "__main__":
     print(parse_clingo_output("test(1). \nOPTIMUM FOUND"))
     print(parse_clingo_output("test(2). test(1). \nOPTIMUM FOUND"))
+    output = run_clingo(["env_temp.lp", "../scenarios/oec-ver2/env/actions_success_rules.lp"])
+    print(output)
     

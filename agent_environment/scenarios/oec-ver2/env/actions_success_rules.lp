@@ -1,5 +1,6 @@
 #script (python)
 import random
+import clingo
 
 N = clingo.Number
 F = clingo.Function
@@ -7,12 +8,6 @@ def outcome(a):
     return N(a.number - random.randint(0, 100))
 
 def success(a):
-    answer = input(f"determine the success of {a.name}(y/n):")
-    if answer == "y":
-        return N(1)
-    elif answer == "n":
-        return N(0)
-    
     if random.randint(0, 100) > 50:
         return N(1)
     return N(0)

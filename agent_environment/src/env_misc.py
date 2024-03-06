@@ -306,11 +306,14 @@ class StateMangerIndividual(StateManger):
         files = [self.temp_file, self.temp_file2, self.actions_success_rules]
         (run_success, output) = run_clingo(files)
         if not run_success:
-            raise Exception(f"cannot emulate the global actions success at step {step}")
+            raise Exception(f"cannot emulate the global actions success at step {step} with error {''.join(output)}")
         succeeded_actions = "".join(output)
 
         # get the actions that are successful back to each agent
         for agent in self.agents:
+            attempted_action = self.actions[agent] 
+            if attempted_action == "":
+                continue
             with open(self.temp_file, "w") as f:
                 f.write(succeeded_actions)
                 f.write(f"agent_env({agent}).")
@@ -321,17 +324,19 @@ class StateMangerIndividual(StateManger):
             files = [self.temp_file]
             (run_success, output) = run_clingo(files)
             if not run_success:
-                raise Exception(f"cannot get the succeeded actions for {agent} at step {step}")
+                raise Exception(f"cannot get the succeeded actions for {agent} at step {step} with error {''.join(output)}")
 
-            attempted_action = self.actions[agent] 
             executed_action = "".join(output)
+            answer = input(f"Do not let action {attempted_action} to be executed (yes='y'/no=other answer):")
+            if answer == "y":
+                executed_action = "" 
             if attempted_action != "":
                 result = "but failed"
                 if executed_action != "":
                     result = f"the action executed is {executed_action}" 
                 if executed_action == attempted_action:
                     result = "and succeeded"
-                logging.info(f"{agent} attempted to do {attempted_action} at time {step}, {result}")
+                logging.info(f"{agent} attempted to do {attempted_action} at time {step}, {result}.")
             self.actions[agent] = executed_action
 
     def __determine_next_state(self, step):
@@ -362,7 +367,7 @@ class StateMangerIndividual(StateManger):
                     with open(self.agent_state[agent], "w") as f:
                         f.write("".join(output))
                 else:
-                    logging.error(f"cannot calculate the state for {agent}")
+                    logging.error(f"cannot calculate the state for {agent} at time {step}")
                     return False
 
             # number of atoms before and after parsing 
@@ -380,8 +385,8 @@ class StateMangerIndividual(StateManger):
                     # write the agent of quesetion
                     f.write(f"agent_env({agent}).")
                     # parsing rule to map the individual state to the global state
-                    f.write("hold_env(A, F, T) :- hold(F, T), _agent(A), time(T).")
-                    f.write("occur_env(A, B, T) :- occur(B, T), agent(A), time(T).")
+                    f.write("hold_env(A, F, T) :- hold(F, T), agent_env(A), time(T).")
+                    f.write("occur_env(A, B, T) :- occur(B, T), agent_env(A), time(T).")
                     f.write(f"#show hold_env/3.")
                     f.write(f"#show occur_env/3.")
 
@@ -449,9 +454,9 @@ class StateMangerIndividual(StateManger):
                 temp_file = self.temp_file
                 with open(temp_file, "w") as f:
                     # the agent to distill back
-                    f.write(f"agent({agent}).")
-                    f.write("hold(B, T) :- hold_env(A, B, T), time(T), agent(A).")
-                    f.write("occur(B, T) :- occur_env(A, B, T), time(T), agent(A).")
+                    f.write(f"agent_env({agent}).")
+                    f.write("hold(B, T) :- hold_env(A, B, T), time(T), agent_env(A).")
+                    f.write("occur(B, T) :- occur_env(A, B, T), time(T), agent_env(A).")
                     # show only the hold and occur
                     f.write(f"#show hold/2.")
                     f.write(f"#show occur/2.")
