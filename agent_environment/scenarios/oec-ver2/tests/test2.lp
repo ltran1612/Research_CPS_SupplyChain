@@ -1,29 +1,28 @@
 % test 2 - test deliver 
 % test state
-deliver_item(wood).
-deliver_agent(agent1, wood).
+deliver_item(agent1, wood).
 time(0..10).
 hold(available_item(wood, 201), 0).
-hold(delivered(wood, 0), 0).
+hold(delivered(agent1, wood, 0), 0).
 
 % test condition
 % test dynamic law 
 occur(deliver(agent1, wood, 100), 1).
 :- not hold(available_item(wood, 201), 1). 
 :- not hold(available_item(wood, 101), 2). 
-:- not hold(delivered(wood, 0), 1). 
-:- not hold(delivered(wood, 100), 2). 
-:- hold(delivered(wood, 0), 2). 
+:- not hold(delivered(agent1, wood, 0), 1). 
+:- not hold(delivered(agent1, wood, 100), 2). 
+:- hold(delivered(agent1, wood, 0), 2). 
 %
 occur(deliver(agent1, wood, 100), 5).
 :- not hold(available_item(wood, 101), 5). 
 :- not hold(available_item(wood, 1), 6). 
-:- not hold(delivered(wood, 100), 5). 
-:- not hold(delivered(wood, 200), 6). 
-:- hold(delivered(wood, 100), 6). 
-:- hold(delivered(wood, 0), 6). 
+:- not hold(delivered(agent1, wood, 100), 5). 
+:- not hold(delivered(agent1, wood, 200), 6). 
+:- hold(delivered(agent1, wood, 100), 6). 
+:- hold(delivered(agent1, wood, 0), 6). 
 
-% inertial rules
+% % inertial rules
 :- not hold(available_item(wood, 1), 7..10). 
 :- hold(available_item(wood, 201), 7..10). 
 :- hold(available_item(wood, 100), 7..10). 
