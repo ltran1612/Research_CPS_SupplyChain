@@ -52,7 +52,8 @@ reason(Reason) :- payment_reason(_, Reason).
 
 % the same reason name cannot be both paying reason and receiving reason for an agent.
 :- receiving_reason(Agent, Reason), paying_reason(Agent, Reason).
-
+% the receive item cannot be called "payment". It is a reserved word for notification of money.
+% the notification of money and the notification of items with quality share the same order of arguments 
 :- recv_item(_, payment, _). 
 
 % FLUENTS
@@ -105,14 +106,26 @@ hold(delivered(Agent, Item, Amount + OldAmount), T+1) :- deliver_item(Agent, Ite
 hold(delivered(Agent, Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Agent, Item, Quality), hold(delivered(Agent, Item, OldAmount, Quality), T), occur(deliver(Agent, Item, Amount, Quality), T), time(T+1). 
 
 % EXECUTABILITY LAWS
+% cannot pay an amount more than available
 :- occur(pay(Agent, Reason, Amount), T), paying_reason(Agent, Reason), hold(available_funds(Fund), T), not Fund >= Amount.
+% cannot deliver an amount more than available
 :- occur(deliver(Agent, Item, Amount), T), deliver_item(Agent, Item), hold(available_item(Item, CurrentAmount), T), not CurrentAmount >= Amount.
 :- occur(deliver(Agent, Item, Amount, Quality), T), deliver_item(Agent, Item, Quality), hold(available_item(Item, CurrentAmount, Quality), T), not CurrentAmount >= Amount.
+% cannot deliver an item that is not a deliver item
 :- occur(deliver(Agent, Item, Amount), T), not deliver_item(Agent, Item).
 :- occur(deliver(Agent, Item, Amount, Quality), T), not deliver_item(Agent, Item, Quality).
+% cannot receive item if there is no notification
 :- occur(receive((Agent, TimeMark), Item, Amount), T), not hold(notification((Agent, TimeMark), Item, Amount), T). 
 :- occur(receive((Agent, TimeMark), Item, Amount, Quality), T), not hold(notification((Agent, TimeMark), Item, Amount, Quality), T). 
-:- occur(receive_money(A, Reason, Amount), T), not hold(notification(A, payment, Reason, Amount), T), A=(Agent, TimeMark). 
+% cannot receive item if it is not a recv_item
+:- occur(receive((Agent, TimeMark), Item, Amount), T), not recv_item(Agent, Item).
+:- occur(receive((Agent, TimeMark), Item, Amount, Quality), T), not recv_item(Agent, Item, Quality).
+% cannot receive money if there is no notification
+:- occur(receive_money(A, Reason, Amount), T), not hold(notification(A, payment, Reason, Amount), T). 
+% cannot receive money if the reason is not a receive reason 
+:- occur(receive_money((Agent, TimeMark), Reason, Amount), T), not receiving_reason(Agent, Reason). 
+% cannot produce an item that is not a produce item
+:- occur(produce(Item, Amount), T), not produce_item(Item). 
 
 % STATIC CASUAL LAWS
 
