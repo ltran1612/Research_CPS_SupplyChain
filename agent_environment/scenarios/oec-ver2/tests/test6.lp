@@ -2,9 +2,8 @@
 % test state
 time(0..10).
 hold(available_item(receiving_item, 0), 0).
-pay_item(the_item).
-recv_item(receiving_item).
-recv_agent(0..4).
+pay_item(0..4, the_item).
+recv_item(0..4, receiving_item).
 
 % test condition
 % test dynamic law 

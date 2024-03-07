@@ -100,7 +100,7 @@ hold(produced(Item, Amount + OldAmount, Quality), T+1) :- produce_item(Item, Qua
 
 % deliver available_item
 hold(available_item(Item, OldAmount - Amount), T+1) :- deliver_item(Agent, Item), hold(available_item(Item, OldAmount), T), OldAmount >= Amount, occur(deliver(Agent, Item, Amount), T), time(T+1).  
-hold(available_item(Item, OldAmount - Amount, Quality), T+1) :- deliver_item(Agent, Item), deliver_item(Item, Quality), hold(available_item(Item, OldAmount, Quality), T), OldAmount >= Amount, occur(deliver(Agent, Item, Amount, Quality), T), time(T+1). 
+hold(available_item(Item, OldAmount - Amount, Quality), T+1) :- deliver_item(Agent, Item, Quality), hold(available_item(Item, OldAmount, Quality), T), OldAmount >= Amount, occur(deliver(Agent, Item, Amount, Quality), T), time(T+1). 
 hold(delivered(Agent, Item, Amount + OldAmount), T+1) :- deliver_item(Agent, Item), hold(delivered(Agent, Item, OldAmount), T), occur(deliver(Agent, Item, Amount), T), time(T+1). 
 hold(delivered(Agent, Item, Amount + OldAmount, Quality), T+1) :- deliver_item(Agent, Item, Quality), hold(delivered(Agent, Item, OldAmount, Quality), T), occur(deliver(Agent, Item, Amount, Quality), T), time(T+1). 
 
