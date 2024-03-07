@@ -1,7 +1,6 @@
 % test case 14 - test planning with receive.
 time(0..10).
-recv_item(apple).
-recv_agent(0..2).
+recv_item(0..2, apple).
 %
 hold(notification((0, 0), apple, 100), 0).
 occur(receive((0, 0), apple, 100), 0).
