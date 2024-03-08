@@ -57,7 +57,8 @@ reason(Reason) :- payment_reason(_, Reason).
 :- recv_item(_, payment, _). 
 
 % FLUENTS
-fluent(payment(Agent, Reason, Amount)) :- number(Amount), payment_reason(Agent, Reason).
+fluent(payment(Agent, sent, Reason, Amount)) :- number(Amount), paying_reason(Agent, Reason).
+fluent(payment(Agent, received, Reason, Amount)) :- number(Amount), receiving_reason(Agent, Reason).
 fluent(available_funds(Amount)) :- number(Amount).
 fluent(produced(Item, Amount, Quality)) :- produce_item(Item, Quality), number(Amount). 
 fluent(produced(Item, Amount)) :- produce_item(Item), number(Amount). 
@@ -81,9 +82,9 @@ action(deliver(Agent, Item, Amount, Quality)) :- deliver_item(Agent, Item, Quali
 
 % DYNAMIC LAWS
 % payment
-hold(payment(Agent, Reason, Amount + OldAmount), T+1) :- hold(payment(Agent, Reason, OldAmount), T), occur(pay(Agent, Reason, Amount), T), time(T+1).
+hold(payment(Agent, sent, Reason, Amount + OldAmount), T+1) :- hold(payment(Agent, sent, Reason, OldAmount), T), occur(pay(Agent, Reason, Amount), T), time(T+1).
 % 
-hold(payment(Agent, Reason, OldAmount + Amount), T+1) :- hold(payment(Agent, Reason, OldAmount), T), occur(receive_money((Agent, TimeMark), Reason, Amount), T), time(T+1). 
+hold(payment(Agent, received, Reason, OldAmount + Amount), T+1) :- hold(payment(Agent, received, Reason, OldAmount), T), occur(receive_money((Agent, TimeMark), Reason, Amount), T), time(T+1). 
 
 % available_funds
 hold(available_funds(OldAmount - Amount), T+1) :- hold(available_funds(OldAmount), T), OldAmount >= Amount, occur(pay(_, Reason, Amount), T), time(T+1). 
@@ -132,14 +133,14 @@ hold(delivered(Agent, Item, Amount + OldAmount, Quality), T+1) :- deliver_item(A
 % INERTIAL RULES
 % auxiliary atoms to determine whether a fluent is changing or not
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-not_done(pay(Agent, Reason), T) :- not occur(pay(Agent, Reason, _), T), payment_reason(Agent, Reason), time(T).
+not_done(pay(Agent, Reason), T) :- not occur(pay(Agent, Reason, _), T), paying_reason(Agent, Reason), time(T).
 %
 changing(fund, T) :- occur(pay(_, _, _), T), time(T).
 changing(fund, T) :- occur(receive_money(_, _, _), T), time(T).
 not_changing(fund, T) :- not changing(fund, T), time(T).
 %
 not_changing(money_notification(A, Reason), T) :- A=(Agent, TimeMark), hold(notification(A, payment, Reason, _), T), receiving_reason(Agent, Reason), not occur(receive_money(A, Reason, _), T), time(T).
-not_done(receive_money(Agent, Reason), T) :- not occur(receive_money((Agent, _), Reason, _), T), payment_reason(Agent, Reason), time(T). 
+not_done(receive_money(Agent, Reason), T) :- not occur(receive_money((Agent, _), Reason, _), T), receiving_reason(Agent, Reason), time(T). 
 %
 not_done(produce(Item), T) :- not occur(produce(Item, _), T), produce_item(Item), time(T).
 not_done(produce(Item), T) :- not produce_item(Item), item(Item), time(T). 
@@ -166,7 +167,8 @@ not_changing(amount(Item, Quality), T) :- not_done(produce(Item, Quality), T), n
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % beginning of inertial rules 
 % pay
-hold(payment(Agent, Reason, Amount), T+1) :- hold(payment(Agent, Reason, Amount), T), not_done(receive_money(Agent, Reason), T), not_done(pay(Agent, Reason), T), time(T+1).
+hold(payment(Agent, sent, Reason, Amount), T+1) :- hold(payment(Agent, sent, Reason, Amount), T), not_done(pay(Agent, Reason), T), time(T+1).
+hold(payment(Agent, received, Reason, Amount), T+1) :- hold(payment(Agent, received, Reason, Amount), T), not_done(receive_money(Agent, Reason), T), time(T+1).
 hold(available_funds(Amount), T+1) :- hold(available_funds(Amount), T), not_changing(fund, T), time(T+1).
 
 % producing items
