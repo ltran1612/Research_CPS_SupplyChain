@@ -48,7 +48,7 @@ reason(Reason) :- payment_reason(_, Reason).
 
 % CONSTRAINTS ABOUT THE CUSTOMIZATION 
 % same item cannot be both item and item with quality
-:- deliver_item(_, Item), deliver_item(_, Item, _).
+:- item(Item), item(Item, _).
 
 % the same reason name cannot be both paying reason and receiving reason for an agent.
 :- receiving_reason(Agent, Reason), paying_reason(Agent, Reason).

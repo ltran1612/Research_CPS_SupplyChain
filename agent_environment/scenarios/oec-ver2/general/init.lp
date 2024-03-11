@@ -1,4 +1,5 @@
-hold(payment(Agent, Reason, 0), 0) :- payment_reason(Agent, Reason).
+hold(payment(Agent, sent,  Reason, 0), 0) :- paying_reason(Agent, Reason).
+hold(payment(Agent, received,  Reason, 0), 0) :- receiving_reason(Agent, Reason).
 hold(available_funds(0), 0). 
 hold(produced(Item, 0, Quality), 0) :- produce_item(Item, Quality). 
 hold(produced(Item, 0), 0) :- produce_item(Item). 
