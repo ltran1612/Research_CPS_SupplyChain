@@ -1,4 +1,5 @@
 % test case 14 - test planning with receive.
+% expect satisfaction
 time(0..10).
 recv_item(0..2, apple).
 %

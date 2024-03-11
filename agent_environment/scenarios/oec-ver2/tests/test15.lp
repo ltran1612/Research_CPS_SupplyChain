@@ -1,4 +1,5 @@
 % test case 15 - test planning with receive with quality.
+% expect satisfaction
 time(0..10).
 recv_item(0..2, apple, Quality) :- quality(Quality).
 quality(0..10).

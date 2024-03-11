@@ -1,4 +1,5 @@
 % test case 12 - test planning with produce
+% expect satisfaction
 time(0..10).
 produce_item(apple).
 number(500).

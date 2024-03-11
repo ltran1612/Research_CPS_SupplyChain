@@ -1,4 +1,4 @@
-% test 1 - test produce + deliver
+% test 3 - test produce + deliver
 % expect satisfaction
 % test state
 % expect no sati

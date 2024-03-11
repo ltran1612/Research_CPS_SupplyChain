@@ -1,4 +1,5 @@
 % test 5 - test receiving money 
+% expect satisfaction
 % test state
 time(0..10).
 hold(available_funds(0), 0).

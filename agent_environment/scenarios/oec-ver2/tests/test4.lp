@@ -1,6 +1,6 @@
 % test 4 - test pay money 
-% test state
 % expect satisfaction.
+% test state
 time(0..10).
 hold(available_funds(100), 0).
 pay_item(agent1, the_item).

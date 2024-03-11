@@ -1,4 +1,5 @@
 % test case 13 - test planning with produce_item, deliver_item 
+% expect satisfaction
 time(0..10).
 produce_item(apple).
 deliver_item(agent1, apple).

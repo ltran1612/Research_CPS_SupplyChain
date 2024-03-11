@@ -1,4 +1,5 @@
 % test 6 - test receiving items 
+% expect satisfaction
 % test state
 time(0..10).
 hold(available_item(receiving_item, 0), 0).

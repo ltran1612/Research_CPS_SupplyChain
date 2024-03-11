@@ -46,6 +46,11 @@ test3:
 	echo $@
 	head -n2 tests/test3.lp
 	@-clingo ${DOMAIN} ${INIT} tests/test3.lp  ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test3.1.lp
+	@-clingo ${DOMAIN} ${INIT} tests/test3.1.lp  ${HIDE_WARNING}
+
 	echo ""
 
 .SILENT:

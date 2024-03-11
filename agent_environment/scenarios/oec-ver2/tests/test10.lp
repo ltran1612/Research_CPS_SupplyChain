@@ -1,4 +1,5 @@
-% test 10 - test receiving items 
+% test 10 - test receiving items  with quality
+% expect satisfaction
 % test state
 time(0..10).
 hold(available_item(receiving_item, 0, 1), 0).
