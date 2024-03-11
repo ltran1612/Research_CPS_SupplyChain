@@ -193,7 +193,12 @@ hold(notification(A, payment, Reason, Amount), T+1) :- hold(notification(A, paym
 :- time(T), occur(A, T), occur(B, T), B != A.
 
 % 3) The (Agent, TimeMark) of notification should be unique
+% case for notification with arity of 3. 
 :- hold(notification(UniqueKey, _, _), T), not Count1 + Count2 = 1,
+Count1=#count{A, B: hold(notification(Key, A, B), T), UniqueKey=Key}, 
+Count2=#count{A, B, C: hold(notification(Key, A, B, C), T), UniqueKey=Key}. 
+% case for notification with arity of 4. 
+:- hold(notification(UniqueKey, _, _, _), T), not Count1 + Count2 = 1,
 Count1=#count{A, B: hold(notification(Key, A, B), T), UniqueKey=Key}, 
 Count2=#count{A, B, C: hold(notification(Key, A, B, C), T), UniqueKey=Key}. 
 

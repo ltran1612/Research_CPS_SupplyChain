@@ -58,6 +58,15 @@ test4:
 	echo $@
 	head -n2 tests/test4.lp
 	@-clingo ${DOMAIN} tests/test4.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test4.1.lp
+	@-clingo ${DOMAIN} tests/test4.1.lp ${HIDE_WARNING}
+	
+	echo ""
+	head -n2 tests/test4.2.lp
+	@-clingo ${DOMAIN} tests/test4.2.lp ${HIDE_WARNING}
+
 	echo ""
 
 .SILENT:
@@ -65,6 +74,38 @@ test5:
 	echo $@
 	head -n2 tests/test5.lp
 	@-clingo ${DOMAIN} tests/test5.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test5.1.lp
+	@-clingo ${DOMAIN} tests/test5.1.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test5.2.lp
+	@-clingo ${DOMAIN} tests/test5.2.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test5.3.lp
+	@-clingo ${DOMAIN} tests/test5.3.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test5.4.lp
+	@-clingo ${DOMAIN} tests/test5.4.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test5.5.lp
+	@-clingo ${DOMAIN} tests/test5.5.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test5.6.lp
+	@-clingo ${DOMAIN} tests/test5.6.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test5.7.lp
+	@-clingo ${DOMAIN} tests/test5.7.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test5.8.lp
+	@-clingo ${DOMAIN} tests/test5.8.lp ${HIDE_WARNING}
 	echo ""
 	
 .SILENT:
