@@ -18,6 +18,27 @@ test2:
 	echo $@
 	head -n2 tests/test2.lp
 	@-clingo ${DOMAIN} tests/test2.lp   ${HIDE_WARNING}
+	
+	echo "" 
+	head -n2 tests/test2.1.lp
+	@-clingo ${DOMAIN} tests/test2.1.lp   ${HIDE_WARNING}
+
+	echo "" 
+	head -n2 tests/test2.2.lp
+	@-clingo ${DOMAIN} tests/test2.2.lp   ${HIDE_WARNING}
+
+	echo "" 
+	head -n2 tests/test2.3.lp
+	@-clingo ${DOMAIN} tests/test2.3.lp ${HIDE_WARNING}
+
+	echo "" 
+	head -n2 tests/test2.4.lp
+	@-clingo ${DOMAIN} tests/test2.4.lp ${HIDE_WARNING}
+
+	echo "" 
+	head -n2 tests/test2.5.lp
+	@-clingo ${DOMAIN} tests/test2.5.lp ${HIDE_WARNING}
+
 	echo ""
 
 .SILENT:

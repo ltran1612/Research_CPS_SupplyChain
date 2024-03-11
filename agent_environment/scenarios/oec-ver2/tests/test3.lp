@@ -1,4 +1,5 @@
 % test 1 - test produce + deliver
+% expect satisfaction
 % test state
 % expect no sati
 produce_item(wood).

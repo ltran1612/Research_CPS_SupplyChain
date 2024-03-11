@@ -1,4 +1,4 @@
-% test 1 - test produce - normal case, edge case
+% test 1 - test produce with no quality- normal case, edge case
 % expect satisfaction 
 % test state
 produce_item(wood).
@@ -52,13 +52,9 @@ occur(produce(wood, 1), 10).
 %
 :- not hold(available_item(wood, 302), 10). 
 % time ends at 10
-:- hold(available_item(wood, 303), 11). 
-:- hold(available_item(wood, 302), 11). 
-:- hold(available_item(wood, 301), 11). 
+:- hold(available_item(wood, _), 11). 
 %
-:- hold(produced(wood, 301), 11). 
-:- hold(produced(wood, 302), 11). 
-:- hold(produced(wood, 303), 11). 
+:- hold(produced(wood, _), 11). 
 
 % test inertial rules
 :- not hold(produced(wood, 301), 6..8). 
