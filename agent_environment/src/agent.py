@@ -76,13 +76,15 @@ def on_message(client: mqtt.Client, userdata, msg):
     if topic == subscribe_topic:
         # received the information for this state
         logging.debug(f"{topic} - {message}")
-        logging.info(f"The state at the start of step {upcoming_step} is: {message}")
         observations = get_atoms([message])
+        printed_observations = list(filter(lambda atom: atom.endswith(f"{upcoming_step})."), observations))
+        logging.info(f"The state at the start of step {upcoming_step} is: {printed_observations}")
         # do some reasoning
         actions = planner.next_step(upcoming_step, "".join(observations))
         if actions is None:
             logging.info("replan failed, cannot do anything")
             action = ""
+            sys.exit(1)
         else:
             action = actions
         logging.debug(f"the next action is {action}")

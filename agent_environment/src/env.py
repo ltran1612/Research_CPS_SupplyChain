@@ -76,7 +76,7 @@ def custom_loop():
             # increase the step
             step += 1 
             logging.info(f"starting the next step {step}")
-            if step == 3:
+            if step == 29:
                 sys.exit(0)
             logging.info(f"started the next step {step}")
             # send a message to each agent so they will send the action for previous step
