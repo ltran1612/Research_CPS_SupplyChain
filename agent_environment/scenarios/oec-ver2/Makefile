@@ -113,36 +113,92 @@ test6:
 	echo $@
 	head -n2 tests/test6.lp
 	@-clingo ${DOMAIN} tests/test6.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.1.lp
+	@-clingo ${DOMAIN} tests/test6.1.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.2.lp
+	@-clingo ${DOMAIN} tests/test6.2.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.3.lp
+	@-clingo ${DOMAIN} tests/test6.3.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.4.lp
+	@-clingo ${DOMAIN} tests/test6.4.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.5.lp
+	@-clingo ${DOMAIN} tests/test6.5.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.6.lp
+	@-clingo ${DOMAIN} tests/test6.6.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.7.lp
+	@-clingo ${DOMAIN} tests/test6.7.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.8.lp
+	@-clingo ${DOMAIN} tests/test6.8.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.9.lp
+	@-clingo ${DOMAIN} tests/test6.9.lp ${HIDE_WARNING}
+	
+	echo ""
+	head -n2 tests/test6.10.lp
+	@-clingo ${DOMAIN} tests/test6.10.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.11.lp
+	@-clingo ${DOMAIN} tests/test6.11.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.12.lp
+	@-clingo ${DOMAIN} tests/test6.12.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.13.lp
+	@-clingo ${DOMAIN} tests/test6.13.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.14.lp
+	@-clingo ${DOMAIN} tests/test6.14.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.15.lp
+	@-clingo ${DOMAIN} tests/test6.15.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.16.lp
+	@-clingo ${DOMAIN} tests/test6.16.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.17.lp
+	@-clingo ${DOMAIN} tests/test6.17.lp ${HIDE_WARNING}
+
+	echo ""
+	head -n2 tests/test6.18.lp
+	@-clingo ${DOMAIN} tests/test6.18.lp ${HIDE_WARNING}
+
 	echo ""
 
-# Test the above but with quality	
 .SILENT:
 test7:
-	echo $@
-	head -n2 tests/test7.lp
-	@-clingo ${DOMAIN} ${INIT} tests/test7.lp ${HIDE_WARNING}
-	echo ""
 
 .SILENT:
 test8:
-	echo $@
-	head -n2 tests/test8.lp
-	@-clingo ${DOMAIN} tests/test8.lp   ${HIDE_WARNING}
-	echo ""
 
 .SILENT:
 test9:
-	echo $@
-	head -n2 tests/test9.lp
-	@-clingo ${DOMAIN} ${INIT} tests/test9.lp  ${HIDE_WARNING}
-	echo ""
 
 .SILENT:
 test10:
-	echo $@
-	head -n2 tests/test10.lp
-	@-clingo ${DOMAIN} tests/test10.lp ${HIDE_WARNING}
-	echo ""
 
 # test other constraints
 .SILENT:
