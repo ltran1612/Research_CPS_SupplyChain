@@ -1,5 +1,5 @@
 {
-    "id": "supplier_of_speedy_auto_part",
+    "id": "supplier_of_speedy_auto_parts",
     "brokerAddress": "localhost",
     "domain": "../scenarios/oec-ver2/supplier_of_speedy_auto_part/domain.lp",
     "initial_state": "../scenarios/oec-ver2/supplier_of_speedy_auto_part/init.lp",
@@ -8,7 +8,7 @@
     "plan_checking": "../scenarios/oec-ver2/supplier_of_speedy_auto_part/plan_checking.lp",
     "global_domain": "../scenarios/oec-ver2/global_domain.lp",
     "contracts": [
-        "../scenarios/oec-ver2/contracts/autopart_supplier_contract.lp"
+        "../scenarios/oec-ver2/contracts/clauses_per_agent_domain/As.lp"
     ],
     "contract_cps": "../scenarios/oec-ver2/cps/contract-cps.lp",
     "cps": "../scenarios/oec-ver2/cps/cps.lp",

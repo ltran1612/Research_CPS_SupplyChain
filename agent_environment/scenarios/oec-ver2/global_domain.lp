@@ -1,5 +1,5 @@
 % maximum number of steps 
-#const lastTimeStep = 10.
+#const lastTimeStep = 28. 
 
 % time declaration
 
