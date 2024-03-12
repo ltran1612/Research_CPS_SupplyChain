@@ -59,15 +59,24 @@ reason(Reason) :- payment_reason(_, Reason).
 % FLUENTS
 fluent(payment(Agent, sent, Reason, Amount)) :- number(Amount), paying_reason(Agent, Reason).
 fluent(payment(Agent, received, Reason, Amount)) :- number(Amount), receiving_reason(Agent, Reason).
+%
 fluent(available_funds(Amount)) :- number(Amount).
+%
 fluent(produced(Item, Amount, Quality)) :- produce_item(Item, Quality), number(Amount). 
 fluent(produced(Item, Amount)) :- produce_item(Item), number(Amount). 
+%
 fluent(delivered(Agent, Item, Amount, Quality)) :- deliver_item(Agent, Item, Quality), number(Amount). 
 fluent(delivered(Agent, Item, Amount)) :- deliver_item(Agent, Item), number(Amount).
+%
+fluent(received(Agent, Item, Amount, Quality)) :- recv_item(Agent, Item, Quality), number(Amount). 
+fluent(received(Agent, Item, Amount)) :- recv_item(Agent, Item), number(Amount).
+%
 fluent(available_item(Item, Amount)) :- item(Item), number(Amount).
 fluent(available_item(Item, Amount, Quality)) :- item(Item, Quality), number(Amount). 
+%
 fluent(notification((Agent, Time), Item, Amount)) :- number(Amount), time(Time), recv_item(Agent, Item).
 fluent(notification((Agent, Time), Item, Amount, Quality)) :- number(Amount), time(Time), recv_item(Agent, Item, Quality).
+%
 fluent(notification((Agent, Time), payment, Reason, Amount)) :- number(Amount), time(Time), receiving_reason(Agent, Reason).
 
 % ACTIONS
@@ -93,6 +102,8 @@ hold(available_funds(OldAmount + Amount), T+1) :- hold(available_funds(OldAmount
 % receive items 
 hold(available_item(Item, Amount + OldAmount), T+1) :- recv_item(Agent, Item), hold(available_item(Item, OldAmount), T), occur(receive((Agent, TimeMark), Item, Amount), T), time(T+1). 
 hold(available_item(Item, Amount + OldAmount, Quality), T+1) :- recv_item(Agent, Item, Quality), hold(available_item(Item, OldAmount, Quality), T), occur(receive((Agent, TimeMark), Item, Amount, Quality), T), time(T+1).
+hold(received(Agent, Item, Amount + OldAmount), T+1) :- recv_item(Agent, Item), hold(received(Agent, Item, OldAmount), T), occur(receive((Agent, _), Item, Amount), T), time(T+1). 
+hold(received(Agent, Item, Amount + OldAmount, Quality), T+1) :- recv_item(Agent, Item, Quality), hold(received(Agent, Item, OldAmount, Quality), T), occur(receive((Agent, _), Item, Amount, Quality), T), time(T+1). 
 
 % produce items 
 hold(available_item(Item, Amount + OldAmount), T+1) :- produce_item(Item), hold(available_item(Item, OldAmount), T), occur(produce(Item, Amount), T), time(T+1). 
@@ -156,9 +167,11 @@ not_done(deliver(Item, Quality), T) :- item(Item, Quality), not occur(deliver(_,
 %
 not_changing(item_notification(A, Item), T) :- A=(Agent, TimeMark), hold(notification(A, Item, Amount), T), recv_item(Agent, Item), not occur(receive(A, Item, Amount), T), time(T).
 not_done(receive(Item), T) :- item(Item), not occur(receive(_, Item, _), T), time(T).
+not_done(receive(Agent, Item), T) :- recv_item(Agent, Item), not occur(receive((Agent, _), Item, _), T), time(T).
 %
 not_changing(item_notification(A, Item, Quality), T) :- A=(Agent, TimeMark), hold(notification(A, Item, Amount, Quality), T), recv_item(Agent, Item, Quality), not occur(receive(A, Item, Amount, Quality), T), time(T). 
 not_done(receive(Item, Quality), T) :- item(Item, Quality), not occur(receive(_, Item, _, Quality), T), time(T).
+not_done(receive(Agent, Item, Quality), T) :- recv_item(Agent, Item, Quality), not occur(receive((Agent, _), Item, _, Quality), T), time(T).
 %
 % item quantity not changing
 not_changing(amount(Item), T) :- not_done(produce(Item), T), not_done(deliver(Item), T), not_done(receive(Item), T).
@@ -178,6 +191,10 @@ hold(produced(Item, Amount), T+1) :- hold(produced(Item, Amount), T), not_done(p
 % deliver items
 hold(delivered(Agent, Item, Amount, Quality), T+1) :- hold(delivered(Agent, Item, Amount, Quality), T), not_done(deliver(Agent, Item, Quality), T), time(T+1).
 hold(delivered(Agent, Item, Amount), T+1) :- hold(delivered(Agent, Item, Amount), T), not_done(deliver(Agent, Item), T), time(T+1).
+
+% received items
+hold(received(Agent, Item, Amount, Quality), T+1) :- hold(received(Agent, Item, Amount, Quality), T), not_done(receive(Agent, Item, Quality), T), time(T+1).
+hold(received(Agent, Item, Amount), T+1) :- hold(received(Agent, Item, Amount), T), not_done(receive(Agent, Item), T), time(T+1).
 
 % available items
 hold(available_item(Item, Amount), T+1) :- hold(available_item(Item, Amount), T), not_changing(amount(Item), T), time(T+1).
