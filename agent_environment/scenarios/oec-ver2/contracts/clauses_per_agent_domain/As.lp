@@ -1,4 +1,5 @@
 % clauses id 
+% in this form, we assuem that each time() represents a day
 clause("C10").
 clause("C11").
 clause("C12").
