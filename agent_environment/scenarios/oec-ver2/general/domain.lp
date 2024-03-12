@@ -39,9 +39,6 @@ paying_reason(Agent, Item) :- pay_item(Agent, Item).
 paying_reason(Agent, Item) :- pay_item(Agent, Item, Quality). 
 %
 payment_reason(Agent, Reason) :- paying_reason(Agent, Reason).
-% When we deliver items, we typically want payment for it, so it's part of the reason for payment. 
-receiving_reason(Agent, delivery(Item)) :- deliver_item(Agent, Item).
-receiving_reason(Agent, delivery(Item)) :- deliver_item(Agent, Item, Quality).
 %
 payment_reason(Agent, Reason) :- receiving_reason(Agent, Reason).
 %
