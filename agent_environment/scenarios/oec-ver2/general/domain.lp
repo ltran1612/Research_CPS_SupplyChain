@@ -1,14 +1,15 @@
 % base domain for all agents
 % Author: Long Tran
-% need to supply the following predicates:
+% need to supply some of the following predicates:
 % 1) produce_item(Item[, Quality]): 1 or more with optional quality.
 % 2) deliver_item(Agent, Item)[, Quality]): 1 or more with optional quality with the agent.
-% 3) pay_item(Agent, Item)[, Quality]): 1 or more, items that we make payment with optional quality with the agent we pay to.
-% 4) reason(Agent, Reason): 0 or more, any reason for payment either receiving payment or make payments from/for Agent. 
-%   a) receiving_reason(Agent, Reason): 0 or more, any reason for receiving payment. deliver_item(Item) will lead to a receiving_reason.
-%   b) paying_reason(Agent, Reason): 0 or more, if the reason for paying is an item, put it in pay_item instead. 
+% 3) pay_item(Agent, Item[, Quality]): 1 or more, items that we make payment with optional quality with the agent we pay to.
+% 4) recv_item(Agent, Item[,Quality]): 0 or more, any items that we receive from other agents with optional quality with the agent we receive from.
 % 5) item(Item): 0 or more, any items that we want to store in the inventory as an agent.
-% 6) recv_item(Agent, Item[,Quality]): 0 or more, any items that we receive from other agents with optional quality with the agent we receive from.
+% 6) receiving_reason(Agent, Reason): 0 or more, any reason for receiving payment. deliver_item(Item) will lead to a receiving_reason. This will be grouped as payment_reason().
+% 7) paying_reason(Agent, Reason): 0 or more, if the reason for paying is an item, put it in pay_item instead. pay_item(...) will create a paying_reason for the item. This will be grouped as payment_reason().
+% 8) payment_reason(Agent, Reason): 0 or more, any reason for payment. This is a combination of paying_reason and receiving_reason.
+% 8) reason(Reason): 0 or more, the reason for payment, but it is regardless of the agent.
 % 9) time(Time): 0 or more, any time that we want to use in the domain. Time has to be able to be advanced by arithmetic +1 in Clingo.
 % And any other predicates or laws that are used along with the above, like quality(Quality), and executability laws for produce.
 % By default, any pay, deliver, or produce items are an item.
@@ -49,7 +50,6 @@ reason(Reason) :- payment_reason(_, Reason).
 % CONSTRAINTS ABOUT THE CUSTOMIZATION 
 % same item cannot be both item and item with quality
 :- item(Item), item(Item, _).
-
 % the same reason name cannot be both paying reason and receiving reason for an agent.
 :- receiving_reason(Agent, Reason), paying_reason(Agent, Reason).
 % the receive item cannot be called "payment". It is a reserved word for notification of money.
@@ -208,8 +208,7 @@ hold(notification(A, payment, Reason, Amount), T+1) :- hold(notification(A, paym
 % OTHER CONSTRAINTS TO MAKE THE DOMAIN CONSISTENT
 % 1) Only one action occurs at a time
 :- time(T), occur(A, T), occur(B, T), B != A.
-
-% 3) The (Agent, TimeMark) of notification should be unique
+% 2) The (Agent, TimeMark) of notification should be unique
 % case for notification with arity of 3. 
 :- hold(notification(UniqueKey, _, _), T), not Count1 + Count2 = 1,
 Count1=#count{A, B: hold(notification(Key, A, B), T), UniqueKey=Key}, 
@@ -218,6 +217,18 @@ Count2=#count{A, B, C: hold(notification(Key, A, B, C), T), UniqueKey=Key}.
 :- hold(notification(UniqueKey, _, _, _), T), not Count1 + Count2 = 1,
 Count1=#count{A, B: hold(notification(Key, A, B), T), UniqueKey=Key}, 
 Count2=#count{A, B, C: hold(notification(Key, A, B, C), T), UniqueKey=Key}. 
+% 3) Cannot deliver, produce, receive, or pay negative number of items 
+% produce
+:- occur(produce(Item, Amount), T), not Amount >= 0.
+:- occur(produce(Item, Amount, _), T), not Amount >= 0.
+% deliver
+:- occur(deliver(_, Item, Amount), T), not Amount >= 0.
+:- occur(deliver(_, Item, Amount, _), T), not Amount >= 0.
+% pay
+:- occur(pay(_, Reason, Amount), T), not Amount >= 0.
+% receive
+:- occur(receive_money(_, _, Amount), T), not Amount >= 0.
+:- occur(receive(_, _, Amount), T), not Amount >= 0.
+:- occur(receive(_, _, Amount, _), T), not Amount >= 0.
 
-% Cannot deliver or produce negative number of items 
-:- number(N), not N >= 0.
+
