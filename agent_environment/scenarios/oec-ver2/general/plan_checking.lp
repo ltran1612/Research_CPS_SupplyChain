@@ -7,5 +7,5 @@ non_max_time(T) :- not max_time(T), target_time(T).
 % things in plan needs to occur in the observation
 :- not hold(A, T), hold_plan(A, T), target_time(T).
 :- not occur(A, T), occur_plan(A, T), non_max_time(T). 
-% things  in observation needs
+% things  in observation needs to be accounted in the plan
 :- hold(A, T), not hold_plan(A, T), target_time(T).

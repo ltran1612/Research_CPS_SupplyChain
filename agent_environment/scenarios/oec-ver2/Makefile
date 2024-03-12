@@ -196,6 +196,10 @@ test8:
 
 .SILENT:
 test9:
+	echo $@
+	head -n2 tests/test9.lp
+	@-clingo ${DOMAIN} ${PLAN} ${INIT} tests/test9.lp ${HIDE_WARNING}
+	echo ""
 
 .SILENT:
 test10:

@@ -78,7 +78,7 @@ fluent(notification((Agent, Time), payment, Reason, Amount)) :- number(Amount), 
 
 % ACTIONS
 action(pay(Agent, Reason, Amount)) :- number(Amount), paying_reason(Agent, Reason). 
-action(receive_money((Agent, Time), Reason, Amount)) :- hold(notificaion((Agent, Time), payment, Reason, Amount), T), receiving_reason(Agent, Reason). 
+action(receive_money((Agent, Time), Reason, Amount)) :- hold(notification((Agent, Time), payment, Reason, Amount), T), receiving_reason(Agent, Reason). 
 action(receive((Agent, Time), Item, Amount)) :- hold(notification((Agent, Time), Item, Amount), T), recv_item(Agent, Item).
 action(receive((Agent, Time), Item, Amount, Quality)) :- hold(notification((Agent, Time), Item, Amount, Quality), T), recv_item(Agent, Item, Quality).
 action(produce(Item, Amount)) :- produce_item(Item), number(Amount).
