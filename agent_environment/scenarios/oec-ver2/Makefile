@@ -203,6 +203,10 @@ test9:
 
 .SILENT:
 test10:
+	echo $@
+	head -n2 tests/test10.lp
+	@-clingo ${DOMAIN} ${PLAN} ${INIT} tests/test10.lp ${HIDE_WARNING}
+	echo ""
 
 # test other constraints
 .SILENT:
