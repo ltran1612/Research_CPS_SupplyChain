@@ -60,16 +60,17 @@ class Planner:
             return True
         return False 
 
-    def plan(self)-> bool:
-        return self.plan_with_observation(self.get_state())
+    def plan(self, start_time=0)-> bool:
+        return self.plan_with_observation(self.get_state(), start_time=start_time)
 
     # plan based on the observation
-    def plan_with_observation(self, observation: str) -> bool:
+    def plan_with_observation(self, observation: str, start_time=0) -> bool:
         # write observations to a temporary file
         write_to_temp_file(self.temp_file, observation)
 
         # the Clingo code to parse the plan from domain form to plan form.
         with open(self.temp_file, "a") as f:
+            f.write(f"current_time({start_time}).")
             f.write("occur_plan(A, T) :- occur(A, T).")
             f.write("hold_plan(A, T) :- hold(A, T).")
             f.write("#show hold_plan/2.")
@@ -171,7 +172,7 @@ class Planner:
         logging.info("replanning...")
         # else replan if different
         self.save_observations(observation)
-        self.plan()
+        self.plan(target_step)
         logging.info("replanning done")
 
         # check it again

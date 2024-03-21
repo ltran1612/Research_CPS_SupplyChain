@@ -1,5 +1,8 @@
 pay_item(metal_craft_solutions, iron_springs).
 recv_item(metal_craft_solutions, iron_springs).
+produce_item(engines).
+deliver_item(car_producer, engines).
+receiving_reason(car_producer, engines).
 % base domain for all agents
 % Author: Long Tran
 % need to supply some of the following predicates:

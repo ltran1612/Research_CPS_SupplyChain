@@ -1,10 +1,6 @@
-recv_item(speedy_auto_parts, vehicle_parts).
-pay_item(speedy_auto_parts, vehicle_parts).
-recv_item(precision_engine, engines).
-pay_item(precision_engine, engines).
-recv_item(sonic_electronics, radios).
-pay_item(sonic_electronics, radios).
-
+produce_item(electronics_parts).
+deliver_item(sonic_electronics, electronics_parts).
+receiving_reason(car_producer, electronics_parts).
 % base domain for all agents
 % Author: Long Tran
 % need to supply some of the following predicates:
