@@ -331,7 +331,6 @@ class StateMangerIndividual(StateManger):
                 raise Exception(f"cannot compare the state at time {step} with error {''.join(output)}")
             old_new_atoms = get_atoms(output)
             # the new state becomes the old state
-            input()
             with open(self.old_env_state, "w") as f:
                 with open(self.env_state, "r") as f2:
                     f.write("".join(f2.readline()))
