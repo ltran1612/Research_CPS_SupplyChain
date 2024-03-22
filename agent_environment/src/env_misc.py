@@ -250,7 +250,7 @@ class StateMangerIndividual(StateManger):
                     # the new hold fluent at current time step will be subject to decision
                     f.write("hold_env_attempt(A, F, T) :- hold(F, T), agent_env(A), time(T), current_env_time(T).")
                     # map the actions that occured in the previous step
-                    f.write("occur_env(A, B, T-1) :- occur(B, T-1), agent_env(A), time(T-1), current_env_time(T).")
+                    f.write("occur_env(A, B, T) :- occur(B, T), agent_env(A), time(T).")
                     # show only the hold_env_attempt and occur_env
                     f.write(f"#show hold_env_attempt/3.")
                     f.write(f"#show occur_env/3.")
