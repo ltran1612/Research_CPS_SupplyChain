@@ -3,4 +3,5 @@ satisfied_clauses_count(N) :- N = #count{Clause : hold(sat(Clause), lastTimeStep
 #maximize {N : satisfied_clauses_count(N)}. 
 % base plan script for oec scenario. 
 
-0 {occur(A, T)}1  :- action(A), time(T).
+plan_time(A) :- current_time(T), time(A), A >= T.
+0 {occur(A, T) : action(A)}1  :- plan_time(T).

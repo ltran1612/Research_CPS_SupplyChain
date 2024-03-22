@@ -1,16 +1,16 @@
 % base domain for all agents
 % Author: Long Tran
 % need to supply some of the following predicates:
-% 1) produce_item(Item[, Quality]): 1 or more with optional quality.
-% 2) deliver_item(Agent, Item)[, Quality]): 1 or more with optional quality with the agent.
-% 3) pay_item(Agent, Item[, Quality]): 1 or more, items that we make payment with optional quality with the agent we pay to.
-% 4) recv_item(Agent, Item[,Quality]): 0 or more, any items that we receive from other agents with optional quality with the agent we receive from.
-% 5) item(Item): 0 or more, any items that we want to store in the inventory as an agent.
-% 6) receiving_reason(Agent, Reason): 0 or more, any reason for receiving payment. deliver_item(Item) will lead to a receiving_reason. This will be grouped as payment_reason().
-% 7) paying_reason(Agent, Reason): 0 or more, if the reason for paying is an item, put it in pay_item instead. pay_item(...) will create a paying_reason for the item. This will be grouped as payment_reason().
-% 8) payment_reason(Agent, Reason): 0 or more, any reason for payment. This is a combination of paying_reason and receiving_reason.
-% 8) reason(Reason): 0 or more, the reason for payment, but it is regardless of the agent.
-% 9) time(Time): 0 or more, any time that we want to use in the domain. Time has to be able to be advanced by arithmetic +1 in Clingo.
+% 1) produce_item(Item[, Quality]): 1 or more, items with optional quality that the agent produces.
+% 2) deliver_item(Agent, Item)[, Quality]): 1 or more, items with optional quality that the agent delivers to other agents.
+% 3) pay_item(Agent, Item[, Quality]): 1 or more, items with optional quality for which the agent pays to other agents.
+% 4) recv_item(Agent, Item[,Quality]): 0 or more, items with optional quality that the agent receives from other agents.
+% 5) item(Item): 0 or more, items other than the above that the agent wants to store in the inventory.
+% 6) receiving_reason(Agent, Reason): 0 or more, reasons for the agent to receive payments from other agents. 
+% 7) paying_reason(Agent, Reason): 0 or more, reasons for the agent to make payments to other agents.
+% 8) payment_reason(Agent, Reason): 0 or more, reasons for payments. Each receiving_reason and paying_reason is a payment_reason.
+% 8) reason(Reason): 0 or more, reasons for payment with respect only to the reasons (no agents concerned).
+
 % And any other predicates or laws that are used along with the above, like quality(Quality), and executability laws for produce.
 % By default, any pay, deliver, or produce items are an item.
 % examples:
