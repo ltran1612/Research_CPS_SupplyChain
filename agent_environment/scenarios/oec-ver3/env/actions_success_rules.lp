@@ -1,0 +1,1 @@
+occur_env_attempt_success(Ag, A, T) :- occur_env_attempt(Ag, A, T).
