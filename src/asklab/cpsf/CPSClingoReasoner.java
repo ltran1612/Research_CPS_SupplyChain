@@ -8,7 +8,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Vector;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 public class CPSClingoReasoner {
@@ -66,17 +65,28 @@ public class CPSClingoReasoner {
 		return aspProg;
 	} // end ontologyToASP
 
-	public static String runClingo(List<File> aspFiles, String clingoOptions) throws Exception {
-		// TODO: 
-		// String out = runCmd(clingoCmd(""));
-		String out = "";
-		return out;
+	public static String runClingo(List<File> aspFiles, List<String> clingoOptions) throws Exception {
+		String[] arguments =  new String[aspFiles.size() + clingoOptions.size() + 1];
+		arguments[0] = "clingo";
+		int index = 1;
+		
+		for (File file : aspFiles) {
+			arguments[index] = file.toPath().toString();
+			index++;
+		} // end for 
+		for (String option : clingoOptions) {
+			arguments[index] = option; 
+			index++;
+		} // end for 
+		Vector<String> out = runCmdRaw(arguments);
+		String result = String.join("\n", out);	
+		return result;
 	} // end asp
 
 	// query the CPS + Ontology
-	public static String query(File sparqlQueryFile, List<File> ontologyFiles, List<File> aspFiles, String clingoOptions) throws IOException {
+	public static String query(File sparqlQueryFile, List<File> ontologyFiles, List<File> aspFiles, List<String> clingoOptions) throws IOException {
 		// name of the temporary file for sparql
-		Path tmpFile= Files.createTempFile("", ".lp");
+		Path tmpFile = Files.createTempFile("", ".lp");
 		tmpFile.toFile().deleteOnExit();
 		String res = "";
 
@@ -94,6 +104,7 @@ public class CPSClingoReasoner {
 			if (aspFiles.size() != 0) {
 				aspFiles.add(tmpFile.toFile());
 				res = runClingo(aspFiles, clingoOptions);
+				// System.out.println(res);
 			} // end if
 		} catch (Exception x) {
 			System.err.println("Exception: " + x);

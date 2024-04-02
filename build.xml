@@ -29,7 +29,17 @@
         </javac>
     </target>
 
-    <target depends="build" name="cli">
+    <target depends="init" name="build-cli">
+        <echo message="${ant.project.name}: ${ant.file}"/>
+        <javac debug="true" debuglevel="${debuglevel}" destdir="bin" srcdir="src" includeantruntime="false">
+            <exclude name="webserver/*.java"/>
+	<exclude name="asklab/cpsf/CPSReasoner.java"/>
+            <classpath refid="CPS.classpath"/>
+            <compilerarg value="-Xlint:deprecation"/>
+        </javac>
+    </target>
+
+    <target depends="build-cli" name="cli">
         <jar destfile="cli.jar"
             basedir="bin"
             excludes="webserver/*.class,asklab/cpsf/CPSReasoner.class">

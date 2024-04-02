@@ -2,7 +2,6 @@ package cli;
 // the Java code for the HybridCPSASP 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 
 import asklab.cpsf.CPSClingoReasoner; 
@@ -19,22 +18,27 @@ public class Main {
         ArrayList<File> ontoFiles = new ArrayList<File>(info.aspPaths.size());
         ArrayList<File> aspFiles = new ArrayList<File>(info.aspPaths.size()); 
 
-        for (String ontoPath : info.ontoPaths) {
-            if (!ontoPath.endsWith(".owl"))
-                continue;
-            
-            File file = new File(ontoPath);
-            ontoFiles.add(file);
-            // ontoFiles = new ArrayList<File>(Arrays.asList(file.listFiles()));
-
-            if (ontoFiles.size() == 0) {
-                throw new RuntimeException("The files supplied do not exist");
+        // get all string
+        for (String path : info.ontoPaths) {
+            File file = new File(path);
+            if (!file.exists()) {
+                throw new RuntimeException("Ontology file does not exist " + path);
             } // end if
+            ontoFiles.add(file);
+        } // end for
+        
+        // get all asp files
+        for (String path : info.aspPaths) {
+            File file = new File(path);
+            if (!file.exists()) {
+                throw new RuntimeException("asp files do not exist " + path);
+            } // end if
+            aspFiles.add(file);
         } // end for
     
         try {
             // query
-            String res = CPSClingoReasoner.query(new File(SPARQL_FILE), ontoFiles, aspFiles, "");
+            String res = CPSClingoReasoner.query(new File(SPARQL_FILE), ontoFiles, aspFiles, info.options);
             System.out.println(res);
             // print out the response
         } catch (IOException excp) {
@@ -92,11 +96,16 @@ class Info {
         aspPaths = new LinkedList<String>();
         options = new LinkedList<String>();
 
+        boolean startOptions = false;
         for (String arg: args) {
             if (arg.endsWith(".owl")) {
                 ontoPaths.add(arg);
-            } else if (arg.endsWith(".asp")) {
+            } else if (arg.endsWith(".lp")) {
                 aspPaths.add(arg);
+            } else if (!startOptions && arg.equals("--asp-options")) {
+                startOptions = true;
+            } else if (startOptions) {
+                options.add(arg);
             } else {
                 System.err.println("Invalid arguments.");
                 System.exit(1);
