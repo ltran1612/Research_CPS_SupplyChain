@@ -1,14 +1,14 @@
 package cli;
 // the Java code for the HybridCPSASP 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
 import asklab.cpsf.CPSClingoReasoner; 
 
 public class Main {
-    private final static String SPARQL_FILE = "./dump.sparql";
-
     // preconditions, given the file paths to:
     // 1) ontologies.
     // 2) the asp files. 
@@ -35,15 +35,41 @@ public class Main {
             } // end if
             aspFiles.add(file);
         } // end for
-    
+        InputStream in = null;
+        BufferedReader reader = null;
+        FileWriter writer = null;
         try {
+            Path queryPath= Files.createTempFile("", ".sparql");
+            File queryFile = queryPath.toFile();
+		    queryFile.deleteOnExit();
+
+            in = Main.class.getResourceAsStream("/dump.sparql");
+            if (in == null) 
+                throw new RuntimeException("Cannot get resources for the dump sparql file");
+            reader = new BufferedReader(new InputStreamReader(in));
+            writer = new FileWriter(queryFile);
+            // write the file
+            String line = "";
+            while ((line = reader.readLine()) != null) {
+                writer.write(line + "\n");
+            } // end while
+            writer.close();
+            reader.close();
+            in.close();
             // query
-            String res = CPSClingoReasoner.query(new File(SPARQL_FILE), ontoFiles, aspFiles, info.options);
+            String res = CPSClingoReasoner.query(queryFile, ontoFiles, aspFiles, info.options);
             System.out.println(res);
             // print out the response
         } catch (IOException excp) {
             System.err.println(excp.getMessage());
-        } // end catch
+        } finally {
+            // end catch
+            try {
+                if (in != null) in.close();
+                if (reader != null) reader.close();
+                if (writer != null) writer.close();
+            } catch(Exception ex) {}
+        } // end finally
     } // end main
 } // end Run class
 
