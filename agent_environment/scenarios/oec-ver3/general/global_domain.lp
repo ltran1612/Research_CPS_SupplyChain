@@ -78,7 +78,7 @@ operation(Name, Input, (Agent, (OldAmount + Amount)), T) :-
     hold(Fluent, (Agent, (OldAmount,)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (A, OldAmount + Amount)), T) :- 
@@ -86,7 +86,7 @@ operation(Name, Input, (Agent, (A, OldAmount + Amount)), T) :-
     hold(Fluent, (Agent, (A, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 
 %
@@ -95,7 +95,7 @@ operation(Name, Input, (Agent, (C, OldAmount + Amount)), T) :-
     hold(Fluent, (Agent, (C, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, C, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (C, D, OldAmount + Amount)), T) :- 
@@ -103,7 +103,7 @@ operation(Name, Input, (Agent, (C, D, OldAmount + Amount)), T) :-
     hold(Fluent, (Agent, (C, D, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, C, D, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (B, C, OldAmount + Amount)), T) :- 
@@ -111,7 +111,7 @@ operation(Name, Input, (Agent, (B, C, OldAmount + Amount)), T) :-
     hold(Fluent, (Agent, (B, C, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, C, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (B, C, D, OldAmount + Amount)), T) :- 
@@ -119,7 +119,7 @@ operation(Name, Input, (Agent, (B, C, D, OldAmount + Amount)), T) :-
     hold(Fluent, (Agent, (B, C, D, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, C, D, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (A, B, OldAmount + Amount)), T) :- 
@@ -127,7 +127,7 @@ operation(Name, Input, (Agent, (A, B, OldAmount + Amount)), T) :-
     hold(Fluent, (Agent, (A, B, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (A, B, C, OldAmount + Amount)), T) :- 
@@ -135,7 +135,7 @@ operation(Name, Input, (Agent, (A, B, C, OldAmount + Amount)), T) :-
     hold(Fluent, (Agent, (A, B, C, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, C, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (B, OldAmount - Amount)), T) :- 
@@ -143,7 +143,7 @@ operation(Name, Input, (Agent, (B, OldAmount - Amount)), T) :-
     hold(Fluent, (Agent, (B, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (OldAmount - Amount)), T) :- 
@@ -151,7 +151,7 @@ operation(Name, Input, (Agent, (OldAmount - Amount)), T) :-
     hold(Fluent, (Agent, (OldAmount,)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (B, C, OldAmount - Amount)), T) :- 
@@ -159,7 +159,7 @@ operation(Name, Input, (Agent, (B, C, OldAmount - Amount)), T) :-
     hold(Fluent, (Agent, (B, C, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, C,  Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 % boolean operations
 operation(Name, Input, true, T) :- 
@@ -225,35 +225,60 @@ operation(Name, Input, true, T) :-
     time(T). 
 
 operation(Name, Input, true, T) :- 
-    Name = not_changed_relevant,
+    Name = not_changed_last,
     Value = (A, _), 
-    NewChanges = (A, _),
+    NewChanges = (A1, _),
+    A1 != A,
     require(Name, Input, T),
-    Value = 2,
-    Input = (Agent, Fluent, NewChanges, Value),
+    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
     time(T+1). 
 
 operation(Name, Input, true, T) :- 
-    Name = not_changed_relevant,
+    Name = not_changed_last,
     Value = (A, B, _),  
-    NewChanges = (A, B, _),
+    NewChanges = (A1, B1, _),
+    A1 != A,
     require(Name, Input, T),
-    Value = 3,
-    Input = (Agent, Fluent, Value, NewChanges, Value),
+    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
+    time(T+1). 
+operation(Name, Input, true, T) :- 
+    Name = not_changed_last,
+    Value = (A, B, _),  
+    NewChanges = (A1, B1, _),
+    B != B1,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
     time(T+1). 
 
 operation(Name, Input, true, T) :- 
-    Name = not_changed_relevant,
+    Name = not_changed_last,
     Value = (A, B, C, _),  
-    NewChanges = (A, B, C, _),
+    NewChanges = (A1, B1, C1, _),
+    A1 != A,
     require(Name, Input, T),
-    Value = 4,
-    Input = (Agent, Fluent, Value, NewChanges, Value),
+    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
+    time(T+1). 
+operation(Name, Input, true, T) :- 
+    Name = not_changed_last,
+    Value = (A, B, C, _),  
+    NewChanges = (A1, B1, C1, _),
+    B1 != B,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
+    time(T+1). 
+
+operation(Name, Input, true, T) :- 
+    Name = not_changed_last,
+    Value = (A, B, C, _),  
+    NewChanges = (A1, B1, C1, _),
+    C1 != C,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
     time(T+1). 
 
 boolean_condition(greater).
 boolean_condition(has).
-boolean_condition(not_changed_relevant).
+boolean_condition(not_changed_last).
 operation(Name, Input, false, T) :- 
     boolean_condition(Name),
     not operation(Name, Input, true, T), 

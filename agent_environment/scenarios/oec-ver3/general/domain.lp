@@ -50,29 +50,29 @@ action(Agent, deliver_quality, (Agent, ToAgent, Item, Quality, Amount)) :- deliv
 % DYNAMIC LAWS
 % payment
 % pay money
-causes(Agent, pay, Value, total_sent_payment, increase, (Agent, pay, Value, total_sent_payment)) :- action(Agent, pay, Value).
-causes(Agent, pay, Value, available_funds, decrease, (Agent, pay, Value, available_funds)) :- action(Agent, pay, Value).
+causes(Agent, pay, Value, total_sent_payment, increase, ()) :- action(Agent, pay, Value).
+causes(Agent, pay, Value, available_funds, decrease, ()) :- action(Agent, pay, Value).
 % receive payment 
-causes(Agent, receive_money, Value, total_received_payment, increase, (Agent, receive_money, Value, total_received_payment)) :- action(Agent, receive_money, Value).
-causes(Agent, receive_money, Value, available_funds, increase, (Agent, receive_money, Value, available_funds)) :- action(Agent, receive_money, Value).
+causes(Agent, receive_money, Value, total_received_payment, increase, ()) :- action(Agent, receive_money, Value).
+causes(Agent, receive_money, Value, available_funds, increase, ()) :- action(Agent, receive_money, Value).
 % receive items
-causes(Agent, receive, Value, available_item, increase, (Agent, receive, Value, available_item)) :- action(Agent, receive, Value).
-causes(Agent, receive, Value, total_received, increase, (Agent, receive, Value, total_received)) :- action(Agent, receive, Value).
+causes(Agent, receive, Value, available_item, increase, ()) :- action(Agent, receive, Value).
+causes(Agent, receive, Value, total_received, increase, ()) :- action(Agent, receive, Value).
 %
-causes(Agent, receive_quality, Value, available_quality_item, increase, (Agent, receive_quality, Value, available_quality_item)) :- action(Agent, receive_quality, Value).
-causes(Agent, receive_quality, Value, total_received_quality, increase, (Agent, receive_quality, Value, total_received_quality)) :- action(Agent, receive_quality, Value).
+causes(Agent, receive_quality, Value, available_quality_item, increase, ()) :- action(Agent, receive_quality, Value).
+causes(Agent, receive_quality, Value, total_received_quality, increase, ()) :- action(Agent, receive_quality, Value).
 % produce
-causes(Agent, produce, Value, available_item, increase, (Agent, produce, Value, available_item)) :- action(Agent, produce, Value).
-causes(Agent, produce, Value, total_produced, increase, (Agent, produce, Value, total_produced)) :- action(Agent, produce, Value).
+causes(Agent, produce, Value, available_item, increase, ()) :- action(Agent, produce, Value).
+causes(Agent, produce, Value, total_produced, increase, ()) :- action(Agent, produce, Value).
 %
-causes(Agent, produce_quality, Value, available_quality_item, increase, (Agent, produce_quality, Value, available_quality_item)) :- action(Agent, produce_quality, Value).
-causes(Agent, produce_quality, Value, total_produced_quality, increase, (Agent, produce_quality, Value, total_produced_quality)) :- action(Agent, produce_quality, Value).
+causes(Agent, produce_quality, Value, available_quality_item, increase, ()) :- action(Agent, produce_quality, Value).
+causes(Agent, produce_quality, Value, total_produced_quality, increase, ()) :- action(Agent, produce_quality, Value).
 % deliver
-causes(Agent, deliver, Value, available_item, decrease, (Agent, deliver, Value, available_item)) :- action(Agent, deliver, Value).
-causes(Agent, deliver, Value, total_delivered, increase, (Agent, deliver, Value, total_delivered)) :- action(Agent, deliver, Value).
+causes(Agent, deliver, Value, available_item, decrease, ()) :- action(Agent, deliver, Value).
+causes(Agent, deliver, Value, total_delivered, increase, ()) :- action(Agent, deliver, Value).
 %
-causes(Agent, deliver_quality, Value, available_quality_item, decrease, (Agent, deliver_quality, Value, available_quality_item)) :- action(Agent, deliver_quality, Value).
-causes(Agent, deliver_quality, Value, total_delivered_quality, increase, (Agent, deliver_quality, Value, total_delivered_quality)) :- action(Agent, deliver_quality, Value).
+causes(Agent, deliver_quality, Value, available_quality_item, decrease, ()) :- action(Agent, deliver_quality, Value).
+causes(Agent, deliver_quality, Value, total_delivered_quality, increase, ()) :- action(Agent, deliver_quality, Value).
 
 % static causal laws
 
@@ -99,11 +99,11 @@ satisfy_condition(Agent, can_receive_quality, has, (Agent, receive_quality, Valu
 executable(Agent, receive_money, Value, can_receive_money) :- action(Agent, receive_money, Value).
 satisfy_condition(Agent, can_receive_money, has, (Agent, receive_money, Value, sent_payment, FromAgent, Reason)) :- receiving_reason(Agent, FromAgent, Reason), action(Agent, receive_money, Value).
 %
-inertial(Agent, received, not_changed_last, 3) :- recv_item(Agent, FromAgent, Item).
-inertial(Agent, received_quality, not_changed_last, 4) :- recv_item(Agent, FromAgent, Item, Quality).
-inertial(Agent, delivered, not_changed_last, 3) :- deliver_item(Agent, ToAgent, Item).
-inertial(Agent, delivered_quality, not_changed_last, 4) :- deliver_item(Agent, ToAgent, Item, Quality).
-inertial(Agent, produced, not_changed_last, 2) :- produce_item(Agent, Item).
-inertial(Agent, produced_quality, not_changed_last, 3) :- produce_item(Agent, Item, Quality).
-inertial(Agent, available_item, not_changed_last, 2) :- item(Agent, Item).
-inertial(Agent, available_item_quality, not_changed_last, 3) :- item(Agent, Item, Quality).
+inertial(Agent, total_received, not_changed_last, ()) :- recv_item(Agent, FromAgent, Item).
+inertial(Agent, total_received_quality, not_changed_last, ()) :- recv_item(Agent, FromAgent, Item, Quality).
+inertial(Agent, total_delivered, not_changed_last, ()) :- deliver_item(Agent, ToAgent, Item).
+inertial(Agent, total_delivered_quality, not_changed_last, ()) :- deliver_item(Agent, ToAgent, Item, Quality).
+inertial(Agent, total_produced, not_changed_last, ()) :- produce_item(Agent, Item).
+inertial(Agent, total_produced_quality, not_changed_last, ()) :- produce_item(Agent, Item, Quality).
+inertial(Agent, available_item, not_changed_last, ()) :- item(Agent, Item).
+inertial(Agent, available_item_quality, not_changed_last, ()) :- item(Agent, Item, Quality).
