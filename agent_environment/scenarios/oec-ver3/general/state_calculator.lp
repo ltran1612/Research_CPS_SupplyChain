@@ -1,6 +1,8 @@
 % executability
-possible(Action, Value, Time) :- executable(Agent, Action, Value, ConditionFluent), hold(ConditionFluent, _, Time), time(Time).
+possible(Action, Value, Time) :- executable(Agent, Action, Value, ConditionFluent), hold(ConditionFluent, (Agent, Action, Value, _), Time), type(ConditionFluent, parameterized), time(Time).
+possible(Action, Value, Time) :- executable(Agent, Action, Value, ConditionFluent), hold(ConditionFluent, _, Time), not type(ConditionFluent, parameterized), time(Time).
 possible(Action, Value, Time) :- not executable(Agent, Action, Value, _), action(Agent, Action, Value), time(Time). 
+failed(Action, Value, Time) :- occur(Action, Value, Time), not possible(Action, Value, Time), time(Time).
 % inputs
 require(Operation, (Agent, Action, Value, Fluent, Input), T) :- causes(Agent, Action, Value, Fluent, Operation, Input), possible(Action, Value, T), occur(Action, Value, T), time(T).
 require(Operation, Input, T) :- satisfy_condition(Agent, ConditionFluent, Operation, Input), time(T).
