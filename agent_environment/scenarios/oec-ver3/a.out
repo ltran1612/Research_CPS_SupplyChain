@@ -1,0 +1,245 @@
+% FLUENTS
+fluent(sent_payment). 
+fluent(received_payment). 
+%
+fluent(total_sent_payment). 
+fluent(total_received_payment). 
+%
+fluent(available_funds).
+%
+fluent(produced).
+fluent(produced_quality).
+%
+fluent(total_produced).
+fluent(total_produced_quality).
+%
+fluent(delivered).
+fluent(delivered_quality).
+%
+fluent(total_delivered).
+fluent(total_delivered_quality).
+%
+fluent(received).
+fluent(received_quality).
+%
+fluent(total_received).
+fluent(total_received_quality).
+%
+fluent(available_item).
+fluent(available_item_quality).
+%
+fluent(enough_funds).
+fluent(enough_item).
+fluent(enough_item_quality).
+fluent(can_receive).
+fluent(can_receive_quality).
+fluent(can_receive_money).
+%
+% type(S
+type(sent_payment, parameterized). 
+type(received_payment, parameterized). 
+%
+type(total_sent_payment, parameterized). 
+type(total_received_payment, parameterized). 
+%
+type(available_funds, parameterized).
+%
+type(produced, parameterized).
+type(produced_quality, parameterized).
+%
+type(total_produced, parameterized).
+type(total_produced_quality, parameterized).
+%
+type(delivered, parameterized).
+type(delivered_quality, parameterized).
+%
+type(total_delivered, parameterized).
+type(total_delivered_quality, parameterized).
+%
+type(received, parameterized).
+type(received_quality, parameterized).
+%
+type(total_received, parameterized).
+type(total_received_quality, parameterized).
+%
+type(available_item, parameterized).
+type(available_item_quality, parameterized).
+%
+type(enough_funds, parameterized).
+type(enough_item, parameterized).
+type(enough_item_quality, parameterized).
+type(can_receive, parameterized).
+type(can_receive_quality, parameterized).
+type(can_receive_money, parameterized).
+
+% operations operation(Name, Input, (A, B, Amount + OldAmount), T+1) :- Name = increase_3_3_3, occur(Action, (Agent, A, B, Amount), T), hold(Fluent, (Agent, A, B, OldAmount), T), require(Input), Input = (Agent, Action, Fluent), time(T+1).
+%
+operation(Name, Input, (OldAmount - Amount), T) :- 
+    Name = decrease_3_1_1,
+    occur(Action, (Agent, A, B, Amount), T), 
+    hold(Fluent, (Agent, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (OldAmount + Amount), T) :- 
+    Name = increase_3_1_1,
+    occur(Action, (Agent, A, B, Amount), T), 
+    hold(Fluent, (Agent, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+% 
+operation(Name, Input, (C, OldAmount + Amount), T) :- 
+    Name = increase_4_2_2,
+    occur(Action, (Agent, A, B, C, Amount), T), 
+    hold(Fluent, (Agent, C, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (C, D, OldAmount + Amount), T) :- 
+    Name = increase_5_3_3,
+    occur(Action, (Agent, A, B, C, D, Amount), T), 
+    hold(Fluent, (Agent, C, D, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (B, C, OldAmount + Amount), T) :- 
+    Name = increase_4_3_3,
+    occur(Action, (Agent, A, B, C, Amount), T), 
+    hold(Fluent, (Agent, B, C, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (B, C, D, OldAmount + Amount), T) :- 
+    Name = increase_5_4_4,
+    occur(Action, (Agent, A, B, C, D, Amount), T), 
+    hold(Fluent, (Agent, B, C, D, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (A, OldAmount + Amount), T) :- 
+    Name = increase_2_2_2,
+    occur(Action, (Agent, A, Amount), T), 
+    hold(Fluent, (Agent, A, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (A, B, OldAmount + Amount), T) :- 
+    Name = increase_3_3_3,
+    occur(Action, (Agent, A, B, Amount), T), 
+    hold(Fluent, (Agent, A, B, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (A, B, C, OldAmount + Amount), T) :- 
+    Name = increase_4_4_4,
+    occur(Action, (Agent, A, B, C, Amount), T), 
+    hold(Fluent, (Agent, A, B, C, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (B, OldAmount - Amount), T) :- 
+    Name = decrease_3_2_2,
+    occur(Action, (Agent, A, B, Amount), T), 
+    hold(Fluent, (Agent, B, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (B, C, OldAmount - Amount), T) :- 
+    Name = decrease_4_3_3,
+    occur(Action, (Agent, A, B, C, Amount), T), 
+    hold(Fluent, (Agent, B, C, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+
+% boolean operations
+operation(Name, Input, (Amount, OldAmount, Result), T) :- 
+    Name = greater_3_1_3,
+    Result = Amount >= OldAmount, 
+    occur(Action, (Agent, A, B, Amount), T), 
+    hold(Fluent, (Agent, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (Amount, OldAmount, Result), T) :- 
+    Name = greater_3_2_3,
+    Result = Amount >= OldAmount, 
+    occur(Action, (Agent, A, B, Amount), T), 
+    hold(Fluent, (Agent, B, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (Amount, OldAmount, Result), T) :- 
+    Name = greater_4_3_3,
+    Result = Amount >= OldAmount, 
+    occur(Action, (Agent, A, B, C, Amount), T), 
+    hold(Fluent, (Agent, B, C, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+%
+operation(Name, Input, (Amount, OldAmount, Result), T) :- 
+    Name = greater_4_3_3,
+    Result = Amount >= OldAmount, 
+    occur(Action, (Agent, A, B, C, Amount), T), 
+    hold(Fluent, (Agent, B, C, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent),
+    time(T). 
+
+operation(Name, Input, (A, B, C, Amount), T) :- 
+    Name = has_4_4_4,
+    Result = Amount >= OldAmount, 
+    occur(Action, (Agent, A, B, C, Amount), T), 
+    hold(Fluent, (Agent, A, B, C, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent, A, B),
+    time(T). 
+
+operation(Name, Input, (A, B, C, D, Amount), T) :- 
+    Name = has_5_5_5,
+    Result = Amount >= OldAmount, 
+    occur(Action, (Agent, A, B, C, D, Amount), T), 
+    hold(Fluent, (Agent, A, B, C, D, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent, A, B),
+    time(T). 
+
+operation(Name, Input, (FromAgent, B, Item, Amount), T) :- 
+    Name = has_4_4_4,
+    Result = Amount >= OldAmount, 
+    occur(Action, (Agent, FromAgent, B, Item, Amount), T), 
+    hold(Fluent, (FromAgent, Agent, B, Item, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent, FromAgent, Item),
+    time(T). 
+
+operation(Name, Input, (FromAgent, B, Item, Amount), T) :- 
+    Name = has_4_4_4,
+    Result = Amount >= OldAmount, 
+    occur(Action, (Agent, FromAgent, B, Item, Amount), T), 
+    hold(Fluent, (FromAgent, Agent, B, Item, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent, FromAgent, Item),
+    time(T). 
+
+operation(Name, Input, (FromAgent, B, Item, Quality, Amount), T) :- 
+    Name = has_5_5_5,
+    Result = Amount >= OldAmount, 
+    occur(Action, (Agent, FromAgent, B, Item, Quality, Amount), T), 
+    hold(Fluent, (FromAgent, Agent, B, Item, Quality, OldAmount), T), 
+    require(Input),
+    Input = (Agent, Action, Fluent, FromAgent, Item, Quality),
+    time(T). 

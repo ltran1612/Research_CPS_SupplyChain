@@ -1,70 +1,72 @@
 % test 1 - test produce with item with quality- normal case, edge case
 % expect satisfaction 
 % test state
-produce_item(wood, 0..10).
+produce_item(test, wood, 0..10).
 time(0..10).
+number(201).
+number(100).
+number(1).
 
 % test condition
 % test initial state
-:- not hold(available_item(wood, 0, 3), 0). 
+% :- not hold(available_quality_item, (test, (wood, 3, 0)), 0). 
+% #show require/3.
 
 % test dynamic law 
-occur(produce(wood, 100, 1), 1).
+occur(produce_quality, (test, wood, 1, 100), 1).
+#show hold/3.
 % edge case 1
-:- not hold(available_item(wood, 0, 1), 1). 
-:- not hold(available_item(wood, 100, 1), 2). 
-%
-:- not hold(produced(wood, 0, 1), 1). 
-:- not hold(produced(wood, 100, 1), 2). 
-%
-:- hold(produced(wood, 0, 1), 2). 
-:- hold(produced(wood, 200, 1), 2). 
+:- not hold(available_quality_item, (test, (wood, 1, 0)), 1). 
+:- not hold(available_quality_item, (test, (wood, 1, 100)), 2). 
+% %
+:- not hold(total_produced_quality, (test, (wood, 1, 0)), 1). 
+:- not hold(total_produced_quality, (test, (wood, 1, 100)), 2). 
+% %
+:- hold(total_produced_quality, (test, (wood, 1, 0)), 2). 
+:- hold(total_produced_quality, (test, (wood, 1, 200)), 2). 
 
-% middle case
-occur(produce(wood, 201, 1), 5).
+% % middle case
+occur(produce_quality, (test, wood, 1, 201), 5).
 %
-:- not hold(available_item(wood, 100, 1), 5). 
-:- not hold(available_item(wood, 301, 1), 6). 
-%
-:- not hold(produced(wood, 100, 1), 5). 
-:- not hold(produced(wood, 301, 1), 6). 
-%
-:- hold(produced(wood, 0, 1), 6). 
-:- hold(produced(wood, 100, 1), 6). 
-:- hold(produced(wood, 200, 1), 6). 
+:- not hold(available_quality_item, (test, (wood, 1, 100)), 5). 
+:- not hold(available_quality_item, (test, (wood, 1, 301)), 6). 
 
-% middle case
-occur(produce(wood, 1, 1), 8).
+:- not hold(total_produced_quality, (test, (wood, 1, 100)), 5). 
+:- not hold(total_produced_quality, (test, (wood, 1, 301)), 6). 
 %
-:- not hold(available_item(wood, 301, 1), 8). 
-:- not hold(available_item(wood, 302, 1), 9). 
-%
-:- not hold(produced(wood, 301, 1), 8). 
-:- not hold(produced(wood, 302, 1), 9). 
-%
-:- hold(produced(wood, 0, 1), 8). 
-:- hold(produced(wood, 100, 1), 8). 
-:- hold(produced(wood, 300, 1), 8). 
-:- hold(produced(wood, 200, 1), 9). 
+:- hold(total_produced_quality, (test, (wood, 1, 0)), 6). 
+:- hold(total_produced_quality, (test, (wood, 1, 100)), 6). 
+:- hold(total_produced_quality, (test, (wood, 1, 200)), 6). 
 
-% edge case 2
-occur(produce(wood, 1, 1), 10).
-%
-:- not hold(available_item(wood, 302, 1), 10). 
-% time ends at 10
-:- hold(available_item(wood, 303, 1), 11). 
-:- hold(available_item(wood, 302, 1), 11). 
-:- hold(available_item(wood, 301, 1), 11). 
-%
-:- hold(produced(wood, 301, 1), 11). 
-:- hold(produced(wood, 302, 1), 11). 
-:- hold(produced(wood, 303, 1), 11). 
+% % middle case
+occur(produce_quality, (test, wood, 1, 1), 8).
+% %
+:- not hold(available_quality_item, (test, (wood, 1, 301)), 8). 
+:- not hold(available_quality_item, (test, (wood, 1, 302)), 9). 
+% %
+:- not hold(total_produced_quality, (test, (wood, 1, 301)), 8). 
+:- not hold(total_produced_quality, (test, (wood, 1, 302)), 9). 
+% %
+:- hold(total_produced_quality, (test, (wood, 1, 0)), 8). 
+:- hold(total_produced_quality, (test, (wood, 1, 100)), 8). 
+:- hold(total_produced_quality, (test, (wood, 1, 300)), 9). 
+:- hold(total_produced_quality, (test, (wood, 1, 200)), 9). 
 
-% test inertial rules
-:- not hold(produced(wood, 301, 1), 6..8). 
-:- not hold(produced(wood, 302, 1), 9..10). 
-:- not hold(produced(wood, 100, 1), 2..5). 
-:- hold(produced(wood, _), 11). 
-:- hold(produced(wood, 0, 1), 7..10). 
-:- hold(produced(wood, 100, 1), 7..10). 
-:- hold(produced(wood, 201, 1), 7..10). 
+% % edge case 2
+occur(produce_quality, (test, wood, 1, 1), 10).
+% %
+:- not hold(available_quality_item, (test, (wood, 1, 302)), 10). 
+% % time ends at 10
+:- hold(available_quality_item, (test, (wood, 1, 302)), 11). 
+:- hold(available_quality_item, (test, (wood, 1, 302)), 11). 
+:- hold(available_quality_item, (test, (wood, 1, 301)), 11). 
+% %
+:- hold(total_produced_quality, (test, (wood, 1, 301)), 11). 
+:- hold(total_produced_quality, (test, (wood, 1, 302)), 11). 
+:- hold(total_produced_quality, (test, (wood, 1, 303)), 11). 
+
+% % test inertial rules
+:- hold(total_produced_quality, (test, (wood, 1, 301)), 9..10). 
+:- hold(total_produced_quality, (test, (wood, 1, 201)), 2..5). 
+:- hold(total_produced_quality, (test, (wood, 1, _)), 11). 
+:- hold(total_produced_quality, (test, (wood, 1, 0)), 7..10). 

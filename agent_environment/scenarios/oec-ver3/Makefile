@@ -1,4 +1,4 @@
-DOMAIN = general/domain.lp 
+DOMAIN = general/domain.lp general/global_domain.lp general/state_calculator.lp
 INIT = general/init.lp
 PLAN = general/plan.lp
 HIDE_WARNING = -q2,2,2 --warn no-atom-undefined -V0
@@ -8,7 +8,7 @@ all: test1 test2 test3 test4 test5 test6 test7 test8 test9 test10 test11 test12 
 test1:
 	echo $@
 	head -n2 tests/test1.lp
-	@-clingo ${DOMAIN} ${INIT} tests/test1.lp  ${HIDE_WARNING}
+	@-clingo ${DOMAIN} ${INIT} tests/test1.lp ${HIDE_WARNING}
 	head -n2 tests/test1.1.lp
 	@-clingo ${DOMAIN} ${INIT} tests/test1.1.lp  ${HIDE_WARNING}
 	echo ""
@@ -17,7 +17,7 @@ test1:
 test2:
 	echo $@
 	head -n2 tests/test2.lp
-	@-clingo ${DOMAIN} tests/test2.lp   ${HIDE_WARNING}
+	@-clingo ${DOMAIN} tests/test2.lp   
 	
 	echo "" 
 	head -n2 tests/test2.1.lp

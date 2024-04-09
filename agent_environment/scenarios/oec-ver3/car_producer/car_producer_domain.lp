@@ -1,3 +1,9 @@
+recv_item(car_producer, speedy_auto_parts, vehicle_parts).
+pay_item(car_producer, speedy_auto_parts, vehicle_parts).
+recv_item(car_producer, precision_engine, engines).
+pay_item(car_producer, precision_engine, engines).
+recv_item(car_producer, sonic_electronics, radios).
+pay_item(car_producer, sonic_electronics, radios).
 % RECEIVING FROM AGENTS
 
 % ITEMS
@@ -40,12 +46,12 @@ action(Agent, pay, (Agent, ToAgent, Reason, Amount)) :- number(Amount), paying_r
 % TODO
 action(Agent, receive_money, (Agent, FromAgent, Reason, Amount)) :- hold(sent_payment, (Agent, (FromAgent, _, Reason, Amount)), _), receiving_reason(Agent, FromAgent, Reason). 
 action(Agent, receive, (Agent, FromAgent, Time, Item, Amount)) :- hold(delivered, (Agent, (FromAgent, Time, Item, Amount)), _), recv_item(Agent, FromAgent, Item).
-action(Agent, receive_quality, (Agent, FromAgent, Time, Item, Quality, Amount)) :- hold(delivered, (Agent, (FromAgent, _, Item, Quality, Amount)), Time), recv_item(Agent, FromAgent, Item, Quality).
+action(Agent, receive_quality, (Agent, FromAgent, Time, Item, Amount, Quality)) :- hold(delivered, (Agent, (FromAgent, _, Item, Quality, Amount)), Time), recv_item(Agent, FromAgent, Item, Quality).
 %
 action(Agent, produce, (Agent, Item, Amount)) :- produce_item(Agent, Item), number(Amount).
-action(Agent, produce_quality, (Agent, Item, Quality, Amount)) :- produce_item(Agent, Item, Quality), number(Amount).
+action(Agent, produce_quality, (Agent, Item, Amount, Quality)) :- produce_item(Agent, Item, Quality), number(Amount).
 action(Agent, deliver, (Agent, ToAgent, Item, Amount)) :- deliver_item(Agent, ToAgent, Item), number(Amount).
-action(Agent, deliver_quality, (Agent, ToAgent, Item, Quality, Amount)) :- deliver_item(Agent, ToAgent, Item, Quality), number(Amount).
+action(Agent, deliver_quality, (Agent, ToAgent, Item, Amount, Quality)) :- deliver_item(Agent, ToAgent, Item, Quality), number(Amount).
 
 % DYNAMIC LAWS
 % payment
@@ -86,7 +92,7 @@ executable(Agent, deliver, Value, enough_item) :- action(Agent, deliver, Value).
 satisfy_condition(Agent, enough_item, greater, (Agent, deliver, Value, available_item)) :- action(Agent, deliver, Value). 
 %
 executable(Agent, deliver_quality, Value, enough_item_quality) :- action(Agent, deliver_quality, Value).
-satisfy_condition(Agent, enough_item_quality, greater, (Agent, deliver_quality, Value, available_quality_item)) :- action(Agent, deliver_quality, Value).
+satisfy_condition(Agent, enough_item_quality, greater, (Agent, deliver_quality, Value, available_item_quality)) :- action(Agent, deliver_quality, Value).
 
 % from agent, sent at time, item, number
 executable(Agent, receive, Value, can_receive) :- action(Agent, receive, Value).
@@ -98,12 +104,3 @@ satisfy_condition(Agent, can_receive_quality, has, (Agent, receive_quality, Valu
 % from agent, sent at time, reason, amount
 executable(Agent, receive_money, Value, can_receive_money) :- action(Agent, receive_money, Value).
 satisfy_condition(Agent, can_receive_money, has, (Agent, receive_money, Value, sent_payment, FromAgent, Reason)) :- receiving_reason(Agent, FromAgent, Reason), action(Agent, receive_money, Value).
-%
-inertial(Agent, received, not_changed_last, 3) :- recv_item(Agent, FromAgent, Item).
-inertial(Agent, received_quality, not_changed_last, 4) :- recv_item(Agent, FromAgent, Item, Quality).
-inertial(Agent, delivered, not_changed_last, 3) :- deliver_item(Agent, ToAgent, Item).
-inertial(Agent, delivered_quality, not_changed_last, 4) :- deliver_item(Agent, ToAgent, Item, Quality).
-inertial(Agent, produced, not_changed_last, 2) :- produce_item(Agent, Item).
-inertial(Agent, produced_quality, not_changed_last, 3) :- produce_item(Agent, Item, Quality).
-inertial(Agent, available_item, not_changed_last, 2) :- item(Agent, Item).
-inertial(Agent, available_item_quality, not_changed_last, 3) :- item(Agent, Item, Quality).
