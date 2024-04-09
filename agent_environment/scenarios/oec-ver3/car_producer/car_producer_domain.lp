@@ -92,7 +92,7 @@ executable(Agent, deliver, Value, enough_item) :- action(Agent, deliver, Value).
 satisfy_condition(Agent, enough_item, greater, (Agent, deliver, Value, available_item)) :- action(Agent, deliver, Value). 
 %
 executable(Agent, deliver_quality, Value, enough_item_quality) :- action(Agent, deliver_quality, Value).
-satisfy_condition(Agent, enough_item_quality, greater, (Agent, deliver_quality, Value, available_item_quality)) :- action(Agent, deliver_quality, Value).
+satisfy_condition(Agent, enough_item_quality, greater, (Agent, deliver_quality, Value, available_quality_item)) :- action(Agent, deliver_quality, Value).
 
 % from agent, sent at time, item, number
 executable(Agent, receive, Value, can_receive) :- action(Agent, receive, Value).

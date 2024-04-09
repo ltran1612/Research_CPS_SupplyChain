@@ -26,7 +26,7 @@ fluent(total_received).
 fluent(total_received_quality).
 %
 fluent(available_item).
-fluent(available_item_quality).
+fluent(available_quality_item).
 %
 fluent(enough_funds).
 fluent(enough_item).
@@ -63,7 +63,7 @@ type(total_received, parameterized).
 type(total_received_quality, parameterized).
 %
 type(available_item, parameterized).
-type(available_item_quality, parameterized).
+type(available_quality_item, parameterized).
 %
 type(enough_funds, parameterized).
 type(enough_item, parameterized).

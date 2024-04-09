@@ -21,7 +21,7 @@ test2:
 	
 	echo "" 
 	head -n2 tests/test2.1.lp
-	@-clingo ${DOMAIN} tests/test2.1.lp   ${HIDE_WARNING}
+	@-clingo ${DOMAIN} tests/test2.1.lp ${HIDE_WARNING} 
 
 	echo "" 
 	head -n2 tests/test2.2.lp

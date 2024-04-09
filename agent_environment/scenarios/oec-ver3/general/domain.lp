@@ -106,4 +106,4 @@ inertial(Agent, total_delivered_quality, not_changed_last, ()) :- deliver_item(A
 inertial(Agent, total_produced, not_changed_last, ()) :- produce_item(Agent, Item).
 inertial(Agent, total_produced_quality, not_changed_last, ()) :- produce_item(Agent, Item, Quality).
 inertial(Agent, available_item, not_changed_last, ()) :- item(Agent, Item).
-inertial(Agent, available_item_quality, not_changed_last, ()) :- item(Agent, Item, Quality).
+inertial(Agent, available_quality_item, not_changed_last, ()) :- item(Agent, Item, Quality).
