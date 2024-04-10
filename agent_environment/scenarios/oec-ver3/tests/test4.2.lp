@@ -1,14 +1,17 @@
 % test 4 - test pay money  - test error case of not having enough money
-% expect unsatisfaction.
+% expect satisfaction.
 % test state
 time(0..10).
-hold(available_funds(100), 0).
-hold(payment(agent1, sent, the_item, 0), 0).
-hold(payment(agent2, sent, the_service, 0), 0).
-pay_item(agent1, the_item).
-pay_item(agent2, the_service).
+hold(available_funds, (test, (100,)), 0).
+hold(total_sent_payment, (test, (agent1, the_item, 0)), 0).
+hold(total_sent_payment, (test, (agent2, the_service, 0)), 0).
+pay_item(test, agent1, the_item).
+pay_item(test, agent2, the_service).
 
 % test condition
 % test dynamic law 
 % edge case 1 
-occur(pay(agent1, the_item, 101), 1).
+occur(pay, (test, agent1, the_item, 101), 1).
+:- not hold(available_funds, (test, (100,)), 2..10).
+:- not hold(total_sent_payment, (test, (agent1, the_item, 0)), 2..10).
+:- not hold(total_sent_payment, (test, (agent2, the_service, 0)), 2..10).

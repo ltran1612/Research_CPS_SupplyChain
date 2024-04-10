@@ -109,3 +109,10 @@ occur(deliver_quality, (test, agent2, steel, 1, 1), 6).
 % % agent with quality will not affect the others agent with quality
 :- hold(total_delivered_quality, (test, (agent2, wood, 2..10, Amount)), 0..10), not Amount == 0. 
 :- hold(available_quality_item, (test, (agent2, wood, 2..10, Amount)), 0..10), not Amount == 201. 
+
+% test delivered_quality to keep track of delivered stuffs. 
+:- not hold(delivered_quality, (test, (agent1, 1, wood, 1, 100)), 2..10).
+:- not hold(delivered_quality, (test, (agent1, 5, wood, 1, 1)), 6..10).
+:- not hold(delivered_quality, (test, (agent1, 7, wood, 1, 1)), 8..10).
+:- not hold(delivered_quality, (test, (agent2, 0, steel, 1, 100)), 1..10).
+:- not hold(delivered_quality, (test, (agent2, 6, steel, 1, 1)), 8..10).
