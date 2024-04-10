@@ -48,3 +48,7 @@ occur(pay, (test, agent1, the_item, 1), 10).
 % % test inertial rules
 :- not hold(available_funds, (test, (2,)), 6..9).
 :- not hold(total_sent_payment, (test, (agent1, the_item, 98)), 6..9).
+% 
+:- not hold(sent_payment, (test, (agent1, 1, the_item, 50)), 2..10).
+:- not hold(sent_payment, (test, (agent1, 5, the_item, 48)), 6..10).
+:- not hold(sent_payment, (test, (agent2, 9, the_service, 1)), 10).
