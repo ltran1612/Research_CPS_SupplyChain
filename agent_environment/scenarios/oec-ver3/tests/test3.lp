@@ -12,14 +12,14 @@ number(100).
 :- not hold(available_item, (test, (wood, 0)), 0). 
 
 % test dynamic law 
-occur(produce, (test, wood, 100), 1).
+occur(produce, (test, (wood, 100)), 1).
 :- not hold(available_item, (test, (wood, 0)), 1). 
 :- not hold(available_item, (test, (wood, 100)), 2). 
 :- not hold(total_produced, (test, (wood, 100)), 2). 
 :- hold(total_produced, (test, (wood, 0)), 2). 
 :- not hold(total_delivered, (test, (agent1, wood, 0)), 2). 
 %
-occur(deliver, (test, agent1, wood, 100), 2).
+occur(deliver, (test, (agent1, wood, 100)), 2).
 :- not hold(available_item, (test, (wood, 100)), 2). 
 :- not hold(available_item, (test, (wood, 0)), 3). 
 :- not hold(total_delivered, (test, (agent1, wood, 0)), 2). 
@@ -29,7 +29,7 @@ occur(deliver, (test, agent1, wood, 100), 2).
 :- hold(total_produced, (test, (wood, 0)), 3..5). 
 :- not hold(total_produced, (test, (wood, 100)), 3..5). 
 % %
-occur(produce, (test, wood, 100), 5).
+occur(produce, (test, (wood, 100)), 5).
 :- not hold(available_item, (test, (wood, 0)), 5). 
 :- not hold(available_item, (test, (wood, 100)), 6). 
 :- not hold(total_produced, (test, (wood, 200)), 6). 

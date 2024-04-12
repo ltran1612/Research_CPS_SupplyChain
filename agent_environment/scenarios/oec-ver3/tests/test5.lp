@@ -16,7 +16,7 @@ number(102).
 % test dynamic law 
 hold(sent_payment, (agent1, (test, 0, receiving_item, 50)), 0).
 %
-occur(receive_money, (test, agent1, 0, receiving_item, 50), 1).
+occur(receive_money, (test, (agent1, 0, receiving_item, 50)), 1).
 :- not hold(available_funds, (test, (0,)), 1).
 :- not hold(available_funds, (test, (50,)), 2).
 %
@@ -25,7 +25,7 @@ occur(receive_money, (test, agent1, 0, receiving_item, 50), 1).
 
 % receive money 2 (with a gap from 1) 
 hold(sent_payment, (agent1, (test, 1, receiving_item, 101)), 1).
-occur(receive_money, (test, agent1, 1, receiving_item, 101), 3).
+occur(receive_money, (test, (agent1, 1, receiving_item, 101)), 3).
 :- not hold(available_funds, (test, (50,)), 3).
 :- not hold(available_funds, (test, (151,)), 4..5).
 %
@@ -34,7 +34,7 @@ occur(receive_money, (test, agent1, 1, receiving_item, 101), 3).
 
 % % receive money 3 (continuation of 2)
 hold(sent_payment, (agent1, (test, 2, receiving_item, 102)), 2).
-occur(receive_money, (test, agent1, 2, receiving_item, 102), 5).
+occur(receive_money, (test, (agent1, 2, receiving_item, 102)), 5).
 :- not hold(available_funds, (test, (151,)), 5).
 :- not hold(available_funds, (test, (253,)), 6..7).
 %
@@ -46,7 +46,7 @@ occur(receive_money, (test, agent1, 2, receiving_item, 102), 5).
 
 % % receive money 4 for apple (continuation of 2)
 hold(sent_payment, (agent2, (test, 3, receiving_apple, 102)), 3).
-occur(receive_money, (test, agent2, 3, receiving_apple, 102), 7).
+occur(receive_money, (test, (agent2, 3, receiving_apple, 102)), 7).
 :- not hold(total_received_payment, (test, (agent2,receiving_apple, 102)), 8..10).
 :- not hold(total_received_payment, (test, (agent2,receiving_apple, 0)), 0..7).
 :- hold(total_received_payment, (test, (agent2,receiving_apple, 102)), 0..7).

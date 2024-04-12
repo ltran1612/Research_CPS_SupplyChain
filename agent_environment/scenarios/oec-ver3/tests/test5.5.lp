@@ -17,6 +17,6 @@ number(10).
 % test dynamic law 
 % receive money 1
 hold(sent_payment, (agent1, (test, 0, receiving_item, 10)), 0). 
-occur(receive_money, (test, agent1, 0, receiving_item, 50), 1).
-:- not action(test, receive_money, (test, agent1, 0, receiving_item, 10)).
-:- not failed(receive_money, (test, agent1, 0, receiving_item, 50), 1).
+occur(receive_money, (test, (agent1, 0, receiving_item, 50)), 1).
+:- not action(test, receive_money, (agent1, 0, receiving_item, 10)).
+:- not failed(receive_money, (test, (agent1, 0, receiving_item, 50)), 1).

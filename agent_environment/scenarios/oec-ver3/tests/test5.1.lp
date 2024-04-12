@@ -12,5 +12,5 @@ receiving_reason(test, agent2, receiving_apple).
 % test condition
 % test dynamic law 
 % receive money 1
-occur(receive_money, (test, agent1, 0, receiving_item, 50), 1).
-:- not failed(receive_money, (test, agent1, 0, receiving_item, 50), 1).
+occur(receive_money, (test, (agent1, 0, receiving_item, 50)), 1).
+:- not failed(receive_money, (test, (agent1, 0, receiving_item, 50)), 1).

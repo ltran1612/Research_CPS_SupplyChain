@@ -70,14 +70,14 @@ type(can_receive_money, parameterized).
 operation(Name, Input, (Agent, (A, T, B, Amount)), T) :- 
     Name = record,
     require(Name, Input, T),
-    Value = (Agent, A, B, Amount),
+    Value = (A, B, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
 operation(Name, Input, (Agent, (A, T, B, C, Amount)), T) :- 
     Name = record,
     require(Name, Input, T),
-    Value = (Agent, A, B, C, Amount),
+    Value = (A, B, C, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 
@@ -86,7 +86,7 @@ operation(Name, Input, (Agent, (OldAmount + Amount,)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (OldAmount,)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, Amount),
+    Value = (A, B, C, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -94,7 +94,7 @@ operation(Name, Input, (Agent, (A, C, OldAmount + Amount)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (A, C, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, Amount),
+    Value = (A, B, C, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -102,7 +102,7 @@ operation(Name, Input, (Agent, (A, C, D, OldAmount + Amount)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (A, C, D, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, D, Amount),
+    Value = (A, B, C, D, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -110,7 +110,7 @@ operation(Name, Input, (Agent, (A, OldAmount + Amount)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (A, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, Amount),
+    Value = (A, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 
@@ -119,7 +119,7 @@ operation(Name, Input, (Agent, (C, OldAmount + Amount)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (C, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, Amount),
+    Value = (A, B, C, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -127,7 +127,7 @@ operation(Name, Input, (Agent, (C, D, OldAmount + Amount)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (C, D, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, D, Amount),
+    Value = (A, B, C, D, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -135,7 +135,7 @@ operation(Name, Input, (Agent, (B, C, OldAmount + Amount)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (B, C, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, Amount),
+    Value = (A, B, C, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -143,7 +143,7 @@ operation(Name, Input, (Agent, (B, C, D, OldAmount + Amount)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (B, C, D, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, D, Amount),
+    Value = (A, B, C, D, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -151,7 +151,7 @@ operation(Name, Input, (Agent, (A, B, OldAmount + Amount)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (A, B, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, Amount),
+    Value = (A, B, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -159,7 +159,7 @@ operation(Name, Input, (Agent, (A, B, C, OldAmount + Amount)), T) :-
     Name = increase,
     hold(Fluent, (Agent, (A, B, C, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, Amount),
+    Value = (A, B, C, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 % 
@@ -167,7 +167,7 @@ operation(Name, Input, (Agent, (OldAmount - Amount,)), T) :-
     Name = decrease,
     hold(Fluent, (Agent, (OldAmount,)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, Amount),
+    Value = (A, B, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -175,7 +175,7 @@ operation(Name, Input, (Agent, (B, OldAmount - Amount)), T) :-
     Name = decrease,
     hold(Fluent, (Agent, (B, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, Amount),
+    Value = (A, B, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -183,7 +183,7 @@ operation(Name, Input, (Agent, (OldAmount - Amount)), T) :-
     Name = decrease,
     hold(Fluent, (Agent, (OldAmount,)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, Amount),
+    Value = (A, B, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -191,7 +191,7 @@ operation(Name, Input, (Agent, (B, C, OldAmount - Amount)), T) :-
     Name = decrease,
     hold(Fluent, (Agent, (B, C, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C,  Amount),
+    Value = (A, B, C,  Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 % boolean operations
@@ -200,18 +200,17 @@ operation(Name, Input, true, T) :-
     Result = OldAmount >= Amount, 
     hold(Fluent, (Agent, (OldAmount,)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Value = (A, B, Amount),
+    Input = (Agent, (Action, Value, Fluent)),
     time(T). 
-
 %
 operation(Name, Input, true, T) :- 
     Name = greater,
     Result = OldAmount >= Amount, 
     hold(Fluent, (Agent, (B, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Value = (A, B, Amount),
+    Input = (Agent, (Action, Value, Fluent)),
     time(T). 
     %
 operation(Name, Input, true, T) :- 
@@ -219,8 +218,8 @@ operation(Name, Input, true, T) :-
     Result = OldAmount >= Amount, 
     hold(Fluent, (Agent, (B, C, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Value = (A, B, C, Amount),
+    Input = (Agent, (Action, Value, Fluent)),
     time(T). 
 %
 operation(Name, Input, true, T) :- 
@@ -228,8 +227,8 @@ operation(Name, Input, true, T) :-
     Result = OldAmount >= Amount, 
     hold(Fluent, (Agent, (A, B, C, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Value = (A, B, C, Amount),
+    Input = (Agent, (Action, Value, Fluent)),
     time(T). 
 %
 operation(Name, Input, true, T) :- 
@@ -237,8 +236,8 @@ operation(Name, Input, true, T) :-
     Result = OldAmount >= Amount,     
     hold(Fluent, (Agent, (A, B, C, D, OldAmount)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, C, D, Amount),
-    Input = (Agent, Action, Value, Fluent),
+    Value = (A, B, C, D, Amount),
+    Input = (Agent, (Action, Value, Fluent)),
     time(T). 
 % %
 operation(Name, Input, true, T) :- 
@@ -304,14 +303,14 @@ operation(Name, Input, true, T) :-
     require(Name, Input, T),
     not hold(ReceivedFluent, (Agent, (SourceAgent, TimeOfSource, ReceiveTarget, Amount)), T),
     hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, ReceiveTarget, Amount)), T),
-    Input = (Agent, Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget)),
+    Input = (Agent, (Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget))),
     time(T+1). 
 operation(Name, Input, true, T) :- 
     Name = has,
     require(Name, Input, T),
     not hold(ReceivedFluent, (Agent, (SourceAgent, TimeOfSource, ReceiveTarget, A, Amount)), T),
     hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, Target, A, Amount)), T),
-    Input = (Agent, Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget, A)),
+    Input = (Agent, (Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget, A))),
     time(T+1). 
 
 boolean_condition(greater).

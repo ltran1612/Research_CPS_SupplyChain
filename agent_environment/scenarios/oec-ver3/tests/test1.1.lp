@@ -13,7 +13,7 @@ number(1).
 % #show require/3.
 
 % test dynamic law 
-occur(produce_quality, (test, wood, 1, 100), 1).
+occur(produce_quality, (test, (wood, 1, 100)), 1).
 #show hold/3.
 % edge case 1
 :- not hold(available_quality_item, (test, (wood, 1, 0)), 1). 
@@ -26,7 +26,7 @@ occur(produce_quality, (test, wood, 1, 100), 1).
 :- hold(total_produced_quality, (test, (wood, 1, 200)), 2). 
 
 % % middle case
-occur(produce_quality, (test, wood, 1, 201), 5).
+occur(produce_quality, (test, (wood, 1, 201)), 5).
 %
 :- not hold(available_quality_item, (test, (wood, 1, 100)), 5). 
 :- not hold(available_quality_item, (test, (wood, 1, 301)), 6). 
@@ -39,7 +39,7 @@ occur(produce_quality, (test, wood, 1, 201), 5).
 :- hold(total_produced_quality, (test, (wood, 1, 200)), 6). 
 
 % % middle case
-occur(produce_quality, (test, wood, 1, 1), 8).
+occur(produce_quality, (test, (wood, 1, 1)), 8).
 % %
 :- not hold(available_quality_item, (test, (wood, 1, 301)), 8). 
 :- not hold(available_quality_item, (test, (wood, 1, 302)), 9). 
@@ -53,7 +53,7 @@ occur(produce_quality, (test, wood, 1, 1), 8).
 :- hold(total_produced_quality, (test, (wood, 1, 200)), 9). 
 
 % % edge case 2
-occur(produce_quality, (test, wood, 1, 1), 10).
+occur(produce_quality, (test, (wood, 1, 1)), 10).
 % %
 :- not hold(available_quality_item, (test, (wood, 1, 302)), 10). 
 % % time ends at 10

@@ -15,7 +15,7 @@ number(1).
 % test condition
 % test dynamic law 
 % edge case
-occur(deliver, (test, agent1, wood, 100), 1).
+occur(deliver, (test, (agent1, wood, 100)), 1).
 % #show require/3.
 % #show causes/6.
 % #show possible/3.
@@ -30,7 +30,7 @@ occur(deliver, (test, agent1, wood, 100), 1).
 :- hold(total_delivered, (test, (agent1, wood, 0)), 2). 
 
 % middle case
-occur(deliver, (test, agent1, wood, 1), 5).
+occur(deliver, (test, (agent1, wood, 1)), 5).
 :- not hold(available_item, (test, (wood, 101)), 5). 
 :- not hold(available_item, (test, (wood, 100)), 6). 
 :- not hold(total_delivered, (test, (agent1, wood, 100)), 5). 
@@ -41,7 +41,7 @@ occur(deliver, (test, agent1, wood, 1), 5).
 
 % middle case
 % occur(deliver(agent1, wood, 1), 7).
-occur(deliver, (test, agent1, wood, 1), 7).
+occur(deliver, (test, (agent1, wood, 1)), 7).
 :- not hold(available_item, (test, (wood, 100)), 7). 
 :- not hold(available_item, (test, (wood, 99)), 8). 
 :- not hold(total_delivered, (test, (agent1, wood, 101)), 7). 
@@ -51,7 +51,7 @@ occur(deliver, (test, agent1, wood, 1), 7).
 :- hold(total_delivered, (test, (agent1, wood, 0)), 8). 
 
 % % edge case
-occur(deliver, (test, agent1, wood, 1), 10).
+occur(deliver, (test, (agent1, wood, 1)), 10).
 :- not hold(available_item, (test, (wood, 99)), 10). 
 :- not hold(total_delivered, (test, (agent1, wood, 102)), 10). 
 :- hold(total_delivered, (test, (agent1, wood, _)), 11). 
@@ -75,14 +75,14 @@ occur(deliver, (test, agent1, wood, 1), 10).
 % % test condition
 % % test dynamic law 
 % % edge case
-occur(deliver, (test, agent2, steel, 100), 0).
+occur(deliver, (test, (agent2, steel, 100)), 0).
 :- not hold(available_item, (test, (steel, 201)), 0). 
 :- not hold(available_item, (test, (steel, 101)), 1). 
 :- not hold(total_delivered, (test, (agent2, steel, 0)), 0). 
 :- not hold(total_delivered, (test, (agent2, steel, 100)), 1). 
 :- hold(total_delivered, (test, (agent2, steel, 0)), 1). 
 % normal case
-occur(deliver, (test, agent2, steel, 1), 6).
+occur(deliver, (test, (agent2, steel, 1)), 6).
 :- not hold(available_item, (test, (steel, 101)), 6). 
 :- not hold(available_item, (test, (steel, 100)), 7). 
 :- not hold(total_delivered, (test, (agent2, steel, 100)), 6). 

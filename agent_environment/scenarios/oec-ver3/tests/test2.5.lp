@@ -10,9 +10,9 @@ hold(total_delivered_quality, (test, (agent1, wood, 0..10, 0)), 0).
 hold(total_delivered_quality, (test, (agent2, steel, 0..10), 0), 0).
 
 % test dynamic law 
-occur(deliver_quality, (test, agent1, wood, 1, 203), 2).
+occur(deliver_quality, (test, (agent1, wood, 1, 203)), 2).
 :- not hold(available_quality_item, (test, (wood, 0..10, 201)), 3..10).
 :- not hold(available_quality_item, (test, (steel, 0..10, 204)), 3..10).
-:- not failed(deliver_quality, (test, agent1, wood, 1, 203), 2).
+:- not failed(deliver_quality, (test, (agent1, wood, 1, 203)), 2).
 
 

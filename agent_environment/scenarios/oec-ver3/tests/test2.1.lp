@@ -14,7 +14,7 @@ hold(total_delivered_quality, (test, (agent2, steel, 1..10, 0)), 0).
 % test condition
 % test dynamic law 
 % edge case
-occur(deliver_quality, (test, agent1, wood, 1, 100), 1).
+occur(deliver_quality, (test, (agent1, wood, 1, 100)), 1).
 :- not hold(available_quality_item, (test, (wood, 1, 201)), 1). 
 :- not hold(available_quality_item, (test, (wood, 1, 101)), 2). 
 :- not hold(total_delivered_quality, (test, (agent1, wood, 1, 0)), 1).
@@ -22,7 +22,7 @@ occur(deliver_quality, (test, agent1, wood, 1, 100), 1).
 :- hold(total_delivered_quality, (test, (agent1, wood, 1, 0)), 2).
 
 % % middle case
-occur(deliver_quality, (test, agent1, wood, 1, 1), 5).
+occur(deliver_quality, (test, (agent1, wood, 1, 1)), 5).
 :- not hold(available_quality_item, (test, (wood, 1, 101)), 5). 
 :- not hold(available_quality_item, (test, (wood, 1, 100)), 6). 
 :- not hold(total_delivered_quality, (test, (agent1, wood, 1, 100)), 5).
@@ -32,7 +32,7 @@ occur(deliver_quality, (test, agent1, wood, 1, 1), 5).
 :- hold(total_delivered_quality, (test, (agent1, wood, 1, 0)), 6).
 
 % % middle case
-occur(deliver_quality, (test, agent1, wood, 1, 1), 7).
+occur(deliver_quality, (test, (agent1, wood, 1, 1)), 7).
 :- not hold(available_quality_item, (test, (wood, 1, 100)), 7). 
 :- not hold(available_quality_item, (test, (wood, 1, 99)), 8). 
 :- not hold(total_delivered_quality, (test, (agent1, wood, 1, 101)), 7).
@@ -43,7 +43,7 @@ occur(deliver_quality, (test, agent1, wood, 1, 1), 7).
 :- hold(total_delivered_quality, (test, (agent1, wood, 1, 0)), 8).
 
 % % edge case
-occur(deliver_quality, (test, agent1, wood, 1, 1), 10).
+occur(deliver_quality, (test, (agent1, wood, 1, 1)), 10).
 :- not hold(available_quality_item, (test, (wood, 1, 99)), 10). 
 :- not hold(total_delivered_quality, (test, (agent1, wood, 1, 102)), 10).
 :- hold(total_delivered_quality, (test, (agent1, wood, 1, _)), 11).
@@ -74,7 +74,7 @@ occur(deliver_quality, (test, agent1, wood, 1, 1), 10).
 % % test dynamic law 
 % % edge case
 % occur(deliver(agent2, steel, 100, 1), 0).
-occur(deliver_quality, (test, agent2, steel, 1, 100), 0).
+occur(deliver_quality, (test, (agent2, steel, 1, 100)), 0).
 % #show operation/4.
 % #show changed/6.
 % #show causes/6.
@@ -88,7 +88,7 @@ occur(deliver_quality, (test, agent2, steel, 1, 100), 0).
 :- hold(total_delivered_quality, (test, (agent2, steel, 1, 0)), 1). 
 % % normal case
 % occur(deliver(agent2, steel, 1, 1), 6).
-occur(deliver_quality, (test, agent2, steel, 1, 1), 6).
+occur(deliver_quality, (test, (agent2, steel, 1, 1)), 6).
 :- not hold(available_quality_item, (test, (steel, 1, 101)), 6). 
 :- not hold(available_quality_item, (test, (steel, 1, 100)), 7). 
 :- not hold(total_delivered_quality, (test, (agent2, steel, 1, 100)), 6). 

@@ -17,19 +17,19 @@ number(48).
 % test condition
 % test dynamic law 
 % edge case 1 
-occur(pay, (test, agent1, the_item, 50), 1).
+occur(pay, (test, (agent1, the_item, 50)), 1).
 :- not hold(available_funds, (test, (100,)), 1).
 :- not hold(available_funds, (test, (50,)), 2).
 :- not hold(total_sent_payment, (test, (agent1, the_item, 50)), 2).
 
 % normal case 
-occur(pay, (test, agent1, the_item, 48), 5).
+occur(pay, (test, (agent1, the_item, 48)), 5).
 :- not hold(available_funds, (test, (50,)), 5).
 :- not hold(available_funds, (test, (2,)), 6).
 :- not hold(total_sent_payment, (test, (agent1, the_item, 98)), 6).
 
 % % second agent 
-occur(pay, (test, agent2, the_service, 1), 9).
+occur(pay, (test, (agent2, the_service, 1)), 9).
 :- not hold(available_funds, (test, (2,)), 9).
 :- not hold(available_funds, (test, (1,)), 10).
 :- not hold(total_sent_payment, (test, (agent1, the_item, 98)), 9).
@@ -39,7 +39,7 @@ occur(pay, (test, agent2, the_service, 1), 9).
 :- not hold(total_sent_payment, (test, (agent1, the_item, 98)), 10).
 
 % % edge case 2
-occur(pay, (test, agent1, the_item, 1), 10).
+occur(pay, (test, (agent1, the_item, 1)), 10).
 :- not hold(available_funds, (test, (1,)), 10).
 % % nothing happens at time 11 since we do not want to calcualte it
 :- hold(available_funds, (test, (_,)), 11).
