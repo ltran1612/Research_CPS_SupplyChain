@@ -98,6 +98,14 @@ operation(Name, Input, (Agent, (A, C, OldAmount + Amount)), T) :-
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
+operation(Name, Input, (Agent, (A, C, D, OldAmount + Amount)), T) :- 
+    Name = increase,
+    hold(Fluent, (Agent, (A, C, D, OldAmount)), T), 
+    require(Name, Input, T),
+    Value = (Agent, A, B, C, D, Amount),
+    Input = (Agent, Action, Value, Fluent, _),
+    time(T). 
+%
 operation(Name, Input, (Agent, (A, OldAmount + Amount)), T) :- 
     Name = increase,
     hold(Fluent, (Agent, (A, OldAmount)), T), 
@@ -303,7 +311,7 @@ operation(Name, Input, true, T) :-
     require(Name, Input, T),
     not hold(ReceivedFluent, (Agent, (SourceAgent, TimeOfSource, ReceiveTarget, A, Amount)), T),
     hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, Target, A, Amount)), T),
-    Input = (Agent, Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget)),
+    Input = (Agent, Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget, A)),
     time(T+1). 
 
 boolean_condition(greater).

@@ -2,49 +2,47 @@
 % expect satisfaction
 % test state
 time(0..10).
-hold(available_item(receiving_item, 0, 1..10), 0).
-hold(received(agent1, receiving_item, 0, 1..10), 0).
-hold(received(agent2, receiving_item, 0, 1..10), 0).
-pay_item(agent1, the_item).
-recv_item(agent1, receiving_item, 1..10).
-recv_item(agent2, receiving_item, 1..10).
+hold(available_quality_item, (test, (receiving_item, 1..10, 0)), 0).
+hold(total_received_quality, (test, (agent1, receiving_item, 1..10, 0)), 0).
+hold(total_received_quality, (test, (agent2, receiving_item, 1..10, 0)), 0).
+pay_item(test, agent1, the_item).
+pay_item(agent1, test, receiving_item, 1..10).
+recv_item(test, agent1, receiving_item, 1..10).
+recv_item(test, agent2, receiving_item, 1..10).
+number(50).
 
 % test condition
 % test dynamic law 
 % receive money 1
-hold(notification((agent1, 1), receiving_item, 50, 1), 1). 
-occur(receive((agent1, 1), receiving_item, 50, 1), 1).
-:- not hold(available_item(receiving_item, 0, 1), 1).
-:- not hold(available_item(receiving_item, 50, 1), 2).
-:- not hold(received(agent1, receiving_item, 0, 1), 1).
-:- not hold(received(agent1, receiving_item, 50, 1), 2).
+hold(delivered_quality, (agent1, (test, 1, receiving_item, 1, 50)), 1).
+occur(receive_quality, (test, agent1, 1, receiving_item, 1, 50), 1).
+:- not hold(delivered_quality, (agent1, (test, 1, receiving_item, 1, 50)), 2).
+:- not action(test, receive_quality, (test, agent1, 1, receiving_item, 1, 50)).
+:- not hold(available_quality_item, (test, (receiving_item, 1, 0)), 1).
+:- not hold(available_quality_item, (test, (receiving_item, 1, 50)), 2).
+:- not hold(total_received_quality, (test, (agent1, receiving_item, 1, 0)), 1).
+:- not hold(total_received_quality, (test, (agent1, receiving_item, 1, 50)), 2).
 % receive money 2 (with a gap from 1) 
-hold(notification((agent2, 2), receiving_item, 101, 1), 3). 
-occur(receive((agent2, 2), receiving_item, 101, 1), 3).
-:- not hold(available_item(receiving_item, 50, 1), 3).
-:- not hold(available_item(receiving_item, 151, 1), 4).
-:- not hold(received(agent2, receiving_item, 0, 1), 3).
-:- not hold(received(agent2, receiving_item, 101, 1), 4).
-% receive money 3 (continuation of 2)
-hold(notification((agent1, 3), receiving_item, 102, 1), 5). 
-occur(receive((agent1, 3), receiving_item, 102, 1), 5).
-:- not hold(available_item(receiving_item, 151, 1), 5).
-:- not hold(available_item(receiving_item, 253, 1), 6).
-:- not hold(received(agent1, receiving_item, 50, 1), 5).
-:- not hold(received(agent1, receiving_item, 152, 1), 6).
+hold(delivered_quality, (agent2, (test, 2, receiving_item, 1, 101)), 3).
+occur(receive_quality, (test, agent2, 2, receiving_item, 1, 101), 3).
+:- not hold(available_quality_item, (test, (receiving_item, 1, 50)), 3).
+:- not hold(available_quality_item, (test, (receiving_item, 1, 151)), 4).
+:- not hold(total_received_quality, (test, (agent2, receiving_item, 1, 0)), 3).
+:- not hold(total_received_quality, (test, (agent2, receiving_item, 1, 101)), 4).
+% % receive money 3 (continuation of 2)
+hold(delivered_quality, (agent1, (test, 3, receiving_item, 1, 102)), 5).
+occur(receive_quality, (test, agent1, 3, receiving_item, 1, 102), 5).
+:- not hold(available_quality_item, (test, (receiving_item, 1, 151)), 5).
+:- not hold(available_quality_item, (test, (receiving_item, 1, 253)), 6).
+:- not hold(total_received_quality, (test, (agent1, receiving_item, 1, 50)), 5).
+:- not hold(total_received_quality, (test, (agent1, receiving_item, 1, 152)), 6).
 
-% edge case
-:- hold(available_item(receiving_item, _, 1), 11).
+% % edge case
+:- hold(available_quality_item, (test, (receiving_item, 1, _)), 11).
 
-% no same signature
-% test intertial rules
-:- hold(notification((agent1, 1), receiving_item, 50, 1), 2..10). 
-:- hold(notification((agent2, 2), receiving_item, 101, 1), 4..10). 
-:- hold(available_item(receiving_item, 151), 6..10).
-:- not hold(available_item(receiving_item, 253, 1), 6..10).
-:- not hold(received(agent1, receiving_item, 152, 1), 6..10).
-:- not hold(received(agent2, receiving_item, 101, 1), 6..10).
-
-% this notification should hold
-hold(notification((agent2, 1), receiving_item, 50, 1), 1). 
-:- not hold(notification((agent2, 1), receiving_item, 50, 1), 2..10). 
+% % no same signature
+% % test intertial rules
+:- hold(available_quality_item, (test, (receiving_item, 1, 151)), 6..10).
+:- not hold(available_quality_item, (test, (receiving_item, 1, 253)), 6..10).
+:- not hold(total_received_quality, (test, (agent1, receiving_item, 1, 152)), 6..10).
+:- not hold(total_received_quality, (test, (agent2, receiving_item, 1, 101)), 6..10).

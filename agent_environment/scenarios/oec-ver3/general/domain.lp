@@ -38,8 +38,8 @@ reason(Agent, Reason) :- payment_reason(Agent, _, Reason).
 action(Agent, pay, (Agent, ToAgent, Reason, Amount)) :- number(Amount), paying_reason(Agent, ToAgent, Reason). 
 % TODO
 action(Agent, receive_money, (Agent, FromAgent, Time, Reason, Amount)) :- hold(sent_payment, (FromAgent, (Agent, Time, Reason, Amount)), _), receiving_reason(Agent, FromAgent, Reason). 
-action(Agent, receive, (Agent, FromAgent, Time, Item, Amount)) :- hold(delivered, (Agent, (FromAgent, Time, Item, Amount)), _), recv_item(Agent, FromAgent, Item).
-action(Agent, receive_quality, (Agent, FromAgent, Time, Item, Quality, Amount)) :- hold(delivered, (Agent, (FromAgent, Time, Item, Quality, Amount)), _), recv_item(Agent, FromAgent, Item, Quality).
+action(Agent, receive, (Agent, FromAgent, Time, Item, Amount)) :- hold(delivered, (FromAgent, (Agent, Time, Item, Amount)), _), recv_item(Agent, FromAgent, Item).
+action(Agent, receive_quality, (Agent, FromAgent, Time, Item, Quality, Amount)) :- hold(delivered_quality, (FromAgent, (Agent, Time, Item, Quality, Amount)), _), recv_item(Agent, FromAgent, Item, Quality).
 %
 action(Agent, produce, (Agent, Item, Amount)) :- produce_item(Agent, Item), number(Amount).
 action(Agent, produce_quality, (Agent, Item, Quality, Amount)) :- produce_item(Agent, Item, Quality), number(Amount).

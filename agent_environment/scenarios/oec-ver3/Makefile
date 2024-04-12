@@ -73,7 +73,7 @@ test4:
 test5:
 	echo $@
 	head -n2 tests/test5.lp
-	@-clingo ${DOMAIN} tests/test5.lp 
+	@-clingo ${DOMAIN} tests/test5.lp ${HIDE_WARNING}
 
 	echo ""
 	head -n2 tests/test5.1.lp
@@ -112,11 +112,11 @@ test5:
 test6:
 	echo $@
 	head -n2 tests/test6.lp
-	@-clingo ${DOMAIN} tests/test6.lp ${HIDE_WARNING}
+	@-clingo ${DOMAIN} tests/test6.lp ${HIDE_WARNING} 
 
 	echo ""
 	head -n2 tests/test6.1.lp
-	@-clingo ${DOMAIN} tests/test6.1.lp ${HIDE_WARNING}
+	@-clingo ${DOMAIN} tests/test6.1.lp ${HIDE_WARNING} 
 
 	echo ""
 	head -n2 tests/test6.2.lp
