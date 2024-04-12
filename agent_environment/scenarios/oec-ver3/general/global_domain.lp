@@ -7,9 +7,6 @@ fluent(total_received_payment).
 %
 fluent(available_funds).
 %
-fluent(produced).
-fluent(produced_quality).
-%
 fluent(total_produced).
 fluent(total_produced_quality).
 %
@@ -44,9 +41,6 @@ type(total_received_payment, parameterized).
 %
 type(available_funds, parameterized).
 %
-type(produced, parameterized).
-type(produced_quality, parameterized).
-%
 type(total_produced, parameterized).
 type(total_produced_quality, parameterized).
 %
@@ -72,12 +66,35 @@ type(can_receive, parameterized).
 type(can_receive_quality, parameterized).
 type(can_receive_money, parameterized).
 
+%
+operation(Name, Input, (Agent, (A, T, B, Amount)), T) :- 
+    Name = record,
+    require(Name, Input, T),
+    Value = (Agent, A, B, Amount),
+    Input = (Agent, Action, Value, Fluent, _),
+    time(T). 
+%
+operation(Name, Input, (Agent, (A, T, B, C, Amount)), T) :- 
+    Name = record,
+    require(Name, Input, T),
+    Value = (Agent, A, B, C, Amount),
+    Input = (Agent, Action, Value, Fluent, _),
+    time(T). 
+
 % operations operation(Name, Input, (A, B, Amount + OldAmount), T+1) :- Name = increase_3_3_3, occur(Action, (Agent, A, B, Amount), T), hold(Fluent, (Agent, A, B, OldAmount), T), require(Input), Input = (Agent, Action, Fluent), time(T+1).
-operation(Name, Input, (Agent, (OldAmount + Amount)), T) :- 
+operation(Name, Input, (Agent, (OldAmount + Amount,)), T) :- 
     Name = increase,
     hold(Fluent, (Agent, (OldAmount,)), T), 
     require(Name, Input, T),
-    Value = (Agent, A, B, Amount),
+    Value = (Agent, A, B, C, Amount),
+    Input = (Agent, Action, Value, Fluent, _),
+    time(T). 
+%
+operation(Name, Input, (Agent, (A, C, OldAmount + Amount)), T) :- 
+    Name = increase,
+    hold(Fluent, (Agent, (A, C, OldAmount)), T), 
+    require(Name, Input, T),
+    Value = (Agent, A, B, C, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -135,6 +152,14 @@ operation(Name, Input, (Agent, (A, B, C, OldAmount + Amount)), T) :-
     hold(Fluent, (Agent, (A, B, C, OldAmount)), T), 
     require(Name, Input, T),
     Value = (Agent, A, B, C, Amount),
+    Input = (Agent, Action, Value, Fluent, _),
+    time(T). 
+% 
+operation(Name, Input, (Agent, (OldAmount - Amount,)), T) :- 
+    Name = decrease,
+    hold(Fluent, (Agent, (OldAmount,)), T), 
+    require(Name, Input, T),
+    Value = (Agent, A, B, Amount),
     Input = (Agent, Action, Value, Fluent, _),
     time(T). 
 %
@@ -209,28 +234,12 @@ operation(Name, Input, true, T) :-
     time(T). 
 % %
 operation(Name, Input, true, T) :- 
-    Name = has,
-    hold(Fluent, (From, (Agent, A, Amount)), T), 
-    require(Name, Input, T),
-    Value = (From, A, Amount),
-    Input = (Agent, Action, Value, Fluent, From, A),
-    time(T). 
-% %
-operation(Name, Input, true, T) :- 
-    Name = has,
-    hold(Fluent, (From, (Agent, A, B, Amount)), T), 
-    require(Name, Input, T),
-    Value = (From, A, B, Amount),
-    Input = (Agent, Action, Value, Fluent, From, A, B),
-    time(T). 
-
-operation(Name, Input, true, T) :- 
     Name = not_changed_last,
     Value = (A, _), 
     NewChanges = (A1, _),
     A1 != A,
     require(Name, Input, T),
-    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
     time(T+1). 
 
 operation(Name, Input, true, T) :- 
@@ -239,7 +248,7 @@ operation(Name, Input, true, T) :-
     NewChanges = (A1, B1, _),
     A1 != A,
     require(Name, Input, T),
-    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
     time(T+1). 
 operation(Name, Input, true, T) :- 
     Name = not_changed_last,
@@ -247,7 +256,7 @@ operation(Name, Input, true, T) :-
     NewChanges = (A1, B1, _),
     B != B1,
     require(Name, Input, T),
-    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
     time(T+1). 
 
 operation(Name, Input, true, T) :- 
@@ -256,7 +265,7 @@ operation(Name, Input, true, T) :-
     NewChanges = (A1, B1, C1, _),
     A1 != A,
     require(Name, Input, T),
-    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
     time(T+1). 
 operation(Name, Input, true, T) :- 
     Name = not_changed_last,
@@ -264,7 +273,7 @@ operation(Name, Input, true, T) :-
     NewChanges = (A1, B1, C1, _),
     B1 != B,
     require(Name, Input, T),
-    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
     time(T+1). 
 
 operation(Name, Input, true, T) :- 
@@ -273,12 +282,34 @@ operation(Name, Input, true, T) :-
     NewChanges = (A1, B1, C1, _),
     C1 != C,
     require(Name, Input, T),
-    Input = (Agent, Fluent, (Agent, NewChanges), (Agent, Value), _),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
+    time(T+1). 
+
+operation(Name, Input, true, T) :- 
+    Name = always_inertial,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
+    time(T+1). 
+%
+operation(Name, Input, true, T) :- 
+    Name = has,
+    require(Name, Input, T),
+    not hold(ReceivedFluent, (Agent, (SourceAgent, TimeOfSource, ReceiveTarget, Amount)), T),
+    hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, ReceiveTarget, Amount)), T),
+    Input = (Agent, Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget)),
+    time(T+1). 
+operation(Name, Input, true, T) :- 
+    Name = has,
+    require(Name, Input, T),
+    not hold(ReceivedFluent, (Agent, (SourceAgent, TimeOfSource, ReceiveTarget, A, Amount)), T),
+    hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, Target, A, Amount)), T),
+    Input = (Agent, Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget)),
     time(T+1). 
 
 boolean_condition(greater).
 boolean_condition(has).
 boolean_condition(not_changed_last).
+boolean_condition(always_inertial).
 operation(Name, Input, false, T) :- 
     boolean_condition(Name),
     not operation(Name, Input, true, T), 

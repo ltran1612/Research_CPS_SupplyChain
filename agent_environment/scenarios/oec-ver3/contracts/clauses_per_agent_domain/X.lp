@@ -6,10 +6,10 @@ clause("C2").
 clause("C3").
 
 % C2: A responsible_for delivered(vehicle_parts, 9K) when by_week 4
-hold(sat("C2"), lastTimeStep) :-  hold(received(speedy_auto_parts, vehicle_parts, 9000), 28). 
+hold(sat("C2"), lastTimeStep) :-  hold(total_received, (car_producer, speedy_auto_parts, vehicle_parts, 9000), 28). 
 
 % C3: X responsible_for payment(vehicle_parts, 40K) when by_week 4
-hold(sat("C3"), lastTimeStep) :-  hold(payment(speedy_auto_parts, sent, vehicle_parts, 40000), 28). 
+hold(sat("C3"), lastTimeStep) :-  hold(sent_payment, (car_producer, speedy_auto_parts, sent, vehicle_parts, 40000), 28). 
 
 % contract between car producer and precision engine
 clause("C16").
