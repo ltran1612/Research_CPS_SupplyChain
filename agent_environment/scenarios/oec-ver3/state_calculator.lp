@@ -98,3 +98,5 @@ hold(Parent, (), T) :- fluent(Parent),
 % cannot have a normal member that is parameterized
 :- member(F, Parent), type(F, parameterized). 
 :- member(Agent, F, Parent), not type(F, parameterized). 
+
+% a parameterized fluent needs an intertial  

@@ -1,0 +1,2 @@
+% test ontology 
+% expect satisfaction

@@ -250,3 +250,9 @@ test16:
 	head -n2 tests/test16.lp
 	@-clingo ${DOMAIN} tests/test16.lp ${HIDE_WARNING}
 	echo ""
+.SILENT:
+test17:
+	echo $@
+	head -n2 tests/test16.lp
+	@-java -jar cps/cli.jar cps/cps-original.owl cps/contract-cps.owl tests/test17.lp --asp-options ${HIDE_WARNING}
+	echo ""
