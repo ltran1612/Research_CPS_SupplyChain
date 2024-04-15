@@ -69,13 +69,11 @@ def on_message(client: mqtt.Client, userdata, msg):
         state_info = json.loads(message)
         state = state_info['state']
         time_step = state_info['time']
-
-        observations = get_atoms([state])
-        printed_observations = list(filter(lambda atom: atom.endswith(f"{time_step})."), observations))
-        logging.info(f"The state at the start of step {time_step} is: {printed_observations}")
+        observation = planner.display(state)
+        logging.info(f"The state at the start of step {time_step} is: {observation}")
 
         # do some reasoning
-        actions = planner.next_step(time_step, "".join(observations))
+        actions = planner.next_step(time_step, state)
 
         # get the action 
         if actions is None:

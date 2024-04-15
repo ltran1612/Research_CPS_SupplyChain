@@ -1,0 +1,18 @@
+{
+    "id": "sonic_electronics",
+    "brokerAddress": "localhost",
+    "domain": "../scenarios/oec-ver3/sonic_electronics/domain.lp",
+    "initial_state": "../scenarios/oec-ver3/sonic_electronics/init.lp",
+    "planner": "../scenarios/oec-ver3/sonic_electronics/plan.lp",
+    "clause_concern_map": "../scenarios/oec-ver3/sonic_electronics/clause-concern-map.lp",
+    "plan_checking": "../scenarios/oec-ver3/sonic_electronics/plan_checking.lp",
+    "global_domain": "../scenarios/oec-ver3/global_domain.lp",
+    "global_config": "../scenarios/oec-ver3/global_config.lp",
+    "state_calculator": "../scenarios/oec-ver3/state_calculator.lp",
+    "display": "../scenarios/oec-ver3/sonic_electronics/display.lp",
+    "contracts": [
+        "../scenarios/oec-ver3/contracts/clauses_per_agent_domain/E.lp"
+    ],
+    "contract_cps": "../scenarios/oec-ver3/cps/contract-cps.lp",
+    "cps": "../scenarios/oec-ver3/cps/cps.lp"
+}

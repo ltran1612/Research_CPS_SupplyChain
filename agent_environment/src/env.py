@@ -5,20 +5,17 @@ import paho.mqtt.client as mqtt
 
 # custom libraries
 from config import load_config, show_config 
-from env_misc import Received, StateMangerIndividual
+from env_misc import Received, StateMangerGlobal 
 
 # load and display the config
 config = load_config(sys.argv)
 show_config(config)
-
-# parse the config
-actions_success_rules = config['actions_success_rules']
-# get the parsers
-global_state_rules = config['global_state_rules']
-# get the list of agents
+#
 agents = config['agents']
-# get the file path to the global domain 
 global_domain_filepath = config["global_domain"]
+global_config = config["global_config"]
+state_calculator = config["state_calculator"]
+#
 
 # initialized the received queue  
 received = Received(agents) 
@@ -26,7 +23,7 @@ received = Received(agents)
 step = -1
 
 # set up
-state = StateMangerIndividual(agents, global_domain_filepath, actions_success_rules, global_state_rules) 
+state = StateMangerGlobal(agents, global_domain_filepath, global_config, state_calculator) 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -77,7 +74,7 @@ def simulate():
     # increase the step
     step += 1 
     logging.info(f"starting the next step {step}")
-    if step == 71:
+    if step > state.get_last_step():
         sys.exit(0)
     logging.info(f"started the next step {step}")
 
@@ -87,7 +84,7 @@ def simulate():
     # then, for each agent, pick out the important information. 
     for agent in agents:
         # take the message from the agent that concerns this agent.
-        message = {"time": step, "state": state.get_state(agent)}
+        message = {"time": step, "state": state.get_state(agent, step)}
         client.publish(f"for/{agent}", json.dumps(message), qos=2, retain=False)
         logging.info(f"sent state information to {agent} for time {step}")
 

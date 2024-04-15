@@ -1,4 +1,4 @@
-DOMAIN = general/domain.lp general/global_domain.lp general/state_calculator.lp
+DOMAIN = general/domain.lp global_domain.lp state_calculator.lp
 INIT = general/init.lp
 PLAN = general/plan.lp
 HIDE_WARNING = -q2,2,2 --warn no-atom-undefined -V0

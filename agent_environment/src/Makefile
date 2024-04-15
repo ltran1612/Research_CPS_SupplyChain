@@ -1,4 +1,4 @@
-SCENARIO_FOLDER = ../config/oec-ver2
+SCENARIO_FOLDER = ../config/oec-ver3
 all: 
 
 env: 

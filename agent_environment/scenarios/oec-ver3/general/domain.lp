@@ -1,3 +1,7 @@
+needs(Agent, delivered, FromAgent) :- recv_item(Agent, FromAgent, Item). 
+needs(Agent, delivered_quality, FromAgent) :- recv_item(Agent, FromAgent, Item, Quality).
+needs(Agent, sent_payment, FromAgent) :- receiving_reason(Agent, FromAgent, Reason). 
+
 % RECEIVING FROM AGENTS
 % ITEMS
 item(Agent, Item) :- produce_item(Agent, Item).

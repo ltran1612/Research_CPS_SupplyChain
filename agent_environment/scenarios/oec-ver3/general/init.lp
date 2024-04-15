@@ -2,7 +2,7 @@
 hold(total_sent_payment, (Agent, (ToAgent, Reason, 0)), 0) :- paying_reason(Agent, ToAgent, Reason).
 hold(total_received_payment, (Agent, (FromAgent, Reason, 0)), 0) :- receiving_reason(Agent, FromAgent, Reason).
 % %
-hold(available_funds, (tester, (0,)), 0). 
+hold(available_funds, (Agent, (0,)), 0) :- payment_reason(Agent, _, _). 
 % %
 hold(total_produced_quality, (Agent, (Item, Quality, 0)), 0) :- produce_item(Agent, Item, Quality). 
 hold(total_produced, (Agent, (Item, 0)), 0) :- produce_item(Agent, Item). 

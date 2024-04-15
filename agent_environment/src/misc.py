@@ -67,6 +67,14 @@ def write_to_temp_file(filename: str, message:str):
     with open(filename, "w") as f:
         f.write(message)
 
+def reset_file(filename):
+    with open(filename, "w") as f:
+        f.write("")
+def copy_file(src, target):
+    with open(src, "r") as f:
+        with open(target, "w") as f2:
+            f2.write("".join(f.readlines()))
+
 if __name__ == "__main__":
     print(parse_clingo_output("test(1). \nOPTIMUM FOUND"))
     print(parse_clingo_output("test(2). test(1). \nOPTIMUM FOUND"))

@@ -1,0 +1,18 @@
+{
+    "id": "metal_craft_solutions",
+    "brokerAddress": "localhost",
+    "domain": "../scenarios/oec-ver3/metal_craft/domain.lp",
+    "initial_state": "../scenarios/oec-ver3/metal_craft/init.lp",
+    "planner": "../scenarios/oec-ver3/metal_craft/plan.lp",
+    "clause_concern_map": "../scenarios/oec-ver3/metal_craft/clause-concern-map.lp",
+    "plan_checking": "../scenarios/oec-ver3/metal_craft/plan_checking.lp",
+    "global_domain": "../scenarios/oec-ver3/global_domain.lp",
+    "global_config": "../scenarios/oec-ver3/global_config.lp",
+    "state_calculator": "../scenarios/oec-ver3/state_calculator.lp",
+    "display": "../scenarios/oec-ver3/metal_craft/display.lp",
+    "contracts": [
+        "../scenarios/oec-ver3/contracts/clauses_per_agent_domain/M.lp"
+    ],
+    "contract_cps": "../scenarios/oec-ver3/cps/contract-cps.lp",
+    "cps": "../scenarios/oec-ver3/cps/cps.lp"
+}
