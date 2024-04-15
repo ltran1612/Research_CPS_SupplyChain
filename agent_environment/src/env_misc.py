@@ -140,6 +140,8 @@ class StateMangerGlobal(StateManger):
         # calcualte
         with open(self.temp_file, "w") as f:
             f.write("#show lastTimeStep/1.")
+            f.write(":- lastTimeStep(T), not T >= 0.")
+            f.write(":- lastTimeStep(T), lastTimeStep(T1), not T=T1.")
         (run_success, output) = run_clingo([self.global_config, self.temp_file])
         if not run_success:
             raise Exception("cannot get the last time step")
