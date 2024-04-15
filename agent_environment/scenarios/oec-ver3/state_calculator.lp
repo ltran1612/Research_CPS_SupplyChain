@@ -82,3 +82,5 @@ require(Operation ,(Agent, Fluent, (Agent, Value), NewChanges, Input), T) :-
     hold(Fluent, (Agent, Value), T), 
     changed(Agent, _, _, Fluent, NewChanges, T), 
     type(Fluent, parameterized), time(T+1).
+
+% implement

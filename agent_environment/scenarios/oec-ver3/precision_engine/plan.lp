@@ -1,4 +1,4 @@
-time(0..T) :- lastTimeStep(T).
+time(0..5).
 satisfied_clauses_count(N) :- N = #count{Clause : hold(sat(Clause), lastTimeStep), clause(Clause)}.
 #maximize {N : satisfied_clauses_count(N)}. 
 % base plan script for oec scenario. 
