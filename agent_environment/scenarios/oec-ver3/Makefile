@@ -244,3 +244,9 @@ test15:
 	head -n2 tests/test15.lp
 	@-clingo ${DOMAIN} ${PLAN} ${INIT} tests/test15.lp ${HIDE_WARNING}
 	echo ""
+.SILENT:
+test16:
+	echo $@
+	head -n2 tests/test16.lp
+	@-clingo ${DOMAIN} tests/test16.lp ${HIDE_WARNING}
+	echo ""

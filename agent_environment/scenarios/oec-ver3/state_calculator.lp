@@ -83,4 +83,18 @@ require(Operation ,(Agent, Fluent, (Agent, Value), NewChanges, Input), T) :-
     changed(Agent, _, _, Fluent, NewChanges, T), 
     type(Fluent, parameterized), time(T+1).
 
-% implement
+% implement conjunction
+hold(Parent, (), T) :- fluent(Parent), 
+    type(Parent, conjunction), 
+    not type(Parent, parameterized), 
+    A=#count{O: member(O, Parent)}, 
+    B=#count{O: member(Agent, O, Parent)}, 
+    C=#count{O: hold(O, _, T), member(O, Parent), not type(O, parameterized)}, 
+    D=#count{O: hold(O, (Agent, _), T), member(Agent, O, Parent), type(O, parameterized)}, 
+    A+B = C+D,
+    time(T). 
+% a fluent cannot be both conjunction and parameterized 
+:- type(F, conjunction), type(F, parameterized). 
+% cannot have a normal member that is parameterized
+:- member(F, Parent), type(F, parameterized). 
+:- member(Agent, F, Parent), not type(F, parameterized). 

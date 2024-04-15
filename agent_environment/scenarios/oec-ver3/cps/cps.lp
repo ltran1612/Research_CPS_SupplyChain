@@ -11,3 +11,6 @@ concern(A) :- aspect(A).
 h(sat(Property), Time) :- property(Property), clause(Clause), addressedBy(Property, Clause), h(sat(Clause), Time).
 h(sat(Concern), Time) :- concern(Concern), property(Property), addressedBy(Concern, Property), h(sat(Property), Time).
 h(sat(Concern), Time) :- concern(Concern), concern(SubConcern), subConcern(Concern, SubConcern), h(sat(SubConcern), Time).
+% NEW STUFFS ADDED FOR OEC USE CASE
+% interface connecting the 2 different format systems. 
+h(sat(A), T) :- hold(sat(A), T).
