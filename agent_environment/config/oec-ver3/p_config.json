@@ -17,5 +17,5 @@
         "../scenarios/oec-ver3/cps/cps-original.owl",
         "../scenarios/oec-ver3/cps/requirements.owl"
     ],
-    "cps": "../scenarios/oec-ver3/cps/cps-reasoner.lp"
+    "cps-reasoner": "../scenarios/oec-ver3/cps/cps-reasoner.lp"
 }

@@ -41,4 +41,4 @@ step(T) :- time(T).
 %
 h(sat(P),T) :- h(sat(Cl),T), clause(Cl), step(T), addressedBy(P,Cl), property(P). 
 %
-:- clause(Cl), addressedBy(P,Cl), not property(P).
+% :- clause(Cl), addressedBy(P,Cl), not property(P).

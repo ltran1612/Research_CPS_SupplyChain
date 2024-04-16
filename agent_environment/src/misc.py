@@ -4,17 +4,18 @@ import logging
 
 # run clingo raw and just returns the subprocess result output
 def run_clingo_raw(files: list, flags=["-V0", "--out-atom=%s."]):
-    command = ["clingo"]
+    command = ["java", "-jar", "./cli.jar"] 
     command.extend(files)
+    command.extend(["--asp-options"])
     command.extend(flags)
+    print(" ".join(command))
     result= subprocess.run(command, capture_output=True)
     return result
-
 # run clingo and return 
 # 1) True if Clingo found an answer set. 
 # 2) False if unsatisfiable. 
 # The boolean result is return in a tuple along with a list of line in the output of Clingo
-def run_clingo(files: list, flags=["-V0", "--out-atom=%s."]):
+def run_clingo(files: list, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."]):
     result = run_clingo_raw(files, flags)
     # parse the message
     parsed_message: str = result.stdout.decode("utf-8")

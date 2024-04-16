@@ -25,8 +25,8 @@ class Planner:
         # 
         self.contracts = config['contracts']
         self.clause_concern_map = config['clause_concern_map']
-        self.contract_cps = config['contract_cps']
-        self.cps = config['cps']
+        self.cps_reasoner = config['cps-reasoner']
+        self.ontologies = config['ontologies']
         #
         self.display_script = config['display']
         #
@@ -85,8 +85,9 @@ class Planner:
         # choose the files needed for the plan
         files = [self.domain, self.global_config, self.global_domain, self.state_calculator,\
                 self.temp_file, self.planner,\
-                self.clause_concern_map, self.cps, self.contract_cps]  
+                self.clause_concern_map, self.cps_reasoner]  
         files.extend(self.contracts)
+        files.extend(self.ontologies)
 
         # run Clingo to plan
         result: CompletedProcess[bytes] = run_clingo_raw(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])

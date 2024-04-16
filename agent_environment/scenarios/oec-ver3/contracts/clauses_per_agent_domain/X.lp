@@ -19,7 +19,7 @@ clause("C18").
 %  C17: P responsible_for delivered(X, engines, 90) when by_week 5 
 %  C18: X responsible_for payment(P, sent, engines) when by_week 5 
 hold(sat("C17"), T) :-  hold(total_received, (car_producer, (precision_engine, engines, 90)), 5), time(T), T >= 5.
-hold(sat("C18"), T) :-  hold(total_sent_payment, (car_producer, (precision_engine, engines, 30000)), 5), T >= 5.
+hold(sat("C18"), T) :-  hold(total_sent_payment, (car_producer, (precision_engine, engines, 30000)), 5), time(T), T >= 5.
 
 %  C13: E responsible_for produced(radios, 90) when by_week 5 
 %  C14: E responsible_for delivered(X, radios, 90) when by_week 5
