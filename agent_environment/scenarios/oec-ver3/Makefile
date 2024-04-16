@@ -254,5 +254,5 @@ test16:
 test17:
 	echo $@
 	head -n2 tests/test16.lp
-	@-java -jar cps/cli.jar cps/cps-original.owl tests/test.owl cps/cps.lp tests/test17.lp ${HIDE_WARNING}
+	@-java -jar cps/cli.jar cps/cps-original.owl tests/test.owl cps/cps.lp tests/test17.lp --asp-options ${HIDE_WARNING}
 	echo ""
