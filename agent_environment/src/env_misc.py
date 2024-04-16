@@ -264,12 +264,13 @@ class StateMangerGlobal(StateManger):
         agent_state = ""  
         with open(self.temp_file, "w") as f:
             f.write(self.__get_filter(step=step, agent=agent))
-        files = [self.temp_file, self.env_state]
+        files = [self.temp_file, self.env_state, self.setup_info[agent]["domain"], self.global_config, self.global_domain]
         (run_success, output) = run_clingo(files)
         if not run_success: 
             raise Exception(f"cannot get the state for the agent {agent}")
         
         agent_state = "".join(output)
+        print(agent, agent_state)
         self.lock.release()
 
         return agent_state 
