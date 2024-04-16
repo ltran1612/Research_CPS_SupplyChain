@@ -110,7 +110,7 @@ class Planner:
 
     # save an observation to the state
     def save_observations(self, observations: str):
-        with open(self.observations, "w") as f:
+        with open(self.observations, "a") as f:
             f.write(observations)
 
     # see the plan, including the actions and the expected state.
