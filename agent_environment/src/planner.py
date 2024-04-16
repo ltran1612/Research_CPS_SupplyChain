@@ -209,15 +209,14 @@ class Planner:
     # get the next step in the plan based on this current observation
     # if the observation does not match the plan, replan
     def next_step(self, target_step, observation:str):
+        self.save_observations(observation)
         # compare the observation with the plan
-        if self.observation_matches_plan(observation):
+        if self.observation_matches_plan(self.get_state()):
             logging.info(f"observation matches plan, get the action for {target_step}")
-            self.save_observations(observation)
             return self.get_actions_at_step(target_step)
         
         logging.info("replanning...")
         # else replan if different
-        self.save_observations(observation)
         self.plan(target_step)
         logging.info("replanning done")
 

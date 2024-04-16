@@ -71,8 +71,9 @@ def on_message(client: mqtt.Client, userdata, msg):
         time_step = state_info['time']
         # print(state)
         observation = planner.display(state)
-        sats = planner.display_sat_concerns()
         logging.info(f"The state at the start of step {time_step} is: {observation}")
+        planner.save_observations(state)
+        sats = planner.display_sat_concerns()
         logging.info(f"The concern satisfaction of step {time_step} is:\n{sats}")
 
         # do some reasoning

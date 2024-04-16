@@ -17,10 +17,10 @@ clause("C2").
 clause("C3").
 
 % C1: A responsible_for produced(vehicle_parts, 9K) when by_week 4
-hold(sat("C1"), T) :-  hold(total_produced, (speedy_auto_parts, (vehicle_parts, 9000)), 4), time(T), T >= 4.
+hold(sat("C1"), T) :-  hold(total_produced, (speedy_auto_parts, (vehicle_parts, Amount)), T1), time(T), T1 <= 4, Amount >= 9000.
 
 % C2: A responsible_for delivered(vehicle_parts, 9K) when by_week 4
-hold(sat("C2"), T) :-  hold(total_delivered, (speedy_auto_parts, (car_producer, vehicle_parts, 9000)), 4), time(T), T >= 4. 
+hold(sat("C2"), T) :-  hold(total_delivered, (speedy_auto_parts, (car_producer, vehicle_parts, Amount)), T1), time(T1), time(T), T1 <= 4, Amount >= 9000. 
 
 % C3: X responsible_for payment(vehicle_parts, 40K) when by_week 4
-hold(sat("C3"), T) :-  hold(total_received_payment, (speedy_auto_parts, (car_producer, vehicle_parts, 40000)), 4), time(T), T >= 4. 
+hold(sat("C3"), T) :-  hold(total_received_payment, (speedy_auto_parts, (car_producer, vehicle_parts, Amount)), T1), time(T1), time(T), T1 <= 4, Amount >= 40000. 
