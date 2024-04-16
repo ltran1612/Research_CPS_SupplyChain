@@ -172,6 +172,7 @@ public class CPSClingoReasoner {
 		private Vector<String> res;
 		private Vector<String> error;
 		private Vector<String> combined;
+		private String output = null;
 
 		private ReturnValue(int _status, Vector<String> _res, Vector<String> _error, Vector<String> _combined) {
 			status = _status;
@@ -180,11 +181,20 @@ public class CPSClingoReasoner {
 			combined = _combined;
 		} // return Value
 
+		private ReturnValue(int _status, String _output) {
+			status = _status;
+			output = _output;
+		} // return Value
+
 		public int getReturnCode() {return status;}
 		public String getStdout() {return String.join("\n", res);}
 		private Vector<String> getStdoutVector() {return new Vector<String>(res);}
 		public String getStderr() {return String.join("\n", error);}
-		public String getCombinedOutput() {return String.join("\n", combined);}
+		public String getCombinedOutput() {
+			if (output != null)
+				return output;
+			return String.join("\n", combined);
+		} // end getCombinedOutput
 	};
 	
 	// run a command with data
