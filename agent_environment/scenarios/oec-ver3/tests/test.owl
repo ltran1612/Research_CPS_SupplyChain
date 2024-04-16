@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+         xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+         xmlns:owl="http://www.w3.org/2002/07/owl#"
+         xml:base="http://www.asklab.tk/ontologies/CPS-Framework"
+         xmlns="http://www.asklab.tk/ontologies/CPS-Framework#">
+
+<owl:Ontology rdf:about="http://www.asklab.tk/ontologies/CPS-Framework"/>
+
+<owl:ObjectProperty rdf:about="#addConcern">
+  <rdfs:domain rdf:resource="#Property"/>
+  <rdfs:range rdf:resource="#Concern"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#addProperty">
+  <rdfs:domain rdf:resource="#Clause"/>
+  <rdfs:range rdf:resource="#Property"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#addressToFunc">
+  <rdfs:domain rdf:resource="#Formulas"/>
+  <rdfs:range rdf:resource="#DecompositionFunction"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#confComponent">
+  <rdfs:domain rdf:resource="#Component_Property"/>
+  <rdfs:range rdf:resource="#Component"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#confProperty">
+  <rdfs:domain rdf:resource="#Component_Property"/>
+  <rdfs:range rdf:resource="#Property"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#memberOf">
+  <rdfs:domain rdf:resource="#Property"/>
+  <rdfs:range rdf:resource="#Formulas"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#positiveImpactTo">
+  <rdfs:domain rdf:resource="#Component_Property"/>
+  <rdfs:range rdf:resource="#Concern"/>
+</owl:ObjectProperty>
+
+<owl:ObjectProperty rdf:about="#relateToProperty">
+  <rdfs:domain rdf:resource="#Component"/>
+  <rdfs:range rdf:resource="#Property"/>
+</owl:ObjectProperty>
+
+<owl:Class rdf:about="#Concern"/>
+
+<owl:Class rdf:about="#Property"/>
+
+<owl:Class rdf:about="#Clause"/>
+
+<owl:Class rdf:about="#Formulas"/>
+
+<owl:Class rdf:about="#DecompositionFunction"/>
+
+<owl:Class rdf:about="#Component_Property"/>
+
+<owl:Class rdf:about="#Component"/>
+
+<Formulas rdf:about="#g6">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <addressToFunc rdf:resource="#Operation_Func"/>
+</Formulas>
+
+
+<Property rdf:about="#Material_Safe_For_Production">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <addConcern rdf:resource="#Safety"/>
+  <addConcern rdf:resource="#Reliability"/>
+  <memberOf rdf:resource="#g6"/>
+        <atomicStatement>material_safe_for_production</atomicStatement>
+</Property>
+
+<Property rdf:about="#Product_Sufficiently_Durable">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <addConcern rdf:resource="#Performance"/>
+  <memberOf rdf:resource="#g6"/>
+        <atomicStatement>product_sufficiently_durable</atomicStatement>  
+</Property>
+
+<Property rdf:about="#On_Time_Production">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <addConcern rdf:resource="#Functionality"/>
+  <memberOf rdf:resource="#g6"/>
+        <atomicStatement>on_time_production</atomicStatement>
+</Property>
+
+<rdf:Description rdf:about="#Received_On_Schedule">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <addConcern rdf:resource="#Functionality"/>
+  <memberOf rdf:resource="#g6"/>
+        <atomicStatement>received_on_schedule</atomicStatement>
+</rdf:Description>
+
+<Property rdf:about="#On_Time_Payment">
+  <rdf:type rdf:resource="http://www.w3.org/2002/07/owl#NamedIndividual"/>
+  <addConcern rdf:resource="#Safety"/>
+  <addConcern rdf:resource="#Reliability"/>
+  <memberOf rdf:resource="#g6"/>
+        <atomicStatement>on_time_production</atomicStatement>
+
+</Property>
+
+</rdf:RDF>
