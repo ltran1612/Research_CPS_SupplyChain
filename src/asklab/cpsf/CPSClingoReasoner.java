@@ -85,7 +85,7 @@ public class CPSClingoReasoner {
 		// name of the temporary file for sparql
 		Path tmpFile = Files.createTempFile("", ".lp");
 		tmpFile.toFile().deleteOnExit();
-		ReturnValue res;
+		ReturnValue res = null;
 		try {
 // STEP 1			
 			if (ontologyFiles.size() != 0) {
@@ -97,6 +97,7 @@ public class CPSClingoReasoner {
 				/* map jena's output to ASP facts */
 				String aspProg = jenaToASP(lines);
 				writeToFile(tmpFile.toFile().getAbsolutePath(), aspProg);
+				res = new ReturnValue(res.getReturnCode(), aspProg);
 			} // end if
 			// write this to a temp file
 // STEP 2
@@ -104,13 +105,11 @@ public class CPSClingoReasoner {
 			if (aspFiles.size() != 0) {
 				aspFiles.add(tmpFile.toFile());
 				res = runClingo(aspFiles, clingoOptions);
-				return res;
-			} // end if
+			}  // end if
+			return res;
 		} catch (Exception x) {
 			throw x;
 		} // end catch
-
-		return null;
 	} // end query
 
 	// get the package path that is stored in this same module/package	
