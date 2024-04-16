@@ -1,8 +1,8 @@
 % test traditional cps ontology reasoning
 % expect satisfaction
-% :- not h(sat("cpsf:received_on_schedule"), _).
+% :- not h(sat("cpsf:Received_On_Schedule"), _).
 #show h/2.
-% % obs(sat("cpsf:received_on_schedule"),true).
+% % obs(sat("cpsf:Received_On_Schedule"),true).
 :- not h(sat("cpsf:Functionality"), 4..10).
 :- h(sat("cpsf:Functionality"), 0..3).
 % PXK1 = {C1: received-on-schedule, C3: on-time-payment} 
