@@ -247,7 +247,7 @@ operation(Name, Input, true, T) :-
     A1 != A,
     require(Name, Input, T),
     Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
-    time(T+1). 
+    time(T). 
 
 operation(Name, Input, true, T) :- 
     Name = not_changed_last,
@@ -256,7 +256,7 @@ operation(Name, Input, true, T) :-
     A1 != A,
     require(Name, Input, T),
     Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
-    time(T+1). 
+    time(T). 
 operation(Name, Input, true, T) :- 
     Name = not_changed_last,
     Value = (A, B, _),  
@@ -264,7 +264,7 @@ operation(Name, Input, true, T) :-
     B != B1,
     require(Name, Input, T),
     Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
-    time(T+1). 
+    time(T). 
 
 operation(Name, Input, true, T) :- 
     Name = not_changed_last,
@@ -273,7 +273,7 @@ operation(Name, Input, true, T) :-
     A1 != A,
     require(Name, Input, T),
     Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
-    time(T+1). 
+    time(T). 
 operation(Name, Input, true, T) :- 
     Name = not_changed_last,
     Value = (A, B, C, _),  
@@ -281,7 +281,7 @@ operation(Name, Input, true, T) :-
     B1 != B,
     require(Name, Input, T),
     Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
-    time(T+1). 
+    time(T). 
 
 operation(Name, Input, true, T) :- 
     Name = not_changed_last,
@@ -290,13 +290,13 @@ operation(Name, Input, true, T) :-
     C1 != C,
     require(Name, Input, T),
     Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
-    time(T+1). 
+    time(T). 
 
 operation(Name, Input, true, T) :- 
     Name = always_inertial,
     require(Name, Input, T),
     Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
-    time(T+1). 
+    time(T). 
 %
 operation(Name, Input, true, T) :- 
     Name = has,
@@ -304,14 +304,14 @@ operation(Name, Input, true, T) :-
     not hold(ReceivedFluent, (Agent, (SourceAgent, TimeOfSource, ReceiveTarget, Amount)), T),
     hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, ReceiveTarget, Amount)), T),
     Input = (Agent, (Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget))),
-    time(T+1). 
+    time(T). 
 operation(Name, Input, true, T) :- 
     Name = has,
     require(Name, Input, T),
     not hold(ReceivedFluent, (Agent, (SourceAgent, TimeOfSource, ReceiveTarget, A, Amount)), T),
     hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, Target, A, Amount)), T),
     Input = (Agent, (Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget, A))),
-    time(T+1). 
+    time(T). 
 
 boolean_condition(greater).
 boolean_condition(has).

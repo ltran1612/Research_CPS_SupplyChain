@@ -188,6 +188,7 @@ class Planner:
             f.write("#show no_property(A) : -h(sat(A), T), step(T), property(A).")
             f.write("#show yes_clause(A) : h(sat(A), T), step(T), clause(A).")
             f.write("#show no_clause(A) : not h(sat(A), T), step(T), clause(A).")
+            f.write("#show hold/2.")
             f.write("#show.")
             f.write("time(T) :- hold(_, _, T).")
         files = [self.domain, self.global_config, self.global_domain,\
@@ -211,6 +212,7 @@ class Planner:
         # compare the observation with the plan
         if self.observation_matches_plan(observation):
             logging.info(f"observation matches plan, get the action for {target_step}")
+            self.save_observations(observation)
             return self.get_actions_at_step(target_step)
         
         logging.info("replanning...")

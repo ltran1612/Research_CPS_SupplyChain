@@ -270,7 +270,6 @@ class StateMangerGlobal(StateManger):
             raise Exception(f"cannot get the state for the agent {agent}")
         
         agent_state = "".join(output)
-        print(agent, agent_state)
         self.lock.release()
 
         return agent_state 
