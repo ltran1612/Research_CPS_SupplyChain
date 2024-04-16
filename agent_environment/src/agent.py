@@ -69,8 +69,11 @@ def on_message(client: mqtt.Client, userdata, msg):
         state_info = json.loads(message)
         state = state_info['state']
         time_step = state_info['time']
+        print(state)
         observation = planner.display(state)
+        sats = planner.display_sat_concerns()
         logging.info(f"The state at the start of step {time_step} is: {observation}")
+        logging.info(f"The concern satisfaction of step {time_step} is: {sats}")
 
         # do some reasoning
         actions = planner.next_step(time_step, state)
@@ -93,6 +96,8 @@ def on_message(client: mqtt.Client, userdata, msg):
 logging.info("initial planning...")
 planner.plan()
 logging.info("planning done.")
+sats = planner.display_sat_concerns()
+logging.info(f"At the start the satisfaction of concerns are:\n{sats}")
 
 # start the agent 
 client = mqtt.Client()

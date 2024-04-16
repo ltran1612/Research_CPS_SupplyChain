@@ -157,6 +157,7 @@ class StateMangerGlobal(StateManger):
     def __get_filter(self, step=None, agent=None):
         hold_time = "T"
         occur_time = "T"
+        action_value = "V"
         if step is not None:
             hold_time = str(step)
             occur_time = str(step-1)
@@ -167,9 +168,10 @@ class StateMangerGlobal(StateManger):
             #show hold(F, (EAgent, Value), {hold_time}) : hold(F, (EAgent, Value), {hold_time}), needs({agent}, F, EAgent), type(F, parameterized).
             #show hold(F, Value, {hold_time}) : needs(F), hold(F, Value, {hold_time}).
             """
+            action_value = f"({agent}, V)"
         return f"""#show.
         #show hold(F, ({agent}, V), {hold_time}) : hold(F, ({agent}, V), {hold_time}).
-        #show occur(A, V, {occur_time}) : occur(A, V, {occur_time}), not failed(A, V, {occur_time}). 
+        #show occur(A, {action_value}, {occur_time}) : occur(A, {action_value}, {occur_time}), not failed(A, {action_value}, {occur_time}). 
         {extension}
         """
 

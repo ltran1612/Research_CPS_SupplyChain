@@ -4,7 +4,7 @@ import logging
 from subprocess import CompletedProcess
 import sys
 import re
-from misc import parse_clingo_output, reset_file, run_clingo, run_clingo_raw, write_to_temp_file 
+from misc import get_atoms, parse_clingo_output, reset_file, run_clingo, run_clingo_raw, write_to_temp_file 
 from env_misc import encode_setup_data 
 import unittest
 
@@ -180,6 +180,29 @@ class Planner:
         else:
             return None
 
+    def display_sat_concerns(self):
+        with open(self.temp_file, "w") as f:
+            f.write("#show yes_concern(A) : h(sat(A), T), step(T), addressedBy(A, P), property(P).")
+            f.write("#show no_concern(A) : -h(sat(A), T), step(T), addressedby(A, P), property(P).")
+            f.write("#show yes_property(A) : h(sat(A), T), step(T),  property(A).")
+            f.write("#show no_property(A) : -h(sat(A), T), step(T), property(A).")
+            f.write("#show.")
+            f.write("time(T) :- hold(_, _, T).")
+        files = [self.domain, self.global_config, self.global_domain,\
+                self.temp_file, self.observations,\
+                self.clause_concern_map, self.cps_reasoner]  
+        files.extend(self.contracts)
+        files.extend(self.ontologies)
+        (run_success, output) = run_clingo(files)
+        if run_success:
+            atoms = get_atoms(output)
+            atoms = list(map(lambda atom :\
+                atom.replace("(", " ").replace(")", " ").replace(".", "")\
+                ,atoms))
+            return "\n".join(atoms)
+        else:
+            logging.error(f"failed to get state of satisfaction of concerns- {output}")
+            raise RuntimeError("failed to get state of satisfaction of concerns")
     # get the next step in the plan based on this current observation
     # if the observation does not match the plan, replan
     def next_step(self, target_step, observation:str):

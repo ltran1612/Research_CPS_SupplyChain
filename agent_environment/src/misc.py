@@ -8,7 +8,7 @@ def run_clingo_raw(files: list, flags=["-V0", "--out-atom=%s."]):
     command.extend(files)
     command.extend(["--asp-options"])
     command.extend(flags)
-    print(" ".join(command))
+    logging.debug(" ".join(command))
     result= subprocess.run(command, capture_output=True)
     return result
 # run clingo and return 
