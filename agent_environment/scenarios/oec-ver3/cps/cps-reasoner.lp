@@ -29,8 +29,7 @@ h(sat(C,F),T)  :- not -h(sat(C,F),T), step(T), func_dec(F,C).
 -h(sat(C),T)   :- concern(C), func_dec(F,C), -h(sat(C,F),T), step(T).
 
 %---- Traditiona Reasoning about Concern Satisfaction ---                       
--h(sat(C),T) :- -h(P,T), property(P), step(T),  addressedBy(C,P), 
-                 not member(P,_).
+-h(sat(C),T) :- -h(sat(P),T), property(P), step(T), addressedBy(C,P), not member(P,_).
 -h(sat(X),T) :- concern(X), concern(Y), subconcern(X,Y), not h(sat(Y),T), step(T).
 -h(sat(X),T) :- concern(X), concern(Y), subconcern(X,Y), -h(sat(Y),T), step(T).
 h(sat(C),T) :- not -h(sat(C),T), concern(C), step(T).
@@ -40,5 +39,6 @@ h(A, T) :- hold(A, T).
 step(T) :- time(T).
 %
 h(sat(P),T) :- h(sat(Cl),T), clause(Cl), step(T), addressedBy(P,Cl), property(P). 
+-h(sat(P),T) :- not h(sat(Cl),T), clause(Cl), step(T), addressedBy(P,Cl), property(P). 
 %
-% :- clause(Cl), addressedBy(P,Cl), not property(P).
+:- clause(Cl), addressedBy(P,Cl), not property(P).

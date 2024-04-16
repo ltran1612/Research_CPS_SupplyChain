@@ -1,8 +1,8 @@
-pay_item(precision_engines, metal_craft_solutions, iron_springs).
-recv_item(precision_engines, metal_craft_solutions, iron_springs).
-produce_item(precision_engines, engines).
-deliver_item(precision_engines, car_producer, engines).
-receiving_reason(precision_engines, car_producer, engines).
+pay_item(precision_engine, metal_craft_solutions, iron_springs).
+recv_item(precision_engine, metal_craft_solutions, iron_springs).
+produce_item(precision_engine, engines).
+deliver_item(precision_engine, car_producer, engines).
+receiving_reason(precision_engine, car_producer, engines).
 %
 needs(Agent, delivered, FromAgent) :- recv_item(Agent, FromAgent, Item). 
 needs(Agent, delivered_quality, FromAgent) :- recv_item(Agent, FromAgent, Item, Quality).

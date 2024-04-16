@@ -9,7 +9,6 @@ hold(sat("C5"), T) :-  hold(total_received, (precision_engine, (metal_craft_solu
 
 % C6: P responsible_for payment(iron_springs, 8K) when by_week 4
 hold(sat("C6"), T) :-  hold(total_sent_payment, (precision_engine, (metal_craft_solutions, iron_springs, 8000)), 4), time(T), T >= 4. 
-. 
 
 % contract between car producer and precision engine
 clause("C16").
