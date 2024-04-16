@@ -52,20 +52,18 @@ public class CPSClingoReasoner {
 		return (list);
 	} // end ontologyFileList
 	
-	public static String ontologyToASP(File sparqlQueryFile, List<File> ontologyFiles) throws IOException, Exception {
+	public static ReturnValue ontologyToASP(File sparqlQueryFile, List<File> ontologyFiles) throws IOException, Exception {
 		// query the ontologies with the SPARQL query.
 		List<String> arguments = ontologyFileList(ontologyFiles, "--data=");
 		arguments = arguments.stream().map(
 			(String argument) -> argument.replace("\\", "/").trim()
 		).collect(Collectors.toList());
 		String[] cmd = jenaCmd(sparqlQueryFile.getAbsolutePath(), arguments);
-		Vector<String> lines = runCmdRaw(cmd);
-		/* map jena's output to ASP facts */
-		String aspProg = jenaToASP(lines);
-		return aspProg;
+		ReturnValue returnValue = runCmdRaw(cmd);
+		return returnValue;
 	} // end ontologyToASP
 
-	public static String runClingo(List<File> aspFiles, List<String> clingoOptions) throws Exception {
+	public static ReturnValue runClingo(List<File> aspFiles, List<String> clingoOptions) throws Exception {
 		String[] arguments =  new String[aspFiles.size() + clingoOptions.size() + 1];
 		arguments[0] = "clingo";
 		int index = 1;
@@ -78,24 +76,26 @@ public class CPSClingoReasoner {
 			arguments[index] = option; 
 			index++;
 		} // end for 
-		Vector<String> out = runCmdRaw(arguments);
-		String result = String.join("\n", out);	
-		return result;
+		ReturnValue out = runCmdRaw(arguments);
+		return out;
 	} // end asp
 
 	// query the CPS + Ontology
-	public static String query(File sparqlQueryFile, List<File> ontologyFiles, List<File> aspFiles, List<String> clingoOptions) throws IOException {
+	public static ReturnValue query(File sparqlQueryFile, List<File> ontologyFiles, List<File> aspFiles, List<String> clingoOptions) throws Exception {
 		// name of the temporary file for sparql
 		Path tmpFile = Files.createTempFile("", ".lp");
 		tmpFile.toFile().deleteOnExit();
-		String res = "";
-
+		ReturnValue res;
 		try {
 // STEP 1			
-			String aspProg = "";
 			if (ontologyFiles.size() != 0) {
-				aspProg = ontologyToASP(sparqlQueryFile, ontologyFiles);
-				res = aspProg;
+				res = ontologyToASP(sparqlQueryFile, ontologyFiles);
+				if (res.getReturnCode() != 0)
+					return res;
+				//  get the result
+				Vector<String> lines = res.getStdoutVector();
+				/* map jena's output to ASP facts */
+				String aspProg = jenaToASP(lines);
 				writeToFile(tmpFile.toFile().getAbsolutePath(), aspProg);
 			} // end if
 			// write this to a temp file
@@ -104,14 +104,13 @@ public class CPSClingoReasoner {
 			if (aspFiles.size() != 0) {
 				aspFiles.add(tmpFile.toFile());
 				res = runClingo(aspFiles, clingoOptions);
-				// System.out.println(res);
+				return res;
 			} // end if
 		} catch (Exception x) {
-			System.err.println("Exception: " + x);
-			x.printStackTrace();
+			throw x;
 		} // end catch
 
-		return (res);
+		return null;
 	} // end query
 
 	// get the package path that is stored in this same module/package	
@@ -164,14 +163,33 @@ public class CPSClingoReasoner {
 	} // end jenaToASP
 
 	// run a command with no data
-	static Vector<String> runCmdRaw(String[] cmd) throws IOException {
+	static ReturnValue runCmdRaw(String[] cmd) throws IOException {
 		return (runCmdRaw(cmd, null));
 	} // end runCmdRaw
 
-	// run a command with data
-	static Vector<String> runCmdRaw(String[] cmdParts, String inData) throws IOException {
-		Runtime r = Runtime.getRuntime();
+	public static class ReturnValue {
+		private int status;
+		private Vector<String> res;
+		private Vector<String> error;
+		private Vector<String> combined;
 
+		private ReturnValue(int _status, Vector<String> _res, Vector<String> _error, Vector<String> _combined) {
+			status = _status;
+			res = _res;
+			error = _error;
+			combined = _combined;
+		} // return Value
+
+		public int getReturnCode() {return status;}
+		public String getStdout() {return String.join("\n", res);}
+		private Vector<String> getStdoutVector() {return new Vector<String>(res);}
+		public String getStderr() {return String.join("\n", error);}
+		public String getCombinedOutput() {return String.join("\n", combined);}
+	};
+	
+	// run a command with data
+	private static ReturnValue runCmdRaw(String[] cmdParts, String inData) throws IOException {
+		Runtime r = Runtime.getRuntime();
 		// execute the command
 		Process p = r.exec(cmdParts);
 
@@ -186,16 +204,20 @@ public class CPSClingoReasoner {
 
 		/* retrieve the output */
 		Vector<String> res = new Vector<String>();
+		Vector<String> combined = new Vector<String>();
 		Vector<String> error = new Vector<String>();
 		try {
-			ReadStream s1, s2;
-			s1 = new ReadStream("stdout", p.getInputStream(), res, false);
-			s2 = new ReadStream("stderr", p.getErrorStream(), error, false);
+			ReadStream s1, s2, s3, s4;
+			s1 = new ReadStream("stdout", p.getInputStream(), res, combined, false);
+			s2 = new ReadStream("stderr", p.getErrorStream(), error, combined, false);
+			//
 			s1.start();
 			s2.start();
+			//
 			p.waitFor();
-			s2.waitFor();
+			//
 			s1.waitFor();
+			s2.waitFor();
 			if (outputFiller != null)
 				outputFiller.join();
 		} catch (Exception e) {
@@ -205,11 +227,7 @@ public class CPSClingoReasoner {
 				p.destroy();
 		} // end finally
 
-		if (res.isEmpty() && !error.isEmpty()) {
-			throw new RuntimeException(error.stream().collect(Collectors.joining((""))));
-		} // end if
-
-		return (res);
+		return new ReturnValue(p.exitValue(), res, error, combined);
 	} // end runCmdRaw
 
 	// run a command with no data
@@ -222,7 +240,7 @@ public class CPSClingoReasoner {
 		String res;
 
 		res = "";
-		for (String line : runCmdRaw(cmd, inData))
+		for (String line : runCmdRaw(cmd, inData).res)
 			res = res + line + "\n";
 
 		return (res);
@@ -286,14 +304,24 @@ public class CPSClingoReasoner {
 		String name;
 		InputStream is;
 		Vector<String> v;
+		Vector<String> pipe;
 		boolean discard;
 		Thread thread;
+		static Object mutex = new Object();
 
 		public ReadStream(String name, InputStream is, Vector<String> v, boolean discard) {
 			this.name = name;
 			this.is = is;
 			this.v = v;
 			this.discard = discard;
+		} // end ReadStream
+
+		public ReadStream(String name, InputStream is, Vector<String> v, Vector<String> _pipe, boolean discard) {
+			this.name = name;
+			this.is = is;
+			this.v = v;
+			this.discard = discard;
+			this.pipe = _pipe;
 		} // end ReadStream
 
 		public void start() {
@@ -316,8 +344,17 @@ public class CPSClingoReasoner {
 
 					if (discard);
 						//System.out.println("[" + name + "] " + s);
-					else
-						v.addElement(s);
+					else {
+						synchronized(mutex) {
+							v.addElement(s);
+						} // end syncrhonized
+
+						if (pipe != null) {
+							synchronized(mutex) {
+								pipe.addElement(s);
+							} // end syncrhonized
+						} // end if
+					} // end while 
 				} // end while
 				is.close();
 			} catch (Exception ex) {

@@ -6,7 +6,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-import asklab.cpsf.CPSClingoReasoner; 
+import asklab.cpsf.CPSClingoReasoner;
+import asklab.cpsf.CPSClingoReasoner.ReturnValue; 
 
 public class Main {
     // preconditions, given the file paths to:
@@ -57,11 +58,13 @@ public class Main {
             reader.close();
             in.close();
             // query
-            String res = CPSClingoReasoner.query(queryFile, ontoFiles, aspFiles, info.options);
-            System.out.println(res);
+            ReturnValue res = CPSClingoReasoner.query(queryFile, ontoFiles, aspFiles, info.options);
+            System.out.println(res.getCombinedOutput());
+            System.exit(res.getReturnCode());
             // print out the response
-        } catch (IOException excp) {
+        } catch (Exception excp) {
             System.err.println(excp.getMessage());
+            System.exit(1);
         } finally {
             // end catch
             try {
