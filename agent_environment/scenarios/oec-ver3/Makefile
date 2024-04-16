@@ -256,3 +256,10 @@ test17:
 	head -n2 tests/test16.lp
 	@-java -jar cps/cli.jar cps/cps-original.owl tests/test.owl cps/cps.lp tests/test17.lp --asp-options ${HIDE_WARNING}
 	echo ""
+.SILENT:
+test18:
+	echo $@
+	head -n2 tests/test16.lp
+	@-java -jar cps/cli.jar ${DOMAIN} tests/test.owl cps/cps-original.owl tests/test18.lp cps/cps.lp --asp-options ${HIDE_WARNING}
+
+	echo ""
