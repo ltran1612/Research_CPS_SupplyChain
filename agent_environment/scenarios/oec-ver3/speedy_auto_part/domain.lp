@@ -1,7 +1,7 @@
 produce_item(speedy_auto_parts, vehicle_parts).
 deliver_item(speedy_auto_parts, car_producer, vehicle_parts).
-recv_item(speedy_auto_parts, supplier_of_speedy_auto_parts, tool_parts, 1..5).
-pay_item(speedy_auto_parts, supplier_of_speedy_auto_parts, tool_parts, 1..5).
+recv_item(speedy_auto_parts, supplier_of_speedy_auto_parts, tool_parts, 3..5).
+pay_item(speedy_auto_parts, supplier_of_speedy_auto_parts, tool_parts, 3..5).
 receiving_reason(speedy_auto_parts, car_producer, vehicle_parts).
 %
 needs(Agent, delivered, FromAgent) :- recv_item(Agent, FromAgent, Item). 

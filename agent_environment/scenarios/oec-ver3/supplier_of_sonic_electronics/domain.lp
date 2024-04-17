@@ -1,6 +1,6 @@
 produce_item(supplier_of_sonic_electronics, electronics_parts).
 deliver_item(supplier_of_sonic_electronics, sonic_electronics, electronics_parts).
-receiving_reason(supplier_of_sonic_electronics, car_producer, electronics_parts).
+receiving_reason(supplier_of_sonic_electronics, sonic_electronics, electronics_parts).
 %
 needs(Agent, delivered, FromAgent) :- recv_item(Agent, FromAgent, Item). 
 needs(Agent, delivered_quality, FromAgent) :- recv_item(Agent, FromAgent, Item, Quality).

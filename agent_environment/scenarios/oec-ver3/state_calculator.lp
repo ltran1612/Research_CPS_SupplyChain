@@ -70,7 +70,9 @@ hold(Fluent, (Agent, Value), T+1) :-
     hold(Fluent, (Agent, Value), T), 
     not changed(Agent, _, _, Fluent, _, T), 
     type(Fluent, parameterized), time(T+1).
-%
+% intertial for the paramterized fluents of an agent that differs by some parts in its vallues.
+% for example, hold(f, (quality1, Amount)) and hold(f, (quality2, Amount)) are different.
+% changes in quality1 should not affect quality2. 
 hold(Fluent, (Agent, Value), T+1) :- 
     hold(Fluent, (Agent, Value), T), 
     inertial(Agent, Fluent, Operation, Input),
