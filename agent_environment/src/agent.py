@@ -94,9 +94,9 @@ def on_message(client: mqtt.Client, userdata, msg):
         logging.info(f"sent the action {action} to the environment for the end of time step {time_step}")
         
 #
-logging.info("initial planning...")
-planner.plan()
-logging.info("planning done.")
+# logging.info("initial planning...")
+# planner.plan()
+# logging.info("planning done.")
 sats = planner.display_sat_concerns()
 logging.info(f"At the start the satisfaction of concerns are:\n{sats}")
 

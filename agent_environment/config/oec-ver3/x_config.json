@@ -4,6 +4,7 @@
     "domain": "../scenarios/oec-ver3/car_producer/domain.lp",
     "initial_state": "../scenarios/oec-ver3/car_producer/init.lp",
     "planner": "../scenarios/oec-ver3/car_producer/plan.lp",
+    "initial-plan": "../scenarios/oec-ver3/car_producer/initial-plan.lp",
     "clause_concern_map": "../scenarios/oec-ver3/car_producer/clause-concern-map.lp",
     "plan_checking": "../scenarios/oec-ver3/car_producer/plan_checking.lp",
     "global_domain": "../scenarios/oec-ver3/global_domain.lp",

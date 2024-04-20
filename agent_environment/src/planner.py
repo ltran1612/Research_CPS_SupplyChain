@@ -4,7 +4,7 @@ import logging
 from subprocess import CompletedProcess
 import sys
 import re
-from misc import get_atoms, parse_clingo_output, reset_file, run_clingo, run_clingo_raw, write_to_temp_file 
+from misc import get_atoms, parse_clingo_output, reset_file, run_clingo, run_clingo_raw, write_to_temp_file, copy_file
 from env_misc import encode_setup_data 
 import unittest
 
@@ -21,6 +21,7 @@ class Planner:
         self.initial_state = config['initial_state']
         #
         self.planner = config['planner']
+        self.initial_plan = config['initial-plan']
         self.plan_checking = config['plan_checking']
         # 
         self.contracts = config['contracts']
@@ -49,6 +50,9 @@ class Planner:
         else:
             logging.error(f"failed to get the initial state - {output}")
             raise RuntimeError("failed to get initial state")
+
+        # copy initial plan to the plan file
+        copy_file(self.initial_plan, self.theplan)
             
     # check if the observation matches with the plan
     # precondition: the plan is stored in self.theplan 

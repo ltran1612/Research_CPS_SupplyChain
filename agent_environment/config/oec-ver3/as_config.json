@@ -4,6 +4,7 @@
     "domain": "../scenarios/oec-ver3/supplier_of_speedy_auto_part/domain.lp",
     "initial_state": "../scenarios/oec-ver3/supplier_of_speedy_auto_part/init.lp",
     "planner": "../scenarios/oec-ver3/supplier_of_speedy_auto_part/plan.lp",
+    "initial-plan": "../scenarios/oec-ver3/supplier_of_speedy_auto_part/initial-plan.lp",
     "clause_concern_map": "../scenarios/oec-ver3/supplier_of_speedy_auto_part/clause-concern-map.lp",
     "plan_checking": "../scenarios/oec-ver3/supplier_of_speedy_auto_part/plan_checking.lp",
     "global_domain": "../scenarios/oec-ver3/global_domain.lp",

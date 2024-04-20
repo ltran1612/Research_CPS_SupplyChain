@@ -4,6 +4,7 @@
     "domain": "../scenarios/oec-ver3/sonic_electronics/domain.lp",
     "initial_state": "../scenarios/oec-ver3/sonic_electronics/init.lp",
     "planner": "../scenarios/oec-ver3/sonic_electronics/plan.lp",
+    "initial-plan": "../scenarios/oec-ver3/sonic_electronics/initial-plan.lp",
     "clause_concern_map": "../scenarios/oec-ver3/sonic_electronics/clause-concern-map.lp",
     "plan_checking": "../scenarios/oec-ver3/sonic_electronics/plan_checking.lp",
     "global_domain": "../scenarios/oec-ver3/global_domain.lp",

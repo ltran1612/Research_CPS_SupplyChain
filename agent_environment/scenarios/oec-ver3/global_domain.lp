@@ -303,13 +303,15 @@ operation(Name, Input, true, T) :-
     require(Name, Input, T),
     not hold(ReceivedFluent, (Agent, (SourceAgent, TimeOfSource, ReceiveTarget, Amount)), T),
     hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, ReceiveTarget, Amount)), T),
+    Value=(SourceAgent, TimeOfSource, ReceiveTarget, Amount),
     Input = (Agent, (Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget))),
     time(T). 
 operation(Name, Input, true, T) :- 
     Name = has,
     require(Name, Input, T),
     not hold(ReceivedFluent, (Agent, (SourceAgent, TimeOfSource, ReceiveTarget, A, Amount)), T),
-    hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, Target, A, Amount)), T),
+    hold(SourceFluent, (SourceAgent, (Agent, TimeOfSource, ReceiveTarget, A, Amount)), T),
+    Value=(SourceAgent, TimeOfSource, ReceiveTarget, A, Amount),
     Input = (Agent, (Action, Value, (ReceivedFluent, SourceFluent, SourceAgent, ReceiveTarget, A))),
     time(T). 
 
