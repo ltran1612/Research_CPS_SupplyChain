@@ -11,7 +11,6 @@ hold(sat("C14"), T) :-  hold(total_delivered, (sonic_electronics, (car_producer,
 hold(sat("C15"), T) :-  hold(total_received_payment, (sonic_electronics, (car_producer,radios, 10000)), T1), time(T), T1 <= 5.
 
 % contract between sonic electronics and the supplier of sonic electronics
-clause("C19").
 clause("C20").
 clause("C21").
 %  C19: Es responsible_for produced(electronic_parts, 270) when by_week 10 
