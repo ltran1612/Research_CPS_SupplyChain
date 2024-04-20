@@ -95,10 +95,11 @@ hold(Parent, (), T) :- fluent(Parent),
     D=#count{O: hold(O, (Agent, _), T), member(Agent, O, Parent), type(O, parameterized)}, 
     A+B = C+D,
     time(T). 
+
 % a fluent cannot be both conjunction and parameterized 
 :- type(F, conjunction), type(F, parameterized). 
 % cannot have a normal member that is parameterized
 :- member(F, Parent), type(F, parameterized). 
 :- member(Agent, F, Parent), not type(F, parameterized). 
-
 % a parameterized fluent needs an intertial  
+%
