@@ -165,7 +165,7 @@ class StateMangerGlobal(StateManger):
         extension = ""
         if agent is not None:
             extension = f"""
-            #show hold(F, (EAgent, Value), {hold_time}) : hold(F, (EAgent, Value), {hold_time}), needs({agent}, F, EAgent), type(F, parameterized).
+            #show hold(F, (EAgent, Value), {hold_time}) : hold(F, (EAgent, Value), {hold_time}), needs({agent}, F, EAgent), type(F, agent).
             #show hold(F, Value, {hold_time}) : needs(F), hold(F, Value, {hold_time}).
             """
             action_value = f"({agent}, V)"

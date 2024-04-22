@@ -33,38 +33,38 @@ fluent(can_receive_quality).
 fluent(can_receive_money).
 %
 % type(S
-type(sent_payment, parameterized). 
-type(received_payment, parameterized). 
+type(sent_payment, agent). 
+type(received_payment, agent). 
 %
-type(total_sent_payment, parameterized). 
-type(total_received_payment, parameterized). 
+type(total_sent_payment, agent). 
+type(total_received_payment, agent). 
 %
-type(available_funds, parameterized).
+type(available_funds, agent).
 %
-type(total_produced, parameterized).
-type(total_produced_quality, parameterized).
+type(total_produced, agent).
+type(total_produced_quality, agent).
 %
-type(delivered, parameterized).
-type(delivered_quality, parameterized).
+type(delivered, agent).
+type(delivered_quality, agent).
 %
-type(total_delivered, parameterized).
-type(total_delivered_quality, parameterized).
+type(total_delivered, agent).
+type(total_delivered_quality, agent).
 %
-type(received, parameterized).
-type(received_quality, parameterized).
+type(received, agent).
+type(received_quality, agent).
 %
-type(total_received, parameterized).
-type(total_received_quality, parameterized).
+type(total_received, agent).
+type(total_received_quality, agent).
 %
-type(available_item, parameterized).
-type(available_quality_item, parameterized).
+type(available_item, agent).
+type(available_quality_item, agent).
 %
-type(enough_funds, parameterized).
-type(enough_item, parameterized).
-type(enough_item_quality, parameterized).
-type(can_receive, parameterized).
-type(can_receive_quality, parameterized).
-type(can_receive_money, parameterized).
+type(enough_funds, agent).
+type(enough_item, agent).
+type(enough_item_quality, agent).
+type(can_receive, agent).
+type(can_receive_quality, agent).
+type(can_receive_money, agent).
 
 %
 operation(Name, Input, (Agent, (A, T, B, Amount)), T) :- 

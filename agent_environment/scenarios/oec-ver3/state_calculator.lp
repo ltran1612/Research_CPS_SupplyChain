@@ -1,6 +1,6 @@
 % executability
-possible(Action, (Agent, Value), Time) :- executable(Agent, Action, Value, ConditionFluent), hold(ConditionFluent, (Agent, (Action, Value, _)), Time), type(ConditionFluent, parameterized), time(Time).
-possible(Action, (Agent, Value), Time) :- executable(Agent, Action, Value, ConditionFluent), hold(ConditionFluent, _, Time), not type(ConditionFluent, parameterized), time(Time).
+possible(Action, (Agent, Value), Time) :- executable(Agent, Action, Value, ConditionFluent), hold(ConditionFluent, (Agent, (Action, Value, _)), Time), type(ConditionFluent, agent), time(Time).
+possible(Action, (Agent, Value), Time) :- executable(Agent, Action, Value, ConditionFluent), hold(ConditionFluent, _, Time), not type(ConditionFluent, agent), time(Time).
 possible(Action, (Agent, Value), Time) :- not executable(Agent, Action, Value, _), action(Agent, Action, Value), time(Time). 
 failed(Action, Value, Time) :- occur(Action, Value, Time), not possible(Action, Value, Time), time(Time).
 % inputs
@@ -46,30 +46,30 @@ changed(Agent, static, CausalFluent, TargetFluent, TargetValue, T) :-
 hold(ConditionFluent, Input, T) :- 
     satisfy_condition(Agent, ConditionFluent, Operation, Input), 
     operation(Operation, (Agent, Input), true, T),
-    not type(ConditionFluent, parameterized),
+    not type(ConditionFluent, agent),
     time(T). 
 changed(Agent, satisfy, Input, ConditionFluent, true, T) :- 
     satisfy_condition(Agent, ConditionFluent, Operation, Input), 
     operation(Operation, (Agent, Input), true, T),
-    not type(ConditionFluent, parameterized),
+    not type(ConditionFluent, agent),
     time(T). 
 %
 hold(ConditionFluent, (Agent, Input), T) :- 
     satisfy_condition(Agent, ConditionFluent, Operation, Input), 
     operation(Operation, (Agent, Input), true, T),
-    type(ConditionFluent, parameterized),
+    type(ConditionFluent, agent),
     time(T). 
 changed(Agent, satisfy, (Agent, Input), ConditionFluent, true, T) :- 
     satisfy_condition(Agent, ConditionFluent, Operation, Input), 
     operation(Operation, (Agent, Input), true, T),
-    type(ConditionFluent, parameterized),
+    type(ConditionFluent, agent),
     time(T). 
 % inertial laws
-hold(Fluent, Value, T+1) :- hold(Fluent, Value, T), not changed(_, _, _, Fluent, _, T), not type(Fluent, parameterized), time(T+1).
+hold(Fluent, Value, T+1) :- hold(Fluent, Value, T), not changed(_, _, _, Fluent, _, T), not type(Fluent, agent), time(T+1).
 hold(Fluent, (Agent, Value), T+1) :- 
     hold(Fluent, (Agent, Value), T), 
     not changed(Agent, _, _, Fluent, _, T), 
-    type(Fluent, parameterized), time(T+1).
+    type(Fluent, agent), time(T+1).
 % intertial for the paramterized fluents of an agent that differs by some parts in its vallues.
 % for example, hold(f, (quality1, Amount)) and hold(f, (quality2, Amount)) are different.
 % changes in quality1 should not affect quality2. 
@@ -78,28 +78,28 @@ hold(Fluent, (Agent, Value), T+1) :-
     inertial(Agent, Fluent, Operation, Input),
     operation(Operation, (Agent, Fluent, (Agent, Value), NewChanges, Input), true, T),
     changed(Agent, _, _, Fluent, NewChanges, T), 
-    type(Fluent, parameterized), time(T+1).
+    type(Fluent, agent), time(T+1).
 require(Operation ,(Agent, Fluent, (Agent, Value), NewChanges, Input), T) :-
     inertial(Agent, Fluent, Operation, Input),
     hold(Fluent, (Agent, Value), T), 
     changed(Agent, _, _, Fluent, NewChanges, T), 
-    type(Fluent, parameterized), time(T+1).
+    type(Fluent, agent), time(T+1).
 
 % implement conjunction
 hold(Parent, (), T) :- fluent(Parent), 
     type(Parent, conjunction), 
-    not type(Parent, parameterized), 
+    not type(Parent, agent), 
     A=#count{O: member(O, Parent)}, 
     B=#count{O: member(Agent, O, Parent)}, 
-    C=#count{O: hold(O, _, T), member(O, Parent), not type(O, parameterized)}, 
-    D=#count{O: hold(O, (Agent, _), T), member(Agent, O, Parent), type(O, parameterized)}, 
+    C=#count{O: hold(O, _, T), member(O, Parent), not type(O, agent)}, 
+    D=#count{O: hold(O, (Agent, _), T), member(Agent, O, Parent), type(O, agent)}, 
     A+B = C+D,
     time(T). 
 
-% a fluent cannot be both conjunction and parameterized 
-:- type(F, conjunction), type(F, parameterized). 
-% cannot have a normal member that is parameterized
-:- member(F, Parent), type(F, parameterized). 
-:- member(Agent, F, Parent), not type(F, parameterized). 
-% a parameterized fluent needs an intertial  
+% a fluent cannot be both conjunction and agent 
+:- type(F, conjunction), type(F, agent). 
+% cannot have a normal member that is agent
+:- member(F, Parent), type(F, agent). 
+:- member(Agent, F, Parent), not type(F, agent). 
+% a agent fluent needs an intertial  
 %
