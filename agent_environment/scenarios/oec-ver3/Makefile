@@ -2,7 +2,7 @@ DOMAIN = general/domain.lp global_domain.lp state_calculator.lp
 INIT = general/init.lp
 PLAN = general/plan.lp
 HIDE_WARNING = -q2,2,2 --warn no-atom-undefined -V0
-all: test1 test2 test3 test4 test5 test6 test16 test17 test18 test19 test20 
+all: test1 test2 test3 test4 test5 test6 test16 test17 test18 test19 test20 test21 
 
 .SILENT:
 test1:
@@ -275,4 +275,11 @@ test20:
 	echo $@
 	head -n2 tests/test20.lp
 	@-java -jar cps/cli.jar ${DOMAIN} tests/test20.lp --asp-options ${HIDE_WARNING}
+	echo ""
+
+.SILENT:
+test21:
+	echo $@
+	head -n2 tests/test21.lp
+	@-java -jar cps/cli.jar ${DOMAIN} tests/test21.lp --asp-options ${HIDE_WARNING}
 	echo ""

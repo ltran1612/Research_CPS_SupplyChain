@@ -1,4 +1,4 @@
-% test error detection
+% test error detection with static causal law
 % expect satisfaction 
 fluent(f1).
 fluent(f2).

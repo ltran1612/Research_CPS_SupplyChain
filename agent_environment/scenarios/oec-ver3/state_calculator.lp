@@ -26,7 +26,7 @@ changed(Agent, action, Action, Fluent, Output, T) :-
     occur(Action, (Agent, Value), T),
     operation(Operation, (Agent, Action, Value, Fluent, Input), Output, T),
     possible(Action, (Agent, Value), T),
-    not failed(T),
+    not failed(T+1),
     time(T+1). 
 %
 % static laws
