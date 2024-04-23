@@ -7,4 +7,4 @@ addressedBy("cpsf:Material_Safe_For_Production", "C13").
 addressedBy("cpsf:Product_Sufficiently_Durable", "C13").
 addressedBy("cpsf:On_Time_Delivery", "C14").
 
-% PMK8sedBy("cpsf:On_Time_Payment", "C21").
+addressedBy("cpsf:On_Time_Payment", "C21").
