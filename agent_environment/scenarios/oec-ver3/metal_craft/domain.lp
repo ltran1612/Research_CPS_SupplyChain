@@ -1,5 +1,5 @@
 deliver_item(metal_craft_solutions, metal_craft_solutions, iron_springs).
-produce_item(metal_craft_solutions, titanium_oxide, 1..4).
+produce_item(metal_craft_solutions, iron_springs).
 recv_item(metal_craft_solutions, supplier_of_metal_craft_solutions, titanium_oxide, 1..4).
 pay_item(metal_craft_solutions, supplier_of_metal_craft_solutions, titanium_oxide, 1..4).
 receiving_reason(metal_craft_solutions, precision_engine, iron_springs).
