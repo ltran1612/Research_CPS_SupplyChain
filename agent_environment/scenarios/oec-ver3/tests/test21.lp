@@ -18,6 +18,8 @@ operation(o, Input, A, T) :-
     Input =  (Agent, a, A, f1, ()),
     time(T).
 :- not hold(f1, v0, 0..10). 
+:- hold(f1, v1, 0..10). 
+:- hold(f1, v2, 0..10). 
 :- not failed(1).
 :- failed(0).
 :- failed(2..10).
