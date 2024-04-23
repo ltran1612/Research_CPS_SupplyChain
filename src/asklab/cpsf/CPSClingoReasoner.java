@@ -109,7 +109,10 @@ public class CPSClingoReasoner {
 			return res;
 		} catch (Exception x) {
 			throw x;
-		} // end catch
+		} finally {
+			if (!tmpFile.toFile().delete())
+				tmpFile.toFile().deleteOnExit();
+		}
 	} // end query
 
 	// get the package path that is stored in this same module/package	
