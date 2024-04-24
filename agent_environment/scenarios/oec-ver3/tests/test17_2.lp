@@ -38,3 +38,9 @@ h("cpsf:Received_On_Schedule", 2).
 :- not h(sat("cpsf:Performance"), 0..5). 
 :- h(sat(A), T), subconcern(A, B), not h(sat(B), T).
 :- h(sat(B), T), addressedBy(A, B), not h(sat(A), T).
+
+%
+%
+
+:- not subconcern("cpsf:Safety", "cpsf:Human_Safety").
+:- not h(sat("cpsf:Human_Safety"), 0..5).
