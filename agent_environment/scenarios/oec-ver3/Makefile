@@ -254,7 +254,15 @@ test16:
 test17:
 	echo $@
 	head -n2 tests/test17.lp
-	@-java -jar cps/cli.jar cps/cps-original.owl tests/test.owl cps/cps-reasoner.lp tests/test17.lp --asp-options ${HIDE_WARNING}
+	@-java -jar cps/cli.jar cps/cps-original.owl tests/test.owl cps/cps-reasoner.lp tests/test17.lp --asp-options  ${HIDE_WARNING}
+	echo ""
+
+	head -n2 tests/test17_1.lp
+	@-java -jar cps/cli.jar cps/cps-original.owl tests/test.owl cps/cps-reasoner.lp tests/test17_1.lp --asp-options ${HIDE_WARNING}
+	echo ""
+
+	head -n2 tests/test17_2.lp
+	@-java -jar cps/cli.jar cps/cps-original.owl tests/test.owl cps/cps-reasoner.lp tests/test17_2.lp --asp-options ${HIDE_WARNING}
 	echo ""
 .SILENT:
 test18:

@@ -151,9 +151,25 @@
     
 
 
+    <!-- http://www.asklab.tk/ontologies/CPS-Framework#Conjunction -->
+
+    <owl:Class rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#Conjunction">
+        <rdfs:subClassOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Formulas"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.asklab.tk/ontologies/CPS-Framework#DecompositionFunction -->
 
     <owl:Class rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#DecompositionFunction"/>
+    
+
+
+    <!-- http://www.asklab.tk/ontologies/CPS-Framework#Disjunction -->
+
+    <owl:Class rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#Disjunction">
+        <rdfs:subClassOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Formulas"/>
+    </owl:Class>
     
 
 

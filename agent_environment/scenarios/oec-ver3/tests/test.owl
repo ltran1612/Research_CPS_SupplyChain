@@ -151,9 +151,25 @@
     
 
 
+    <!-- http://www.asklab.tk/ontologies/CPS-Framework#Conjunction -->
+
+    <owl:Class rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#Conjunction">
+        <rdfs:subClassOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Formulas"/>
+    </owl:Class>
+    
+
+
     <!-- http://www.asklab.tk/ontologies/CPS-Framework#DecompositionFunction -->
 
     <owl:Class rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#DecompositionFunction"/>
+    
+
+
+    <!-- http://www.asklab.tk/ontologies/CPS-Framework#Disjunction -->
+
+    <owl:Class rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#Disjunction">
+        <rdfs:subClassOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Formulas"/>
+    </owl:Class>
     
 
 
@@ -192,7 +208,6 @@
         <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Property"/>
         <addConcern rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Reliability"/>
         <addConcern rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Safety"/>
-        <memberOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#g6"/>
         <atomicStatement>material_safe_for_production</atomicStatement>
     </owl:NamedIndividual>
     
@@ -202,8 +217,6 @@
 
     <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#On_Time_Payment">
         <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Property"/>
-        <addConcern rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Reliability"/>
-        <addConcern rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Safety"/>
         <memberOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#g6"/>
         <atomicStatement>on_time_production</atomicStatement>
     </owl:NamedIndividual>
@@ -214,18 +227,8 @@
 
     <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#On_Time_Production">
         <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Property"/>
-        <addConcern rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Functionality"/>
         <memberOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#g6"/>
         <atomicStatement>on_time_production</atomicStatement>
-    </owl:NamedIndividual>
-    
-
-
-    <!-- http://www.asklab.tk/ontologies/CPS-Framework#Operation_Func -->
-
-    <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#Operation_Func">
-        <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#DecompositionFunction"/>
-        <decomposition_function_of rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Functionality"/>
     </owl:NamedIndividual>
     
 
@@ -240,8 +243,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#Product_Sufficiently_Durable">
         <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Property"/>
-        <addConcern rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Performance"/>
-        <memberOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#g6"/>
+        <memberOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#g7"/>
         <atomicStatement>product_sufficiently_durable</atomicStatement>
     </owl:NamedIndividual>
     
@@ -251,8 +253,7 @@
 
     <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#Received_On_Schedule">
         <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Property"/>
-        <addConcern rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Functionality"/>
-        <memberOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#g6"/>
+        <memberOf rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#g7"/>
         <atomicStatement>received_on_schedule</atomicStatement>
     </owl:NamedIndividual>
     
@@ -273,8 +274,17 @@
     <!-- http://www.asklab.tk/ontologies/CPS-Framework#g6 -->
 
     <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#g6">
-        <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Formulas"/>
-        <addressToFunc rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Operation_Func"/>
+        <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Conjunction"/>
+        <addConcern rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Functionality"/>
+    </owl:NamedIndividual>
+    
+
+
+    <!-- http://www.asklab.tk/ontologies/CPS-Framework#g7 -->
+
+    <owl:NamedIndividual rdf:about="http://www.asklab.tk/ontologies/CPS-Framework#g7">
+        <rdf:type rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Disjunction"/>
+        <addConcern rdf:resource="http://www.asklab.tk/ontologies/CPS-Framework#Safety"/>
     </owl:NamedIndividual>
 </rdf:RDF>
 
