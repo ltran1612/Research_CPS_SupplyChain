@@ -127,6 +127,7 @@ class StateMangerGlobal(StateManger):
     # something like the numbers that we can use. 
     global_domain = "global_domain_env_temp.lp"
     env_state = "state_env_temp.lp"  
+    env_state_history = "state_env_history_temp.lp"  
     temp_file2 = "env_temp2.lp"
     state_calculator = "state_calculator_env_temp.lp"
     cps_reasoner = "cps_reasoner_env_temp.lp"
@@ -142,6 +143,8 @@ class StateMangerGlobal(StateManger):
         copy_file(global_domain, self.global_domain)
         # initialize the global state to empty
         reset_file(self.env_state)
+        # reset history
+        reset_file(self.env_state_history)
         # global state rules 
         self.actions = {}
         for agent in self.agents:
@@ -232,6 +235,8 @@ class StateMangerGlobal(StateManger):
     def __update_env_state(self, new_state):
         with open(self.env_state, "w") as f:
             f.write(new_state)  
+        with open(self.env_state_history, "a") as f:
+            f.write(new_state)
     # get domains
     def __get_domains(self):
         domains = list(map(lambda agent: self.setup_info[agent]["domain"], self.agents))
@@ -320,7 +325,7 @@ class StateMangerGlobal(StateManger):
             f.write("time(T) :- hold(_, _, T).")
 
         files = [self.global_config, self.global_domain,\
-                self.temp_file, self.env_state,\
+                self.temp_file, self.env_state_history,\
                 self.cps_reasoner]  
         # contracts
         files.extend(self.__get_contracts())
