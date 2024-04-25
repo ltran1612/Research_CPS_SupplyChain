@@ -320,7 +320,7 @@ class StateMangerGlobal(StateManger):
             f.write("#show yes_property(A) : h(A, T), step(T),  property(A).")
             f.write("#show no_property(A) : -h(A, T), step(T), property(A).")
             f.write("#show yes_clause(A) : h(sat(A), T), step(T), clause(A).")
-            f.write("#show no_clause(A) : not h(sat(A), T), step(T), clause(A).")
+            f.write("#show no_clause(A) : not h(sat(A), _), clause(A).")
             f.write("#show.")
             f.write("time(T) :- hold(_, _, T).")
 

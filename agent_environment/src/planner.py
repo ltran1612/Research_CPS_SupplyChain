@@ -187,7 +187,7 @@ class Planner:
     def display_sat_concerns(self):
         with open(self.temp_file, "w") as f:
             f.write("#show yes_clause(A) : h(sat(A), T), step(T), clause(A).")
-            f.write("#show no_clause(A) : not h(sat(A), T), step(T), clause(A).")
+            f.write("#show no_clause(A) : not h(sat(A), _), clause(A).")
             f.write("#show.")
             f.write("time(T) :- hold(_, _, T).")
         files = [self.domain, self.global_config, self.global_domain,\
