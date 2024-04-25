@@ -3,5 +3,10 @@
     "agents": ["car_producer", "speedy_auto_parts", "supplier_of_speedy_auto_parts", "precision_engine", "metal_craft_solutions", "supplier_of_metal_craft_solutions", "sonic_electronics", "supplier_of_sonic_electronics"], 
     "global_domain": "../scenarios/oec-ver3/global_domain.lp",
     "global_config": "../scenarios/oec-ver3/global_config.lp",
-    "state_calculator": "../scenarios/oec-ver3/state_calculator.lp"
+    "state_calculator": "../scenarios/oec-ver3/state_calculator.lp",
+    "ontologies": [
+        "../scenarios/oec-ver3/cps/cps-original.owl",
+        "../scenarios/oec-ver3/cps/requirements.owl"
+    ],
+    "cps-reasoner": "../scenarios/oec-ver3/cps/cps-reasoner.lp"
 }

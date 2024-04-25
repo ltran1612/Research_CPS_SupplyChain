@@ -15,6 +15,8 @@ agents = config['agents']
 global_domain_filepath = config["global_domain"]
 global_config = config["global_config"]
 state_calculator = config["state_calculator"]
+cps_reasoner = config["cps-reasoner"]
+ontologies = config["ontologies"]
 #
 
 # initialized the received queue  
@@ -23,7 +25,7 @@ received = Received(agents)
 step = -1
 
 # set up
-state = StateMangerGlobal(agents, global_domain_filepath, global_config, state_calculator) 
+state = StateMangerGlobal(agents, global_domain_filepath, global_config, state_calculator, cps_reasoner, ontologies) 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -80,6 +82,9 @@ def simulate():
 
     # calcualte the global next state
     state.calculate_state(step)
+
+    # display state
+    logging.info(f"clauses and concerns satisfaction are:\n{state.display_sat_concerns()}")
 
     # then, for each agent, pick out the important information. 
     for agent in agents:

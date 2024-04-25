@@ -31,7 +31,7 @@ h(sat(C),T) :- not -h(sat(C),T), concern(C), step(T).
 h(A, T) :- hold(A, T).
 step(T) :- time(T).
 %
-h(P,T) :- h(sat(Cl),T), clause(Cl), step(T), addressedBy(P,Cl), property(P). 
+h(P,T) :- not -h(P,T), step(T), addressedBy(P, _), property(P). 
 -h(P,T) :- not h(sat(Cl),T), clause(Cl), step(T), addressedBy(P,Cl), property(P). 
 %
 :- clause(Cl), addressedBy(P,Cl), not property(P).

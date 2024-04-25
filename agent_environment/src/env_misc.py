@@ -32,6 +32,18 @@ class StateManger:
             f.write(agent_setup_data["domain"])
             agent_setup_data["domain"] = domain_filename
         
+        # put contracts to a file
+        contracts_filename = f"{agent}_contract_env_temp.lp"
+        with open(contracts_filename, "w") as f:
+            f.write(agent_setup_data['contracts']) 
+            agent_setup_data['contracts'] = contracts_filename
+        
+        # put clause concerns to a file
+        clause_concern_mapping_filename = f"{agent}_clause_concern_mapping_env_temp.lp"
+        with open(clause_concern_mapping_filename, "w") as f:
+            f.write(agent_setup_data['clause_concern_map']) 
+            agent_setup_data['clause_concern_map'] = clause_concern_mapping_filename
+        
         # set up the data for each agent  
         self.setup_info[agent] = agent_setup_data
         self.lock.release()
@@ -117,11 +129,13 @@ class StateMangerGlobal(StateManger):
     env_state = "state_env_temp.lp"  
     temp_file2 = "env_temp2.lp"
     state_calculator = "state_calculator_env_temp.lp"
+    cps_reasoner = "cps_reasoner_env_temp.lp"
     global_config = "global_config_env_temp.lp"
+    ontologies = []
     actions = {}
     lastStep = 0
 
-    def __init__(self, agents, global_domain, global_config, state_calculator):
+    def __init__(self, agents, global_domain, global_config, state_calculator, cps_reasoner, ontologies):
         super().__init__(agents)
 
         # set up temp file for global domain
@@ -136,6 +150,15 @@ class StateMangerGlobal(StateManger):
         copy_file(global_config, self.global_config)
         # state_calculator 
         copy_file(state_calculator, self.state_calculator)
+        # cps reasoner
+        copy_file(cps_reasoner, self.cps_reasoner)
+        # clause concern map
+        copy_file(cps_reasoner, self.cps_reasoner)
+        # ontologies
+        for num, ontology in enumerate(ontologies):
+            ontology_temp = f"ontology_{num}_env_temp.owl"
+            copy_file(ontology, ontology_temp)
+            self.ontologies.append(ontology_temp)
 
         # calcualte
         with open(self.temp_file, "w") as f:
@@ -149,7 +172,6 @@ class StateMangerGlobal(StateManger):
         temp = "".join(output).strip()
         temp = re.findall(r"\d+", temp)
         self.lastStep = int(temp[0])
-
 
     def get_last_step(self):
         return self.lastStep
@@ -210,10 +232,22 @@ class StateMangerGlobal(StateManger):
     def __update_env_state(self, new_state):
         with open(self.env_state, "w") as f:
             f.write(new_state)  
+    # get domains
+    def __get_domains(self):
+        domains = list(map(lambda agent: self.setup_info[agent]["domain"], self.agents))
+        return domains
+    # get contracts 
+    def __get_contracts(self):
+        contracts = list(map(lambda agent: self.setup_info[agent]["contracts"], self.agents))
+        return contracts 
+    # get clause concern mappings 
+    def __get_mappings(self):
+        mappings = list(map(lambda agent: self.setup_info[agent]["clause_concern_map"], self.agents))
+        return mappings 
     #
     def __determine_next_state(self, step):
         # get the domains of each agent
-        domains = list(map(lambda agent: self.setup_info[agent]["domain"], self.agents))
+        domains = self.__get_domains()
         # put the actions of each agent to a temp file
         actions_file = self.temp_file
         with open(actions_file, "w") as f:
@@ -274,17 +308,62 @@ class StateMangerGlobal(StateManger):
 
         return agent_state 
 
+    def display_sat_concerns(self):
+        with open(self.temp_file, "w") as f:
+            f.write("#show yes_concern(A) : h(sat(A), T), step(T), addressedBy(A, P), property(P).")
+            f.write("#show no_concern(A) : -h(sat(A), T), step(T), addressedBy(A, P), property(P).")
+            f.write("#show yes_property(A) : h(A, T), step(T),  property(A).")
+            f.write("#show no_property(A) : -h(A, T), step(T), property(A).")
+            f.write("#show yes_clause(A) : h(sat(A), T), step(T), clause(A).")
+            f.write("#show no_clause(A) : not h(sat(A), T), step(T), clause(A).")
+            f.write("#show.")
+            f.write("time(T) :- hold(_, _, T).")
+
+        files = [self.global_config, self.global_domain,\
+                self.temp_file, self.env_state,\
+                self.cps_reasoner]  
+        # contracts
+        files.extend(self.__get_contracts())
+        # clause concern mappings
+        files.extend(self.__get_mappings())
+        # include ontologies
+        files.extend(self.ontologies)
+        # include domains
+        files.extend(self.__get_domains())
+        # run the program
+        (run_success, output) = run_clingo(files)
+        if run_success:
+            atoms = get_atoms(output)
+            atoms = list(map(lambda atom :\
+                atom.replace("(", " ").replace(")", " ").replace(".", "")\
+                ,atoms))
+            return "\n".join(atoms)
+        else:
+            logging.error(f"failed to get state of satisfaction of concerns- {output}")
+            raise RuntimeError("failed to get state of satisfaction of concerns")
+
 # encode the setup data to a JSON string to send 
 # precondition: the config object 
 def encode_setup_data(config) -> dict:
     domain = config["domain"]
     initial_state = config['initial_state']
+    contracts = config['contracts']
+    clause_concern_map = config['clause_concern_map'] 
 
     setup_data = {} 
     with open(domain, "r") as f:
         setup_data["domain"] = "".join(f.readlines())
     with open(initial_state, "r") as f:
         setup_data["initial_state"] = "".join(f.readlines())
+    with open(clause_concern_map, "r") as f:
+        setup_data["clause_concern_map"] = "".join(f.readlines())
+    # contracts
+    contracts_content = []
+    for contract in contracts:
+        with open(contract, "r") as f:
+            contracts_content.append("".join(f.readlines()))
+    setup_data["contracts"] = "".join(contracts_content)
+
 
     return json.dumps(setup_data)
 
