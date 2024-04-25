@@ -107,7 +107,7 @@ logging.getLogger().setLevel(logging.INFO)
 logging.getLogger().addHandler(log_handler)
 
 # run the thread
-client.connect(config['brokerAddress'], 1883, 60)
+client.connect(config['brokerAddress'], 1883, 0)
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.

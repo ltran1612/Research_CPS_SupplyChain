@@ -106,7 +106,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 # connect to the mqtt broker 
-client.connect(config['brokerAddress'], 1883, 60)
+client.connect(config['brokerAddress'], 1883, 0)
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.
