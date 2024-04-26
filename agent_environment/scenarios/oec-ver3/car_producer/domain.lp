@@ -125,6 +125,8 @@ inertial(Agent, available_quality_item, not_changed_last, ()) :- item(Agent, Ite
 inertial(Agent, total_sent_payment, not_changed_last, ()) :- paying_reason(Agent, ToAgent, Reason).
 inertial(Agent, total_received_payment, not_changed_last, ()) :- receiving_reason(Agent, FromAgent, Reason) .
 %
+inertial(Agent, available_funds, always_inertial, ()) :- paying_reason(Agent, _, _).
+inertial(Agent, available_funds, always_inertial, ()) :- receiving_reason(Agent, _, _).
 inertial(Agent, received, always_inertial, ()) :- recv_item(Agent, FromAgent, Item).
 inertial(Agent, sent_payment, always_inertial, ()) :- pay_item(Agent, ToAgent, Item).
 inertial(Agent, received_quality, always_inertial, ()) :- recv_item(Agent, FromAgent, Item, Quality).
