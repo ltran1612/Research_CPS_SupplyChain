@@ -1,4 +1,5 @@
 produce_item(sonic_electronics, radios).
+pay_item(sonic_electronics, supplier_of_sonic_electronics, electronics_parts).
 deliver_item(sonic_electronics, car_producer, radios).
 recv_item(sonic_electronics, supplier_of_sonic_electronics, electronics_parts).
 receiving_reason(sonic_electronics, car_producer, radios).
