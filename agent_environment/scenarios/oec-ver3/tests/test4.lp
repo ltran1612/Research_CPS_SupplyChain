@@ -5,6 +5,8 @@ time(0..10).
 hold(available_funds, (test, (100,)), 0).
 hold(total_sent_payment, (test, (agent1, the_item, 0)), 0).
 hold(total_sent_payment, (test, (agent2, the_service, 0)), 0).
+inertial(test, available_funds, foo, foo).
+inertial(test, total_sent_payment, foo, foo).
 pay_item(test, agent1, the_item).
 pay_item(test, agent2, the_service).
 number(50).

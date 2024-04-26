@@ -5,6 +5,62 @@ time(0..10).
 hold(available_quality_item, (test, (receiving_item, 1..10, 0)), 0).
 hold(total_received_quality, (test, (agent1, receiving_item, 1..10, 0)), 0).
 hold(total_received_quality, (test, (agent2, receiving_item, 1..10, 0)), 0).
+inertial(test, available_quality_item, not_changed_last, ()).
+inertial(test, total_received_quality, not_changed_last, ()).
+inertial(agent1, delivered_quality, not_changed_last, ()).
+inertial(agent2, delivered_quality, not_changed_last, ()).
+
+operation(Name, Input, true, T) :- 
+    Name = not_changed_last,
+    Value = (A, _), 
+    NewChanges = (A1, _),
+    A1 != A,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
+    time(T). 
+
+operation(Name, Input, true, T) :- 
+    Name = not_changed_last,
+    Value = (A, B, _),  
+    NewChanges = (A1, B1, _),
+    A1 != A,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
+    time(T). 
+operation(Name, Input, true, T) :- 
+    Name = not_changed_last,
+    Value = (A, B, _),  
+    NewChanges = (A1, B1, _),
+    B != B1,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
+    time(T). 
+
+operation(Name, Input, true, T) :- 
+    Name = not_changed_last,
+    Value = (A, B, C, _),  
+    NewChanges = (A1, B1, C1, _),
+    A1 != A,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
+    time(T). 
+operation(Name, Input, true, T) :- 
+    Name = not_changed_last,
+    Value = (A, B, C, _),  
+    NewChanges = (A1, B1, C1, _),
+    B1 != B,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
+    time(T). 
+
+operation(Name, Input, true, T) :- 
+    Name = not_changed_last,
+    Value = (A, B, C, _),  
+    NewChanges = (A1, B1, C1, _),
+    C1 != C,
+    require(Name, Input, T),
+    Input = (Agent, Fluent, (Agent, Value), (Agent, NewChanges), _),
+    time(T). 
 pay_item(test, agent1, the_item).
 pay_item(agent1, test, receiving_item, 1..10).
 recv_item(test, agent1, receiving_item, 1..10).

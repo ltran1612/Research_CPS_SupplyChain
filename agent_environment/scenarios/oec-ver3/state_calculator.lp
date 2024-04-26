@@ -107,6 +107,7 @@ hold(Fluent, (Agent, Value), T+1) :- hold(Fluent, (Agent, Value), T),
     not changed(Agent, action, _, Fluent, _, T), 
     not changed(Agent, static, _, Fluent, _, T+1), 
     not changed(Agent, satisfy, _, Fluent, _, T+1), 
+    inertial(Agent, Fluent, _, _),
     type(Fluent, agent), time(T+1).
 % intertial for the fluents of an agent that differs by some parts in its vallues.
 % for example, hold(f, (quality1, Amount)) and hold(f, (quality2, Amount)) are different.
