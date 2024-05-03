@@ -84,7 +84,7 @@ def simulate():
     state.calculate_state(step)
 
     # display state
-    logging.info(f"clauses and concerns satisfaction are:\n{state.display_sat_concerns()}")
+    logging.info(f"clauses and concerns satisfaction are:\n{state.display_sat_concerns(step)}")
 
     # then, for each agent, pick out the important information. 
     for agent in agents:

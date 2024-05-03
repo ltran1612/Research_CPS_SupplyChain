@@ -313,14 +313,15 @@ class StateMangerGlobal(StateManger):
 
         return agent_state 
 
-    def display_sat_concerns(self):
+    def display_sat_concerns(self, step):
         with open(self.temp_file, "w") as f:
-            f.write("#show yes_concern(A) : h(sat(A), T), step(T), addressedBy(A, P), property(P).")
-            f.write("#show no_concern(A) : -h(sat(A), T), step(T), addressedBy(A, P), property(P).")
-            f.write("#show yes_property(A) : h(A, T), step(T),  property(A).")
-            f.write("#show no_property(A) : -h(A, T), step(T), property(A).")
-            f.write("#show yes_clause(A) : h(sat(A), T), step(T), clause(A).")
-            f.write("#show no_clause(A) : not h(sat(A), _), clause(A).")
+            f.write(f"current_sat_time({step}).")
+            f.write("#show yes_concern(A) : h(sat(A), T), current_sat_time(T), addressedBy(A, P), property(P).")
+            f.write("#show no_concern(A) : -h(sat(A), T), current_sat_time(T), addressedBy(A, P), property(P).")
+            f.write("#show yes_property(A) : h(A, T), current_sat_time(T),  property(A).")
+            f.write("#show no_property(A) : -h(A, T), current_sat_time(T), property(A).")
+            f.write("#show yes_clause(A) : h(sat(A), T), current_sat_time(T), clause(A).")
+            f.write("#show no_clause(A) : not h(sat(A), T), current_sat_time(T), clause(A).")
             f.write("#show.")
             f.write("time(T) :- hold(_, _, T).")
 
