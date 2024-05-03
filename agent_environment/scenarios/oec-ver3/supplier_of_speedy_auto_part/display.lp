@@ -21,5 +21,5 @@ display(received_quality).
 display(total_received).
 display(total_received_quality).
 %
-display(available_item).
+display(available_quality_item).
 %

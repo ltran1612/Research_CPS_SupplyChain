@@ -8,7 +8,7 @@ clause("C12").
 % hold(sat("C11"), T) :-  hold(total_received_quality, (speedy_auto_parts, (supplier_of_speedy_auto_parts, tool_parts, Q, 11000)), 3), Q >= 3, time(T), T >= 3.
 
 % C12: A responsible_for payment(tool_parts, 30K) when by_week 3
-hold(sat("C12"), T) :-  hold(total_sent_payment, (speedy_auto_parts, (supplier_of_speedy_auto_parts,  tool_parts, 30000)), T1), time(T), T1 <= 3.
+hold(sat("C12"), T) :-  hold(total_sent_payment, (speedy_auto_parts, (supplier_of_speedy_auto_parts,  tool_parts, 30000)), T1), time(T), T1 <= 4.
 
 % clauses id 
 clause("C1").
