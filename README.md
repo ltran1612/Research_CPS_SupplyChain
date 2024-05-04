@@ -119,4 +119,4 @@ The src folder contains the following files:
 
 9. Run supplier of sonic electronics:
 
-   make ID=es agent
+       make ID=es agent
