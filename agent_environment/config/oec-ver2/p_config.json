@@ -1,0 +1,17 @@
+{
+    "id": "precision_engine",
+    "brokerAddress": "localhost",
+    "domain": "../scenarios/oec-ver2/precision_engine/domain.lp",
+    "initial_state": "../scenarios/oec-ver2/precision_engine/init.lp",
+    "planner": "../scenarios/oec-ver2/precision_engine/plan.lp",
+    "clause_concern_map": "../scenarios/oec-ver2/precision_engine/clause-concern-map.lp",
+    "plan_checking": "../scenarios/oec-ver2/precision_engine/plan_checking.lp",
+    "global_domain": "../scenarios/oec-ver2/global_domain.lp",
+    "contracts": [
+        "../scenarios/oec-ver2/contracts/clauses_per_agent_domain/P.lp"
+    ],
+    "contract_cps": "../scenarios/oec-ver2/cps/contract-cps.lp",
+    "cps": "../scenarios/oec-ver2/cps/cps.lp",
+    "interest": [] 
+
+}

@@ -1,6 +1,7 @@
 import sys, logging
 import paho.mqtt.client as mqtt
 from threading import Lock
+import json
 
 # custom libraries 
 from misc import get_atoms 
@@ -25,24 +26,15 @@ show_config(config)
 planner: Planner = Planner(config)
 
 # agent topics
-publish_topic = f"env/{config['id']}" 
-subscribe_topic = f"for/{config['id']}" 
-received_publish_topic = f"recv/{config['id']}" 
-next_subscribe_topic = f"next/{config['id']}" 
-
-# store the action for the step
-action = ""
-# target step 
-upcoming_step = 0 
+send_topic = f"env/{config['id']}" 
+receive_topic = f"for/{config['id']}" 
+logging.debug(f"Published to {send_topic}")
+logging.debug(f"Subscribed to {receive_topic}")
 
 # variable to identify if we're connecting for the first time or not
 # with a Lock/mutex
 startLock = Lock()
 started = False
-
-logging.debug(f"Publish to {publish_topic}")
-logging.debug(f"Subscribe to {subscribe_topic}")
-
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
     global started
@@ -52,20 +44,18 @@ def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
     startLock.acquire()
     if not started:
         # send setup information 
-        client.publish(publish_topic, encode_setup_data(config), qos=2, retain=False)
+        client.publish(send_topic, encode_setup_data(config), qos=2, retain=False)
         logging.info("agent notified to the env of its existence")
         started = True 
     startLock.release()
 
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe(subscribe_topic)
-    client.subscribe(next_subscribe_topic)
+    client.subscribe(receive_topic)
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
     global action
-    global upcoming_step 
 
     # get the topic and messages
     topic: str = msg.topic
@@ -73,39 +63,42 @@ def on_message(client: mqtt.Client, userdata, msg):
     message = message.strip()
 
     # if the topic matches our needed topic 
-    if topic == subscribe_topic:
+    if topic == receive_topic:
         # received the information for this state
         logging.debug(f"{topic} - {message}")
-        logging.info(f"The state at the start of step {upcoming_step} is: {message}")
-        observations = get_atoms([message])
+        state_info = json.loads(message)
+        state = state_info['state']
+        time_step = state_info['time']
+        # print(state)
+        observation = planner.display(state)
+        logging.info(f"The state at the start of step {time_step} is: {observation}")
+        planner.save_observations(state)
+        sats = planner.display_sat_concerns()
+        logging.info(f"The concern satisfaction of step {time_step} is:\n{sats}")
+
         # do some reasoning
-        actions = planner.next_step(upcoming_step, "".join(observations))
+        actions = planner.next_step(time_step, state)
+
+        # get the action 
         if actions is None:
             logging.info("replan failed, cannot do anything")
             action = ""
+            sys.exit(1)
         else:
             action = actions
-        logging.debug(f"the next action is {action}")
-        logging.info(f"the action to do in {upcoming_step} is: {action}")
-        # received the state information
-        client.publish(received_publish_topic, "")
-        logging.debug("notified the env that the agent received the environment information")
-    elif topic == next_subscribe_topic:
+        # 
+        logging.debug(f"the next action is {action} for the end of time step {time_step}")
         # send the action then wait again till we can do it
-        client.publish(publish_topic, action)
+        client.publish(send_topic, action)
+        # send the action
+        logging.info(f"sent the action {action} to the environment for the end of time step {time_step}")
         
-        # get the step number
-        upcoming_step = int(message)
-        if upcoming_step == 0:
-            logging.info(f"the env realized this agent existence")
-        else:
-            logging.info(f"sent the action done at step {upcoming_step-1} to the env")
-
-
 #
-logging.info("initial planning...")
-planner.plan()
-logging.info("planning done.")
+# logging.info("initial planning...")
+# planner.plan()
+# logging.info("planning done.")
+sats = planner.display_sat_concerns()
+logging.info(f"At the start the satisfaction of concerns are:\n{sats}")
 
 # start the agent 
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -113,7 +106,7 @@ client.on_connect = on_connect
 client.on_message = on_message
 
 # connect to the mqtt broker 
-client.connect(config['brokerAddress'], 1883, 60)
+client.connect(config['brokerAddress'], 1883, 0)
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.

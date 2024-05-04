@@ -19,8 +19,8 @@ def show_config(config):
     if id:
         print(f"This is an Agent with id {id}")
     else: 
-        parsers = config["parsers"]
-        print(f"This is an Environment with these pairs set up: {json.dumps(parsers)}")
+        agents = config["agents"]
+        print(f"This is an environment with these agents: {json.dumps(agents)}")
 
 # a function to load the config from the command line arguments
 def load_config(args: list[str]):

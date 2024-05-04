@@ -1,7 +1,7 @@
 # the state manager for the environment
-
+import traceback
 from threading import Lock 
-from misc import run_clingo, get_atoms, atoms_to_str
+from misc import copy_file, reset_file, run_clingo, get_atoms, atoms_to_str
 from parser_factory import ParserFactory
 import logging
 import re
@@ -27,10 +27,22 @@ class StateManger:
         agent_setup_data = decode_setup_data(agent_setup_info)
 
         # put the domain
-        domain_filename = f"{agent}_domain_temp.lp"
+        domain_filename = f"{agent}_domain_env_temp.lp"
         with open(domain_filename, "w") as f:
             f.write(agent_setup_data["domain"])
             agent_setup_data["domain"] = domain_filename
+        
+        # put contracts to a file
+        contracts_filename = f"{agent}_contract_env_temp.lp"
+        with open(contracts_filename, "w") as f:
+            f.write(agent_setup_data['contracts']) 
+            agent_setup_data['contracts'] = contracts_filename
+        
+        # put clause concerns to a file
+        clause_concern_mapping_filename = f"{agent}_clause_concern_mapping_env_temp.lp"
+        with open(clause_concern_mapping_filename, "w") as f:
+            f.write(agent_setup_data['clause_concern_map']) 
+            agent_setup_data['clause_concern_map'] = clause_concern_mapping_filename
         
         # set up the data for each agent  
         self.setup_info[agent] = agent_setup_data
@@ -109,359 +121,255 @@ class Received:
 
         return result
 
-# create a regex for catching the fluent
-def create_fluent_regex(fluent):
-   return r"h\(" + re.escape(fluent) + r"\(.*\),\d+\)\."
-# a prototype for a state manager using a single domain file
-class StateManagerGlobal(StateManger):
-    global_state = "global_state_temp.lp" 
-
-    def __init__(self, agents, config, global_domain):
-        super().__init__(agents)
-        self.parsers = config["parsers"]
-        self.global_domain = global_domain
-
-        # reset the global state to empty
-        one_init = "../scenarios/builder_lumber/one_init.lp"
-        with open(one_init, "r") as f: 
-            one_init = "".join(f.readlines())
-        with open(self.global_state, "w") as f:
-            f.write(one_init)
-
-        # update the global domain with the one 
-        # TODO: update this to config file
-        one_domain = "../scenarios/builder_lumber/one_domain.lp"
-        self.domain = one_domain
-    
-    def setup(self, agent, agent_setup_info):
-        self.lock.acquire()
-        # decode the setup data retrieved from each agent
-        # each data will be a string containing the information
-        agent_setup_data = decode_setup_data(agent_setup_info)
-
-        # put the domain
-        domain_filename = f"{agent}_domain_temp.lp"
-        with open(domain_filename, "w") as f:
-            f.write(agent_setup_data["domain"])
-            agent_setup_data["domain"] = domain_filename
-
-        # get fluents and atoms
-        (result, lines) = run_clingo([agent_setup_data["domain"], self.global_domain])
-        if not result:
-            logging.error(f"cannot get fluents of {agent}")
-            exit(1)
-        atoms = get_atoms(lines) 
-        parser_factory = ParserFactory()
-        fluent_parser = parser_factory.fluent()
-
-        # get fluents
-        fluent_atoms = list(filter(parser_factory.is_fluent, atoms))
-        fluents = {} 
-        for atom in fluent_atoms:
-            (fluent, param_num) = fluent_parser(atom)
-            if fluent in fluents:
-                continue
-                
-            fluents[fluent] = param_num
-
-        agent_setup_data["interest"].extend(fluents.keys())
-        agent_setup_data["interest"] = list(dict.fromkeys(agent_setup_data["interest"]).keys())
-
-        # set up the data for each agent  
-        self.setup_info[agent] = agent_setup_data
-        self.lock.release()
-    
-    def calculate_state(self, step=None):
-        self.lock.acquire()
-        # MAYBE: move the file from scenarios to a folder meant for environment 
-        compute_global_state_code = "../scenarios/builder_lumber/env/compute_next.lp"
-
-        # temp file
-        # calculate global state
-        # add in messages from each agent
-        # the added message needs to be pass
-        messages = self.temp_file
-        with open(messages, "w") as f:
-            # write the step
-            if not step is None:
-                f.write(f"step({step}).")
-            if len(self.messages.keys()) > 0: # if there is a message
-                for agent in self.agents:
-                    f.write(self.messages[agent]) # write the message to the file
-        
-        
-        # run the program to calcualte the state
-        files = [messages, self.global_state, self.domain, self.global_domain]
-        (run_success, output) = run_clingo(files)
-        if run_success:
-            # saves the global state
-            with open(self.global_state, "w") as f:
-                f.write("".join(output))
-        
-        # reset message buffer
-        self.messages = {}
-        self.lock.release()
-
-        return run_success 
-    
-    def get_state(self, agent):
-        state = None
-
-        self.lock.acquire()
-        interested_fluents = self.setup_info[agent]["interest"]
-        state = ""
-        with open(self.global_state, "r") as f:
-            state = f.readlines()
-
-        state_atoms = get_atoms(state)
-        def filter_fluent(x: str):
-            for fluent in interested_fluents:
-                regex = create_fluent_regex(fluent)
-                if re.match(regex, x, re.IGNORECASE):
-                    return True
-
-            return False
-
-        agent_interested_info = list(filter(filter_fluent, state_atoms))
-
-        # TODO: get state for each agent from the global state
-        # it will be done by doing some parsing. 
-        self.lock.release()
-
-        return atoms_to_str(agent_interested_info) 
-    
-# a different version of state manager
-# we will compute the state for each agent individually
-class StateMangerIndividual(StateManger): 
-    agent_state = {}
+# the global version of state manager
+class StateMangerGlobal(StateManger): 
     # store the global domain that the all agents share.
     # something like the numbers that we can use. 
-    global_domain = "global_domain_temp.lp"
+    global_domain = "global_domain_env_temp.lp"
+    env_state = "state_env_temp.lp"  
+    env_state_history = "state_env_history_temp.lp"  
+    temp_file2 = "env_temp2.lp"
+    state_calculator = "state_calculator_env_temp.lp"
+    cps_reasoner = "cps_reasoner_env_temp.lp"
+    global_config = "global_config_env_temp.lp"
+    ontologies = []
+    actions = {}
+    lastStep = 0
 
-    def __init__(self, agents, global_domain, parsers):
+    def __init__(self, agents, global_domain, global_config, state_calculator, cps_reasoner, ontologies):
         super().__init__(agents)
 
-        # set up temp file for the state of agents
-        for agent in agents:
-            self.agent_state[agent] = f"{agent}_state_temp.lp"
-        
         # set up temp file for global domain
-        with open(global_domain, "r") as f:
-            with open(self.global_domain, "w") as f2:
-                f2.write("".join(f.readlines()))
+        copy_file(global_domain, self.global_domain)
+        # initialize the global state to empty
+        reset_file(self.env_state)
+        # reset history
+        reset_file(self.env_state_history)
+        # global state rules 
+        self.actions = {}
+        for agent in self.agents:
+            self.actions[agent] = ""
+        # global config 
+        copy_file(global_config, self.global_config)
+        # state_calculator 
+        copy_file(state_calculator, self.state_calculator)
+        # cps reasoner
+        copy_file(cps_reasoner, self.cps_reasoner)
+        # clause concern map
+        copy_file(cps_reasoner, self.cps_reasoner)
+        # ontologies
+        for num, ontology in enumerate(ontologies):
+            ontology_temp = f"ontology_{num}_env_temp.owl"
+            copy_file(ontology, ontology_temp)
+            self.ontologies.append(ontology_temp)
+
+        # calcualte
+        with open(self.temp_file, "w") as f:
+            f.write("#show lastTimeStep/1.")
+            f.write(":- lastTimeStep(T), not T >= 0.")
+            f.write(":- lastTimeStep(T), lastTimeStep(T1), not T=T1.")
+        (run_success, output) = run_clingo([self.global_config, self.temp_file])
+        if not run_success:
+            raise Exception("cannot get the last time step")
         
-        # parsers
-        self.parsers = parsers
+        temp = "".join(output).strip()
+        temp = re.findall(r"\d+", temp)
+        self.lastStep = int(temp[0])
+
+    def get_last_step(self):
+        return self.lastStep
+
+    def __get_filter(self, step=None, agent=None):
+        hold_time = "T"
+        occur_time = "T"
+        action_value = "V"
+        if step is not None:
+            hold_time = str(step)
+            occur_time = str(step-1)
+        
+        extension = ""
+        if agent is not None:
+            extension = f"""
+            #show hold(F, (EAgent, Value), {hold_time}) : hold(F, (EAgent, Value), {hold_time}), needs({agent}, F, EAgent), type(F, agent).
+            #show hold(F, Value, {hold_time}) : needs(F), hold(F, Value, {hold_time}).
+            """
+            action_value = f"({agent}, V)"
+        return f"""#show.
+        #show hold(F, ({agent}, V), {hold_time}) : hold(F, ({agent}, V), {hold_time}).
+        #show occur(A, {action_value}, {occur_time}) : occur(A, {action_value}, {occur_time}), not failed(A, {action_value}, {occur_time}). 
+        {extension}
+        """
 
     # save the setup information for each agent
     def setup(self, agent, agent_setup_info):
         super().setup(agent, agent_setup_info)
 
-        # set upt init
         self.lock.acquire()
-        state_filename = self.agent_state[agent]
-        with open(state_filename, "w") as f:
+        # write the initial state description to a temp file
+        with open(self.temp_file, "w") as f:
             f.write(self.setup_info[agent]["initial_state"])
+            f.write(self.__get_filter())
+        # calcualte the initial state of the agent with its domain and initial state description 
+        (run_success, output) = run_clingo([self.temp_file, self.setup_info[agent]["domain"]])
+        if not run_success:
+            raise Exception(f"cannot get the initial state fluents and actions {agent}")
+        # write initial state of the agent to the env state.
+        with open(self.env_state, "a") as f:
+            f.write("".join(output))
         self.lock.release()
-
-    # calculate the state for the entire environment
-    def calculate_state(self, step=None):
-        self.lock.acquire()
-
-        # write the next step to the global domain 
-        if not step is None:
-            with open(self.global_domain, "a") as f:
-                f.write(f"time({step}).")
-
-        # while we have not finished with calculating the state of each agent
-        finished = False 
-        while not finished:
-            # compute individual state
+    
+    def __determine_actions_success(self, step):
+        logging.info(f"Determine the success of the actions executed at the end of step {step}")
+        # we expect each agent to only send the action that they will execute
+        for agent in self.agents:
+            # get the message of the agent
+            message = self.messages[agent] if agent in self.messages else ""
+            message = message.strip()
+            self.actions[agent] = message
+            answer = "n"
+            if message != "": 
+                answer = input(f"Allow the action {message} to be executed fully (yes='y'/no='n'):")
+            if answer == "n": 
+                self.actions[agent] = "" 
+    #
+    def __update_env_state(self, new_state):
+        with open(self.env_state, "w") as f:
+            f.write(new_state)  
+        with open(self.env_state_history, "a") as f:
+            f.write(new_state)
+    # get domains
+    def __get_domains(self):
+        domains = list(map(lambda agent: self.setup_info[agent]["domain"], self.agents))
+        return domains
+    # get contracts 
+    def __get_contracts(self):
+        contracts = list(map(lambda agent: self.setup_info[agent]["contracts"], self.agents))
+        return contracts 
+    # get clause concern mappings 
+    def __get_mappings(self):
+        mappings = list(map(lambda agent: self.setup_info[agent]["clause_concern_map"], self.agents))
+        return mappings 
+    #
+    def __determine_next_state(self, step):
+        # get the domains of each agent
+        domains = self.__get_domains()
+        # put the actions of each agent to a temp file
+        actions_file = self.temp_file
+        with open(actions_file, "w") as f:
             for agent in self.agents:
-                # get the message of the agent
-                message = self.messages[agent] if agent in self.messages else ""
-                # write the message to a temporary file
-                message_temp = self.temp_file
-                with open(message_temp, "w") as f:
-                    f.write(message)
-                    f.write("#show hold/2.")
-                    f.write("#show occur/2.")
-
-                # get the domain of each agent
-                domain_temp = "domain_temp.lp"
-                with open(domain_temp, "w") as f:
-                    with open(self.setup_info[agent]["domain"], "r") as f2:
-                        f.write("".join(f2.readlines()))
-                
-                # run clingo with the message, domain, global domain, and the previous state 
-                files = [message_temp, domain_temp, self.agent_state[agent], self.global_domain]
-                (run_success, output) = run_clingo(files)
-                # if we succesfully compute the state, save the state to self.agent_state
-                if run_success: 
-                    with open(self.agent_state[agent], "w") as f:
-                        f.write("".join(output))
-                else:
-                    logging.error(f"cannot calculate the state for {agent}")
-                    return False
-                
-            # number of atoms before and after parsing 
-            atoms_num_before = 0
-
-            # convert the individual state of of each agent to global form 
-            # initialize the file for the global state
-            env_state = "env_global_temp.lp"  
-            with open(env_state, "w") as f:
-                f.write("")
-            # write the global form of the state of each agent
-            for agent in self.agents:
-                temp_file = self.temp_file
-                with open(temp_file, "w") as f:
-                    # write the agent of quesetion
-                    f.write(f"agent({agent}).")
-                    # parsing rule to map the individual state to the global state
-                    f.write("hold_env(A, F, T) :- hold(F, T), agent(A), time(T).")
-                    f.write("occur_env(A, B, T) :- occur(B, T), agent(A), time(T).")
-                    f.write(f"#show hold_env/3.")
-                    f.write(f"#show occur_env/3.")
-
-                # map the state with:
-                # 1. the global domain
-                # 2. the individual state of the agent
-                # 3. the temporary file containing the mapping rules
-                files = [temp_file, self.agent_state[agent], self.global_domain]
-                (run_success, output) = run_clingo(files)
-                if run_success: 
-                    # if successfull:
-                    # 1: save the global state result 
-                    with open(env_state, "a") as f:
-                        f.write("".join(output))
-                    
-                    # get the number of atoms in the state
-                    atoms = get_atoms(output)
-                    atoms_num_before += len(atoms)
-                else:
-                    logging.error(f"cannot filter the state for only fluents and actions {agent}")
-                    return False
-
-            # # DEBUG: see the condition of each state before transitioning 
-            # with open(env_state, "r") as f:
-            #     logging.info(f"time is {step}")
-            #     logging.info("".join(f.readlines()))
-            
-            # run the parsing rules (mapping rules) 
-            temp_file = self.temp_file
-            # write the show rules first
-            with open(temp_file, "w") as f: 
-                f.write("#show hold_env/3.")
-                f.write("#show occur_env/3.")
-            # write all the parser scripts into one file
-            for agent in self.agents:
-                with open(temp_file, "a") as f:
-                    with open(self.parsers[agent], "r") as f2:
-                        f.write("".join(f2.readlines()))
-
-            # run the env state with the parser scripts 
-            atoms_num_after = 0
-            files = [temp_file, env_state, self.global_domain]
-            (run_success, output) = run_clingo(files)
-            if run_success: 
-                # write the new env state
-                with open(env_state, "w") as f:
-                    f.write("".join(output))
-
-                # get the number of atoms after parsing
-                atoms = get_atoms(output)
-                atoms_num_after += len(atoms)
-            else:
-                logging.error(f"there is some conflict between the states of agents")
-                return False
-
-            # if the number of atoms before and after parsing is the same, nothing was added, we are done
-            if atoms_num_before == atoms_num_after:
-                finished = True
-                break
-            
-            # error catching, if the number of atoms before is greater than the number of atoms after, error. 
-            if atoms_num_before > atoms_num_after:
-                logging.error(f"something is wrong when computing env state, atoms after parsing is greater than atoms before")
-                return False
-
-            # here we know that there are more atoms than before. 
-            # distill new stuffs back for each agent
-            for agent in self.agents:
-                # the mapping rules to map back from the environment form to individual form.
-                temp_file = self.temp_file
-                with open(temp_file, "w") as f:
-                    # the agent to distill back
-                    f.write(f"agent({agent}).")
-                    f.write("hold(B, T) :- hold_env(A, B, T), time(T), agent(A).")
-                    f.write("occur(B, T) :- occur_env(A, B, T), time(T), agent(A).")
-                    # show only the hold and occur
-                    f.write(f"#show hold/2.")
-                    f.write(f"#show occur/2.")
-
-                # distill with:
-                # 1. the global domain
-                # 2. the entire environment state
-                # 3. the temporary file containing the mapping rules
-                files = [temp_file, env_state, self.global_domain]
-                (run_success, output) = run_clingo(files)
-                if run_success: 
-                    # write the result for each agent
-                    with open(self.agent_state[agent], "w") as f:
-                        f.write("".join(output))
-                    
-                    # # DEBUG: see the condition of each agent after distilling 
-                    # with open(self.agent_state[agent], "r") as f:
-                    #     logging.info(f"time is {step} for agent {agent}")
-                    #     logging.info("".join(f.readlines()))
-                else:
-                    logging.error(f"cannot distill from env state to individual state")
-                    return False
-
+                f.write(self.actions[agent])
+            f.write(self.__get_filter(step))
+        # calculate the next state
+        files = domains
+        files.extend([actions_file, self.env_state, self.global_domain, self.global_config, self.state_calculator])
+        # 
+        (run_success, output) = run_clingo(files)
+        if not run_success:
+            raise Exception(f"cannot calculate the next state for the environment")
+        # write the next state to the env state
+        self.__update_env_state("".join(output))
         # reset message buffer
         self.messages = {}
-        self.lock.release()
+        
+    # calculate the state for the entire environment
+    def calculate_state(self, step=None):
+        if step is None:
+            return False
 
-        return True
+        self.lock.acquire()
+        # write the next step to the global domain 
+        with open(self.global_config, "a") as f:
+            f.write(f"\ntime({step}).\n")
 
-    def get_state(self, agent):
+        try:
+            # determine the success of the actions of each agent
+            if step > 0:
+                self.__determine_actions_success(step-1)
+
+            # gotten the actions, determine the next state
+            self.__determine_next_state(step) 
+            return True
+        except Exception as e:
+            logging.error(e.__str__())
+            traceback.print_exc()
+            return False
+        finally:
+            self.lock.release()
+   
+    def get_state(self, agent, step=None):
         self.lock.acquire()
 
         # get the state of the agent
-        agent_state = None
-        # agent_state_file = self.agent_state[agent]
-
-        temp_file = self.temp_file
-        with open(temp_file, "w") as f:
-            f.write(f"#show hold/2.")
-            f.write(f"#show occur/2.")
-
-        files = [temp_file, self.agent_state[agent]]
+        agent_state = ""  
+        with open(self.temp_file, "w") as f:
+            f.write(self.__get_filter(step=step, agent=agent))
+        files = [self.temp_file, self.env_state, self.setup_info[agent]["domain"], self.global_config, self.global_domain]
         (run_success, output) = run_clingo(files)
-        if run_success: 
-            agent_state = "".join(output)
-        else:
-            logging.error(f"cannot filter the state for only fluents and actions {agent}")
-            return False
-
+        if not run_success: 
+            raise Exception(f"cannot get the state for the agent {agent}")
+        
+        agent_state = "".join(output)
         self.lock.release()
 
         return agent_state 
+
+    def display_sat_concerns(self, step):
+        with open(self.temp_file, "w") as f:
+            f.write(f"current_sat_time({step}).")
+            f.write("#show yes_concern(A) : h(sat(A), T), current_sat_time(T), addressedBy(A, P), property(P).")
+            f.write("#show no_concern(A) : -h(sat(A), T), current_sat_time(T), addressedBy(A, P), property(P).")
+            f.write("#show yes_property(A) : h(A, T), current_sat_time(T),  property(A).")
+            f.write("#show no_property(A) : -h(A, T), current_sat_time(T), property(A).")
+            f.write("#show yes_clause(A) : h(sat(A), T), current_sat_time(T), clause(A).")
+            f.write("#show no_clause(A) : not h(sat(A), T), current_sat_time(T), clause(A).")
+            f.write("#show.")
+            f.write("time(T) :- hold(_, _, T).")
+
+        files = [self.global_config, self.global_domain,\
+                self.temp_file, self.env_state_history,\
+                self.cps_reasoner]  
+        # contracts
+        files.extend(self.__get_contracts())
+        # clause concern mappings
+        files.extend(self.__get_mappings())
+        # include ontologies
+        files.extend(self.ontologies)
+        # include domains
+        files.extend(self.__get_domains())
+        # run the program
+        (run_success, output) = run_clingo(files)
+        if run_success:
+            atoms = get_atoms(output)
+            atoms = list(map(lambda atom :\
+                atom.replace("(", " ").replace(")", " ").replace(".", "")\
+                ,atoms))
+            return "\n".join(atoms)
+        else:
+            logging.error(f"failed to get state of satisfaction of concerns- {output}")
+            raise RuntimeError("failed to get state of satisfaction of concerns")
 
 # encode the setup data to a JSON string to send 
 # precondition: the config object 
 def encode_setup_data(config) -> dict:
     domain = config["domain"]
     initial_state = config['initial_state']
-    interested_atoms = config["interest"]
+    contracts = config['contracts']
+    clause_concern_map = config['clause_concern_map'] 
 
     setup_data = {} 
     with open(domain, "r") as f:
         setup_data["domain"] = "".join(f.readlines())
     with open(initial_state, "r") as f:
         setup_data["initial_state"] = "".join(f.readlines())
-    setup_data["interest"] = interested_atoms 
+    with open(clause_concern_map, "r") as f:
+        setup_data["clause_concern_map"] = "".join(f.readlines())
+    # contracts
+    contracts_content = []
+    for contract in contracts:
+        with open(contract, "r") as f:
+            contracts_content.append("".join(f.readlines()))
+    setup_data["contracts"] = "".join(contracts_content)
+
 
     return json.dumps(setup_data)
 

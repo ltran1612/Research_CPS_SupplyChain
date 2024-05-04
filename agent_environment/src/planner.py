@@ -4,36 +4,42 @@ import logging
 from subprocess import CompletedProcess
 import sys
 import re
-from misc import parse_clingo_output, run_clingo, run_clingo_raw, write_to_temp_file 
+from misc import get_atoms, parse_clingo_output, reset_file, run_clingo, run_clingo_raw, write_to_temp_file, copy_file
 from env_misc import encode_setup_data 
 import unittest
 
 class Planner:
     # initialize the planner with domain
     def __init__(self, config):
-        self.domain = config['domain']
-        self.initial_state = config['initial_state']
-        self.planner = config['planner']
-        self.clause_concern_map = config['clause_concern_map']
-        self.contracts = config['contracts']
-        self.global_domain = config['global_domain']
-        self.contract_cps = config['contract_cps']
-        self.cps = config['cps']
         self.id = config['id']
+        #
+        self.domain = config['domain']
+        self.global_domain = config['global_domain']
+        self.global_config = config['global_config']
+        self.state_calculator = config['state_calculator']
+        # 
+        self.initial_state = config['initial_state']
+        #
+        self.planner = config['planner']
+        self.initial_plan = config['initial-plan']
         self.plan_checking = config['plan_checking']
-
+        # 
+        self.contracts = config['contracts']
+        self.clause_concern_map = config['clause_concern_map']
+        self.cps_reasoner = config['cps-reasoner']
+        self.ontologies = config['ontologies']
+        #
+        self.display_script = config['display']
+        #
         # temp fiels
         self.theplan =  f"{self.id}_plan_temp.lp"
         self.observations =  f"{self.id}_obs_temp.lp"
         self.temp_file = f"{self.id}_temp.lp" 
 
         # initialize temp file
-        with open(self.theplan, "w") as f:
-            f.write("")
-        with open(self.observations, "w") as f:
-            f.write("")
-        with open(self.temp_file, "w") as f:
-            f.write("")
+        reset_file(self.theplan)
+        reset_file(self.observations)
+        reset_file(self.temp_file)
 
         # initial state
         # set the initial state
@@ -44,6 +50,9 @@ class Planner:
         else:
             logging.error(f"failed to get the initial state - {output}")
             raise RuntimeError("failed to get initial state")
+
+        # copy initial plan to the plan file
+        copy_file(self.initial_plan, self.theplan)
             
     # check if the observation matches with the plan
     # precondition: the plan is stored in self.theplan 
@@ -60,26 +69,29 @@ class Planner:
             return True
         return False 
 
-    def plan(self)-> bool:
-        return self.plan_with_observation(self.get_state())
+    def plan(self, start_time=0)-> bool:
+        return self.plan_with_observation(self.get_state(), start_time=start_time)
 
     # plan based on the observation
-    def plan_with_observation(self, observation: str) -> bool:
+    def plan_with_observation(self, observation: str, start_time=0) -> bool:
         # write observations to a temporary file
         write_to_temp_file(self.temp_file, observation)
 
         # the Clingo code to parse the plan from domain form to plan form.
         with open(self.temp_file, "a") as f:
-            f.write("occur_plan(A, T) :- occur(A, T).")
-            f.write("hold_plan(A, T) :- hold(A, T).")
-            f.write("#show hold_plan/2.")
-            f.write("#show occur_plan/2.")
+            f.write(f"current_time({start_time}).")
+            f.write("occur_plan(N, V, T) :- occur(N, V, T).")
+            f.write("hold_plan(N, V, T) :- hold(N, V, T).")
+            f.write("#show hold_plan/3.")
+            f.write("#show occur_plan/3.")
         
         # plan
         # choose the files needed for the plan
-        files = [self.domain, self.temp_file, self.planner, self.clause_concern_map,\
-                 self.global_domain, self.cps, self.contract_cps]  
+        files = [self.domain, self.global_config, self.global_domain, self.state_calculator,\
+                self.temp_file, self.planner,\
+                self.clause_concern_map, self.cps_reasoner]  
         files.extend(self.contracts)
+        files.extend(self.ontologies)
 
         # run Clingo to plan
         result: CompletedProcess[bytes] = run_clingo_raw(files, flags=["-q1,2,2", "-V0", "--warn", "no-atom-undefined", "--out-atom=%s."])
@@ -102,15 +114,15 @@ class Planner:
 
     # save an observation to the state
     def save_observations(self, observations: str):
-        with open(self.observations, "w") as f:
+        with open(self.observations, "a") as f:
             f.write(observations)
 
     # see the plan, including the actions and the expected state.
     def see_plan(self):
         # parse the plan from plan form back to domain form
         with open(self.temp_file, "w") as f:
-            f.write(f"occur(A, T) :- occur_plan(A, T).")
-            f.write(f"hold(A, T) :- hold_plan(A, T).")
+            f.write(f"occur(A, V, T) :- occur_plan(A, V, T).")
+            f.write(f"hold(A, V, T) :- hold_plan(A, V, T).")
         # choose the files 
         files = [self.temp_file, self.theplan]
         # run the parsing process
@@ -124,9 +136,9 @@ class Planner:
     def get_actions_at_step(self, step):
         # convert the plan from plan form to domain form 
         with open(self.temp_file, "w") as f:
-            f.write(f"occur(A, T) :- occur_plan(A, T), target_time(T).")
+            f.write(f"occur(A, V, T) :- occur_plan(A, V, T), target_time(T).")
             f.write(f"target_time({step}).")
-            f.write("#show occur/2.")
+            f.write("#show occur/3.")
         
         # choose the files
         files = [self.temp_file, self.theplan]
@@ -145,12 +157,12 @@ class Planner:
     # get the differences between plan and observation
     def get_diff(self):
         with open(self.temp_file, "w") as f:
-            f.write("target_time(T) :- hold(A, T).")
-            f.write("target_time(T) :- occur(A, T).")
+            f.write("target_time(T) :- hold(A, V, T).")
+            f.write("target_time(T) :- occur(A, V, T).")
             f.write("max_time(A) :- A = #max{T: target_time(T)}.")
             f.write("non_max_time(T) :- not max_time(T), target_time(T).") 
-            f.write("#show not_have_fluent(A) : not hold(A, T), hold_plan(A, T), target_time(T).")
-            f.write("#show not_have_action(A) : not occur(A, T), occur_plan(A, T), non_max_time(T).")
+            f.write("#show not_have_fluent(A) : not hold(A, V, T), hold_plan(A, V, T), target_time(T).")
+            f.write("#show not_have_action(A) : not occur(A, V, T), occur_plan(A, V, T), non_max_time(T).")
 
         files = [self.observations, self.theplan, self.temp_file]
         (result, output) = run_clingo(files)
@@ -158,20 +170,53 @@ class Planner:
             return "".join(output)
         else:
             return None
-        
 
+    def display(self, observation): 
+        with open(self.temp_file, "w") as f:
+            f.write(observation)
+            f.write("#show.")
+            f.write("#show hold(F, V, T) : hold(F, V, T), display(F).")
+            f.write("#show occur(F, V, T) : occur(F, V, T).")
+        files = [self.display_script, self.temp_file]
+        (result, output) = run_clingo(files)
+        if result:
+            return "".join(output)
+        else:
+            return None
+
+    def display_sat_concerns(self):
+        with open(self.temp_file, "w") as f:
+            f.write("#show yes_clause(A) : h(sat(A), T), step(T), clause(A).")
+            f.write("#show no_clause(A) : not h(sat(A), _), clause(A).")
+            f.write("#show.")
+            f.write("time(T) :- hold(_, _, T).")
+        files = [self.domain, self.global_config, self.global_domain,\
+                self.temp_file, self.observations,\
+                self.clause_concern_map, self.cps_reasoner]  
+        files.extend(self.contracts)
+        files.extend(self.ontologies)
+        (run_success, output) = run_clingo(files)
+        if run_success:
+            atoms = get_atoms(output)
+            atoms = list(map(lambda atom :\
+                atom.replace("(", " ").replace(")", " ").replace(".", "")\
+                ,atoms))
+            return "\n".join(atoms)
+        else:
+            logging.error(f"failed to get state of satisfaction of concerns- {output}")
+            raise RuntimeError("failed to get state of satisfaction of concerns")
     # get the next step in the plan based on this current observation
     # if the observation does not match the plan, replan
     def next_step(self, target_step, observation:str):
+        self.save_observations(observation)
         # compare the observation with the plan
-        if self.observation_matches_plan(observation):
+        if self.observation_matches_plan(self.get_state()):
             logging.info(f"observation matches plan, get the action for {target_step}")
             return self.get_actions_at_step(target_step)
         
         logging.info("replanning...")
         # else replan if different
-        self.save_observations(observation)
-        self.plan()
+        self.plan(target_step)
         logging.info("replanning done")
 
         # check it again

@@ -1,2 +1,2 @@
 % PPK2 = {C6: on-time-payment}
-addressedBy("cpsf:on-time-payment", "C6").
+addressedBy("cpsf:On_Time_Payment", "C6").

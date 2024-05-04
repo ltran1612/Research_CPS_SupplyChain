@@ -1,0 +1,17 @@
+{
+    "id": "metal_craft_solutions",
+    "brokerAddress": "localhost",
+    "domain": "../scenarios/oec-ver2/metal_craft/domain.lp",
+    "initial_state": "../scenarios/oec-ver2/metal_craft/init.lp",
+    "planner": "../scenarios/oec-ver2/metal_craft/plan.lp",
+    "clause_concern_map": "../scenarios/oec-ver2/metal_craft/clause-concern-map.lp",
+    "plan_checking": "../scenarios/oec-ver2/metal_craft/plan_checking.lp",
+    "global_domain": "../scenarios/oec-ver2/global_domain.lp",
+    "contracts": [
+        "../scenarios/oec-ver2/contracts/clauses_per_agent_domain/M.lp"
+    ],
+    "contract_cps": "../scenarios/oec-ver2/cps/contract-cps.lp",
+    "cps": "../scenarios/oec-ver2/cps/cps.lp",
+    "interest": [] 
+
+}

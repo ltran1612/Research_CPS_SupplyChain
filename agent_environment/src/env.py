@@ -1,23 +1,23 @@
+from threading import Lock
+import json
 import logging, sys
 import paho.mqtt.client as mqtt
 
 # custom libraries
 from config import load_config, show_config 
-from threading import Thread 
-from time import sleep
-from env_misc import Received, StateMangerIndividual
+from env_misc import Received, StateMangerGlobal 
 
 # load and display the config
 config = load_config(sys.argv)
 show_config(config)
-
-# parse the config
-# get the parsers
-parsers = config['parsers']
-# get the list of agents
-agents = list(parsers)
-# get the file path to the global domain 
+#
+agents = config['agents']
 global_domain_filepath = config["global_domain"]
+global_config = config["global_config"]
+state_calculator = config["state_calculator"]
+cps_reasoner = config["cps-reasoner"]
+ontologies = config["ontologies"]
+#
 
 # initialized the received queue  
 received = Received(agents) 
@@ -25,7 +25,7 @@ received = Received(agents)
 step = -1
 
 # set up
-state = StateMangerIndividual(agents, global_domain_filepath, parsers) 
+state = StateMangerGlobal(agents, global_domain_filepath, global_config, state_calculator, cps_reasoner, ontologies) 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
@@ -48,57 +48,56 @@ def on_message(client: mqtt.Client, userdata, msg):
         logging.error(e)
 
     if topic == f"env/{agent}":
-        logging.info(f"received from {agent}")
+        logging.info(f"received from {agent} for time {step}")
         if not state.is_setup():
             state.setup(agent, message)
-            return
-        state.receive_message(agent, message)
-    elif topic == f"recv/{agent}":
-        logging.info(f"{agent} received")
+        else:
+            state.receive_message(agent, message)
         received.receive(agent)
+        simulate()
 
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.on_connect = on_connect
 client.on_message = on_message
 
-# custom environment function
-
 # custom loop function that will loop forever
-def custom_loop(): 
-    while True:
-        global step
+simLock= Lock()
+def simulate(): 
+    global step
 
-        # all users have received the information we sent
-        # sent them the message to do the next step
-        if received.received_all() or (state.is_setup() and step == -1): 
-            # environment control the signal for the next step
-            # increase the step
-            step += 1 
-            logging.info(f"starting the next step {step}")
-            input()
-            logging.info(f"started the next step {step}")
-            # send a message to each agent so they will send the action for previous step
-            for agent in agents:
-                client.publish(f"next/{agent}", str(step), qos=2, retain=False)
+    if not received.received_all():
+        return
 
-            # reset received array
-            received.reset()
+    if not simLock.acquire(blocking=False):
+        return
 
-        # we received fully everything
-        # compile information
-        # send the information to each agent
-        if state.received_all():
-            # calcualte the global next state
-            state.calculate_state(step)
+    # all users have received the information we sent
+    # sent them the message to do the next step
+    # increase the step
+    step += 1 
+    logging.info(f"starting the next step {step}")
+    if step > state.get_last_step():
+        sys.exit(0)
+    logging.info(f"started the next step {step}")
 
-            # then, for each agent, pick out the important information. 
-            for agent in agents:
-                # take the message from the agent that concerns this agent.
-                client.publish(f"for/{agent}", state.get_state(agent), qos=2)
-                logging.info(f"sent state information to {agent}")
+    # calcualte the global next state
+    state.calculate_state(step)
 
-        # sleep for 1 second
-        sleep(1)
+    # display state
+    logging.info(f"clauses and concerns satisfaction are:\n{state.display_sat_concerns(step)}")
+
+    # then, for each agent, pick out the important information. 
+    for agent in agents:
+        # take the message from the agent that concerns this agent.
+        message = {"time": step, "state": state.get_state(agent, step)}
+        client.publish(f"for/{agent}", json.dumps(message), qos=2, retain=False)
+        logging.info(f"sent state information to {agent} for time {step}")
+
+    logging.info(f"sent state information to {agent} for time {step}")
+    # reset received array
+    received.reset()
+    simLock.release()
+
 
 # set the logging
 log_handler = logging.StreamHandler(sys.stdout)
@@ -108,9 +107,7 @@ logging.getLogger().setLevel(logging.INFO)
 logging.getLogger().addHandler(log_handler)
 
 # run the thread
-my_thread = Thread(target=custom_loop, args=())
-my_thread.start()
-client.connect(config['brokerAddress'], 1883, 60)
+client.connect(config['brokerAddress'], 1883, 0)
 
 # Blocking call that processes network traffic, dispatches callbacks and
 # handles reconnecting.

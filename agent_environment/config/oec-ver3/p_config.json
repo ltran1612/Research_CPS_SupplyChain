@@ -1,0 +1,22 @@
+{
+    "id": "precision_engine",
+    "brokerAddress": "localhost",
+    "domain": "../scenarios/oec-ver3/precision_engine/domain.lp",
+    "initial_state": "../scenarios/oec-ver3/precision_engine/init.lp",
+    "planner": "../scenarios/oec-ver3/precision_engine/plan.lp",
+    "initial-plan": "../scenarios/oec-ver3/precision_engine/initial-plan.lp",
+    "clause_concern_map": "../scenarios/oec-ver3/precision_engine/clause-concern-map.lp",
+    "plan_checking": "../scenarios/oec-ver3/precision_engine/plan_checking.lp",
+    "global_domain": "../scenarios/oec-ver3/global_domain.lp",
+    "global_config": "../scenarios/oec-ver3/global_config.lp",
+    "state_calculator": "../scenarios/oec-ver3/state_calculator.lp",
+    "display": "../scenarios/oec-ver3/precision_engine/display.lp",
+    "contracts": [
+        "../scenarios/oec-ver3/contracts/clauses_per_agent_domain/P.lp"
+    ],
+    "ontologies": [
+        "../scenarios/oec-ver3/cps/cps-original.owl",
+        "../scenarios/oec-ver3/cps/requirements.owl"
+    ],
+    "cps-reasoner": "../scenarios/oec-ver3/cps/cps-reasoner.lp"
+}
