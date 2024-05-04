@@ -87,35 +87,35 @@ The src folder contains the following files:
 
 1. Run environment:
 
-    make env
+        make env
 
 2. Run car producer:
 
-    make ID=x agent
+        make ID=x agent
 
 3. Run speedy auto part:
 
-    make ID=a agent
+        make ID=a agent
 
 4. Run supplier of speedy auto part: 
 
-    make ID=as agent
+        make ID=as agent
 
 5. Run precision engine:
 
-    make ID=p agent
+        make ID=p agent
 
 6. Run metal crafts:
 
-    make ID=m agent
+        make ID=m agent
 
 7. Run supplier of metal crafts:
 
-   make ID=ms agent
+       make ID=ms agent
 
 8. Run sonic electronics:
 
-   make ID=e agent
+       make ID=e agent
 
 9. Run supplier of sonic electronics:
 
