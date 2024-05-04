@@ -85,18 +85,38 @@ The src folder contains the following files:
     
 #### Run OEC
 
-1. Run environment. 
+1. Run environment:
 
     make env
 
-2. Run car producer
+2. Run car producer:
 
-    make ID=car_producer agent
+    make ID=x agent
 
-3. Run speedy auto part
+3. Run speedy auto part:
 
-    make ID=speedy_auto_part agent
+    make ID=a agent
 
-4. Run supplier of speedy auto part. 
+4. Run supplier of speedy auto part: 
 
-    make ID=supplier_of_speedy_auto_part agent
+    make ID=as agent
+
+5. Run precision engine:
+
+    make ID=p agent
+
+6. Run metal crafts:
+
+    make ID=m agent
+
+7. Run supplier of metal crafts:
+
+   make ID=ms agent
+
+8. Run sonic electronics:
+
+   make ID=e agent
+
+9. Run supplier of sonic electronics:
+
+   make ID=es agent
