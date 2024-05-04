@@ -9,3 +9,11 @@ The CLI requires the following 2 things to be available in the shell:
 The location of the related files are:
 1) entry point (main function): src/cli/Main.java
 2) the object that represents the hybrid reasoner: src/asklab/cpsf/CPSClingoReasoner.java
+
+## Build
+
+To build, just do:
+
+    ant cli
+
+and it will build a jar file to be used as the CLI.
