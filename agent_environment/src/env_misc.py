@@ -7,7 +7,7 @@ import logging
 import re
 import json
 
-# base class for individual approach for state manager
+# base class for individual approach for state engine simulator 
 # thread-safe
 class StateManger:
     messages = {}
@@ -75,15 +75,6 @@ class StateManger:
 
         return result
 
-    # calculate state
-    # Implement this function in the child class
-    def calculate_state(self, step=None): 
-        pass
-
-    # function to get the state relates to an agent 
-    # Implement this function in the child class
-    def get_state(self, agent):
-        pass
 
 # a thread-safe object to check the number of messages that the user responded.
 class Received:
