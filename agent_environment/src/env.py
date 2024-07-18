@@ -33,7 +33,6 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe('env/+')
-    client.subscribe('recv/+')
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):

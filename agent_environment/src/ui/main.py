@@ -8,7 +8,25 @@ from tabs.settings import fill as fillSettings
 
 # Create the main application window
 root = tk.Tk()
-root.title("Tkinter Tabs Example")
+root.title("Supply Chain Simulator")
+
+# top section
+top_frame = tk.Frame(root)
+top_frame.pack(side="top", fill="x")
+
+# Create buttons and pack them into the top frame
+backButton= tk.Button(top_frame, text="Back")
+backButton.pack(side="left", padx=5, pady=5)
+
+# label
+timeLabel = tk.Label(top_frame, text="0:0")
+timeLabel.pack(side="left", padx=5, pady=5)
+
+nextButton= tk.Button(top_frame, text="Next")
+nextButton.pack(side="left", padx=5, pady=5)
+
+runButton = tk.Button(top_frame, text="Run")
+runButton.pack(side="left", padx=5, pady=5)
 
 # Create a Notebook widget for tabbed views
 notebook = ttk.Notebook(root)
