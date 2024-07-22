@@ -1,0 +1,12 @@
+{
+    "brokerAddress": "localhost",
+    "agents": ["car_producer", "speedy_auto_parts"], 
+    "global_domain": "../scenarios/oec-ver3/global_domain.lp",
+    "global_config": "../scenarios/oec-ver3/global_config.lp",
+    "state_calculator": "../scenarios/oec-ver3/state_calculator.lp",
+    "ontologies": [
+        "../scenarios/oec-ver3/cps/cps-original.owl",
+        "../scenarios/oec-ver3/cps/requirements.owl"
+    ],
+    "cps-reasoner": "../scenarios/oec-ver3/cps/cps-reasoner.lp"
+}

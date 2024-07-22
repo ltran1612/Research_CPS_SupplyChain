@@ -20,8 +20,8 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
     logging.debug("Connected with result code "+str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe(f'{TOPICS["FOR_ENV"]}/+')
-    client.subscribe(f'{TOPICS["FOR_AGENT"]}/+')
+    client.subscribe(f"{TOPICS['FOR_ENV']}/+")
+    client.subscribe(f"{TOPICS['FOR_AGENT']}/+")
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
@@ -41,8 +41,6 @@ def on_message(client: mqtt.Client, userdata, msg):
 client = mqtt.Client()
 client.on_connect = on_connect
 client.on_message = on_message
-
-# function to simulate
 
 # set the logging
 log_handler = logging.StreamHandler(sys.stdout)
