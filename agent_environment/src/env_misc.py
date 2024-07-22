@@ -75,7 +75,6 @@ class StateManger:
 
         return result
 
-
 # a thread-safe object to check the number of messages that the user responded.
 class Received:
     received = {}
