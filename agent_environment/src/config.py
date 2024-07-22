@@ -1,11 +1,6 @@
 import logging, sys
 import json 
 
-# the default config
-defaultConfig = {
-    "brokerAddress": "mqtt://localhost:1883",
-} # 
-
 # a function to display the content of config file 
 def show_config(config):
     address = config["brokerAddress"]
@@ -33,4 +28,4 @@ def load_config(args: list[str]):
         config = json.loads(text)
         return config
 
-    return defaultConfig
+    return None 
