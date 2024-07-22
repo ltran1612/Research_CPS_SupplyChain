@@ -1,5 +1,11 @@
-import logging, sys
+# contain the config settings required by the Python program of the project. 
 import json 
+
+# the names of the topics 
+TOPICS = {
+    "FOR_ENV": "env",
+    "FOR_AGENT": "for"
+}
 
 # a function to display the content of config file 
 def show_config(config):

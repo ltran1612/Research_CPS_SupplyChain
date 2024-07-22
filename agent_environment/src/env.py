@@ -10,7 +10,7 @@ import json
 import logging, sys
 import paho.mqtt.client as mqtt
 # custom libraries
-from config import load_config, show_config 
+from config import load_config, show_config, TOPICS
 from env_misc import Received, StateMangerGlobal 
 
 # load and display the config
@@ -37,7 +37,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
     logging.debug("Connected with result code "+str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
-    client.subscribe('env/+')
+    client.subscribe(f'{TOPICS['FOR_ENV']}/+')
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
@@ -55,7 +55,7 @@ def on_message(client: mqtt.Client, userdata, msg):
 
     # check if this is the message containing the action information meant for the env from the agent. 
     # there could be other topics
-    if topic == f"env/{agent}":
+    if topic == f"{TOPICS['FOR_ENV']}/{agent}":
         logging.info(f"received from {agent} for time {step}")
         # if the state simulation engine is not set up yet
         # the message sent by the agent is the setup message
@@ -112,7 +112,7 @@ def simulate():
         # get only the relevant portion of information that relates to the agent
         message = {"time": step, "state": state.get_state(agent, step)}
         # send it
-        client.publish(f"for/{agent}", json.dumps(message), qos=2, retain=False)
+        client.publish(f"{TOPICS['FOR_AGENT']}/{agent}", json.dumps(message), qos=2, retain=False)
         logging.info(f"sent state information to {agent} for time {step}")
 
     logging.info(f"sent state information to {agent} for time {step}")

@@ -6,7 +6,7 @@ import json
 # custom libraries 
 from misc import get_atoms 
 from env_misc import encode_setup_data
-from config import show_config, load_config
+from config import show_config, load_config, TOPICS
 from planner import Planner 
 
 # set the logging
@@ -26,8 +26,8 @@ show_config(config)
 planner: Planner = Planner(config)
 
 # agent topics
-send_topic = f"env/{config['id']}" 
-receive_topic = f"for/{config['id']}" 
+send_topic = f"{TOPICS['FOR_ENV']}/{config['id']}" 
+receive_topic = f"{TOPICS['FOR_AGENT']}/{config['id']}" 
 logging.debug(f"Published to {send_topic}")
 logging.debug(f"Subscribed to {receive_topic}")
 
