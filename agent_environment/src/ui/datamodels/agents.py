@@ -21,16 +21,24 @@ class AgentListModel(DataModel):
         for box in self.cboxes:
             if box.winfo_exists() != 1:
                 continue
-            # TODO: update the values
             box.config(values=list(self.agents.keys())) 
     
+    # TODO: update function
+    def update(self, agent_name):
+        for box in self.cboxes:
+            if box.winfo_exists() != 1:
+                continue
+            # update the label combobox result if this agent selected in a combobox
+            if box.get() != agent_name:
+                continue
+            # TODO: update
+
     # fill function, to be implemented by child classes
     def fill(self, frame):
-        print("filling...")
         # Tab 2 content with multiple components
         def on_combobox_select(event):
             selected_value = combobox.get()
-            label_combobox_result.config(text=f"Selected: {selected_value}")
+            label_combobox_result.config(text=self.agents[selected_value])
 
         # Create a label for the dropdown menu
         label_dropdown = tk.Label(frame, text="Choose an option:")
