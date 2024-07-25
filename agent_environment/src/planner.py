@@ -127,6 +127,9 @@ class Planner:
         with open(self.temp_file, "w") as f:
             f.write(f"occur(A, V, T) :- occur_plan(A, V, T).")
             f.write(f"hold(A, V, T) :- hold_plan(A, V, T).")
+            f.write("#show hold/3.")
+            f.write("#show occur/3.")
+            f.write("#show.")
         # choose the files 
         files = [self.temp_file, self.theplan]
         # run the parsing process
