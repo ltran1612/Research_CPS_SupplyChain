@@ -12,6 +12,7 @@ import logging, sys
 import paho.mqtt.client as mqtt
 from config import TOPICS
 from ui.datamodels.agent import AgentDataModel
+from ui.datamodels.agents import AgentListModel
 from ui.showui import start_ui 
 # custom libraries
 
@@ -21,8 +22,7 @@ broker_addr = sys.argv[1]
 # time
 time = -1
 # agents
-agents:dict[str, AgentDataModel] = {}
-
+agents = AgentListModel()
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -84,9 +84,8 @@ logging.getLogger().addHandler(log_handler)
 
 client.connect(broker_addr, 1883, 0)
 client.loop_start()
-print("Starting after running background")
 
 # TODO: Start the interface
 # TODO: For each agent tab, let the agent model fill the frame for the agent tab. 
-start_ui()
+start_ui(agents)
 client.loop_stop()

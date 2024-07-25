@@ -2,6 +2,7 @@ from ui.datamodels.base import DataModel
 
 class AgentDataModel(DataModel):
     def __init__(self, s, name):
+        super().__init__()
         self.atoms = []
         self.name = name
         self.actions = []
@@ -27,4 +28,3 @@ class AgentDataModel(DataModel):
     # fill function, to be implemented by child classes
     def fill(self, frame):
         raise NotImplementedError("not implemented")
-        
