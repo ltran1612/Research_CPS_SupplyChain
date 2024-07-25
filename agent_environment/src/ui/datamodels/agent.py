@@ -26,13 +26,16 @@ class AgentDataModel(DataModel):
     # load plan
     def load_plan(self, plan):
         self.plan = plan
-        # TODO: notify
+        # notify
+        self._notify_subscribers(self.name)
     
     def __str__(self):
         res = [""]
         res.extend(self.atoms)
         s ="\n**".join(res)
-        return f"Agent: {self.name}{s}"
+        # TODO: include the plan
+        p = self.plan
+        return f"Agent: {self.name}{s}\nPlan:\n{p}"
 
     # fill function, to be implemented by child classes
     def fill(self, frame):

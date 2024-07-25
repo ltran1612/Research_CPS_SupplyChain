@@ -97,7 +97,6 @@ def on_message(client: mqtt.Client, userdata, msg):
             agents[agent] = AgentDataModel("", agent)
         magent: AgentDataModel = agents[agent]
         magent.load_plan(plan)
-        print(plan)
 
 
 # setup the MQTT client

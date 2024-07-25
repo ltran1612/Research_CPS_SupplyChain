@@ -40,7 +40,22 @@ class AgentListModel(DataModel):
         # Tab 2 content with multiple components
         def on_combobox_select(event):
             selected_value = combobox.get()
-            label_combobox_result.config(text=self.agents[selected_value])
+
+            label_combobox_result.delete("1.0", tk.END)
+            label_combobox_result.insert(tk.END,self.agents[selected_value])
+        # scrollbars
+        h = tk.Scrollbar(frame, orient = 'horizontal')
+        # attach Scrollbar to root window at 
+        # the bootom
+        h.pack(side = tk.BOTTOM, fill = tk.X)
+  
+        # create a vertical scrollbar-no need
+        # to write orient as it is by
+        # default vertical
+        v = tk.Scrollbar(frame)
+        # attach Scrollbar to root window on 
+        # the side
+        v.pack(side = tk.RIGHT, fill = tk.Y)
 
         # Create a label for the dropdown menu
         label_dropdown = tk.Label(frame, text="Choose an option:")
@@ -55,7 +70,7 @@ class AgentListModel(DataModel):
         self.cboxes.append(combobox)
 
         # Create a label to display the selected value
-        label_combobox_result = tk.Label(frame, text="Selected: None")
+        label_combobox_result = tk.Text(frame, xscrollcommand=h, yscrollcommand=v)
         label_combobox_result.pack(pady=5)
 
         # Create a button
