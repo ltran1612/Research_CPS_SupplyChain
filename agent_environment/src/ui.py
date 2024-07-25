@@ -7,12 +7,14 @@
 
 # libraries 
 import json
-from threading import Lock
+from threading import Lock, Thread
 import logging, sys
 import paho.mqtt.client as mqtt
 from config import TOPICS
-from ui.datamodels.agent import AgentDataModel 
+from ui.datamodels.agent import AgentDataModel
+from ui.showui import start_ui 
 # custom libraries
+
 
 # load and display the config
 broker_addr = sys.argv[1]
@@ -20,6 +22,7 @@ broker_addr = sys.argv[1]
 time = -1
 # agents
 agents:dict[str, AgentDataModel] = {}
+
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -74,16 +77,16 @@ client.on_message = on_message
 
 # set the logging
 log_handler = logging.StreamHandler(sys.stdout)
-log_handler.setLevel(logging.ERROR)
+log_handler.setLevel(logging.INFO)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logging.getLogger().setLevel(logging.INFO)
+logging.getLogger().setLevel(logging.ERROR)
 logging.getLogger().addHandler(log_handler)
 
-# run the thread
 client.connect(broker_addr, 1883, 0)
+client.loop_start()
+print("Starting after running background")
 
-# Blocking call that processes network traffic, dispatches callbacks and
-# handles reconnecting.
-# Other loop*() functions are available that give a threaded interface and a
-# manual interface.
-client.loop_forever()
+# TODO: Start the interface
+# TODO: For each agent tab, let the agent model fill the frame for the agent tab. 
+start_ui()
+client.loop_stop()
