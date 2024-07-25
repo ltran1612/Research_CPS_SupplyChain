@@ -5,7 +5,8 @@ import json
 TOPICS = {
     "FOR_ENV": "env",
     "FOR_AGENT": "for",
-    "CONCERNS_REQUIREMENTS": "cons_reqs"
+    "CONCERNS_REQUIREMENTS": "cons_reqs",
+    "PLAN": "plan"
 }
 
 # a function to display the content of config file 

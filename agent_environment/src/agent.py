@@ -25,11 +25,21 @@ show_config(config)
 # set up planner
 planner: Planner = Planner(config)
 
+# time step
+time_step = 0
+
 # agent topics
 send_topic = f"{TOPICS['FOR_ENV']}/{config['id']}" 
 receive_topic = f"{TOPICS['FOR_AGENT']}/{config['id']}" 
+plan_topic = f"{TOPICS['PLAN']}/{config['id']}" 
 logging.debug(f"Published to {send_topic}")
 logging.debug(f"Subscribed to {receive_topic}")
+
+# subscribe an action when the plan changes
+def share_plan(plan):
+    message = {"time": time_step, "plan": plan}
+    client.publish(plan_topic, json.dumps(message), qos=2, retain=False)
+planner.subscribe(share_plan)
 
 # variable to identify if we're connecting for the first time or not
 # with a Lock/mutex
@@ -46,6 +56,8 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
         # send setup information 
         client.publish(send_topic, encode_setup_data(config), qos=2, retain=False)
         logging.info("agent notified to the env of its existence")
+        # publish the first plan
+        share_plan(planner.see_plan())
         started = True 
     startLock.release()
 
@@ -86,7 +98,7 @@ def on_message(client: mqtt.Client, userdata, msg):
             sys.exit(1)
         else:
             action = actions
-        # 
+
         logging.debug(f"the next action is {action} for the end of time step {time_step}")
         # send the action then wait again till we can do it
         client.publish(send_topic, action)

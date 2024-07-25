@@ -7,6 +7,7 @@ class AgentDataModel(DataModel):
         self.name = name
         self.actions = []
         self.load_from_string(s)
+        self.plan = ""
 
     # load the data from a string
     def load_from_string(self, s):
@@ -20,6 +21,12 @@ class AgentDataModel(DataModel):
     # load action
     def load_action(self, action):
         self.actions.append(action)
+        # TODO: notify
+
+    # load plan
+    def load_plan(self, plan):
+        self.plan = plan
+        # TODO: notify
     
     def __str__(self):
         res = [""]

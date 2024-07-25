@@ -1,7 +1,6 @@
 # UI shower
 # listen to and display:
-# 1) Action at each time step. (DONE)
-# 2) The state of the environment. (TODO)
+# 1) Action at each time step. (TODO)
 # 3) The state of each agent. (DONE)
 # 4) The plan for each agent.  (TODO)
 # 5) The concerns of supply chain and their satisfaction (DONE)
@@ -36,6 +35,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
     client.subscribe(f"{TOPICS['FOR_ENV']}/+")
     client.subscribe(f"{TOPICS['FOR_AGENT']}/+")
     client.subscribe(f"{TOPICS['CONCERNS_REQUIREMENTS']}")
+    client.subscribe(f"{TOPICS['PLAN']}/+")
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
@@ -50,11 +50,12 @@ def on_message(client: mqtt.Client, userdata, msg):
     try:
         agent = topic[topic.rindex("/")+1:]
     except ValueError as e:
-        logging.error(e)
+        pass
     
     if topic.startswith(TOPICS['FOR_ENV']):
         # if this is a config file from the agent, ignore
         if len(message) > 0 and message[0] != "{":
+            # TODO: save the action
             print(f"-> Action of Agent {agent}: {message}")
     if topic.startswith(TOPICS['FOR_AGENT']):
         data = json.loads(message)
@@ -86,6 +87,16 @@ def on_message(client: mqtt.Client, userdata, msg):
         sat_concerns = data["sat"]
         concerns.load_from_string(sat_concerns)
         print(concerns)
+
+    if topic.startswith(TOPICS["PLAN"]):
+        data = json.loads(message)
+        t = data["time"]
+
+        plan = data["plan"]
+        if agent not in agents:
+            agents[agent] = AgentDataModel("", agent)
+        magent: AgentDataModel = agents[agent]
+        magent.load_plan(plan)
 
 
 # setup the MQTT client
