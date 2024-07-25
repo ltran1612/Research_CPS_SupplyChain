@@ -31,6 +31,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
     # reconnect then subscriptions will be renewed.
     client.subscribe(f"{TOPICS['FOR_ENV']}/+")
     client.subscribe(f"{TOPICS['FOR_AGENT']}/+")
+    client.subscribe(f"{TOPICS['CONCERNS_REQUIREMENTS']}")
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
@@ -68,6 +69,13 @@ def on_message(client: mqtt.Client, userdata, msg):
             else:
                 agents[agent] = AgentDataModel(state, agent)
             print(agents[agent])
+
+    if topic == TOPICS['CONCERNS_REQUIREMENTS']:
+        data = json.loads(message)
+        t = data["time"]
+        sat_concerns = data["sat"]
+        print("Sat Concerns:")
+        print(sat_concerns)
 
 
 # setup the MQTT client

@@ -105,7 +105,10 @@ def simulate():
     state.calculate_state(step)
 
     # display the clauses and concerns satisfied 
-    logging.info(f"clauses and concerns satisfaction are:\n{state.display_sat_concerns(step)}")
+    sat_concerns = state.display_sat_concerns(step)
+    logging.info(f"clauses and concerns satisfaction are:\n{sat_concerns}")
+    message = {"time": step, "sat": sat_concerns}
+    client.publish(TOPICS["CONCERNS_REQUIREMENTS"], json.dumps(message), qos=2, retain=False)
 
     # then, for each agent, pick out the requested information to send to them. 
     for agent in agents:
