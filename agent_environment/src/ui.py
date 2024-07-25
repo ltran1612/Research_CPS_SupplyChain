@@ -4,7 +4,7 @@
 # 2) The state of the environment. (TODO)
 # 3) The state of each agent. (DONE)
 # 4) The plan for each agent.  (TODO)
-# 5) The concerns of supply chain and their satisfaction (TODO)
+# 5) The concerns of supply chain and their satisfaction (DONE)
 
 # libraries 
 import json
