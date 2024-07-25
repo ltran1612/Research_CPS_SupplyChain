@@ -14,6 +14,8 @@ class AgentDataModel(DataModel):
         atoms = s.split(". ")
         atoms = list(set(atoms))
         self.atoms = atoms
+        # update to the subscribers
+        self._notify_subscribers(self.name)
     
     # load action
     def load_action(self, action):

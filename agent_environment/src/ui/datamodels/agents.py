@@ -18,12 +18,14 @@ class AgentListModel(DataModel):
     def __setitem__(self, name: str, agent):
         self.agents[name] = agent 
         agent.subscribe(self)
+        # updated
         for box in self.cboxes:
             if box.winfo_exists() != 1:
                 continue
             box.config(values=list(self.agents.keys())) 
     
-    # TODO: update function
+    # update function when the publisher publishes something
+    # in this case, it's the individual agent in the list
     def update(self, agent_name):
         for box in self.cboxes:
             if box.winfo_exists() != 1:
@@ -31,7 +33,7 @@ class AgentListModel(DataModel):
             # update the label combobox result if this agent selected in a combobox
             if box.get() != agent_name:
                 continue
-            # TODO: update
+            box.event_generate("<<ComboboxSelected>>")
 
     # fill function, to be implemented by child classes
     def fill(self, frame):
