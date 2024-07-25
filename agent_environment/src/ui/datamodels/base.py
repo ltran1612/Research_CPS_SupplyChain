@@ -20,7 +20,6 @@ class DataModel:
     def update(self, event_name): 
         pass
 
-    # abstract
     def _notify_subscribers(self, event_name: str):
         for sub in self.subscribers:
             sub.update(event_name)

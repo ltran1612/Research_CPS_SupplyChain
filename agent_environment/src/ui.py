@@ -13,6 +13,7 @@ import paho.mqtt.client as mqtt
 from config import TOPICS
 from ui.datamodels.agent import AgentDataModel
 from ui.datamodels.agents import AgentListModel
+from ui.datamodels.cons import ConcernModel
 from ui.showui import start_ui 
 # custom libraries
 
@@ -23,6 +24,8 @@ broker_addr = sys.argv[1]
 time = -1
 # agents
 agents = AgentListModel()
+# concerns
+concerns = ConcernModel()
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -50,7 +53,7 @@ def on_message(client: mqtt.Client, userdata, msg):
     
     if topic.startswith(TOPICS['FOR_ENV']):
         # if this is a config file from the agent, ignore
-        if message[0] != "{":
+        if len(message) > 0 and message[0] != "{":
             print(f"-> Action of Agent {agent}: {message}")
     if topic.startswith(TOPICS['FOR_AGENT']):
         data = json.loads(message)
@@ -73,9 +76,15 @@ def on_message(client: mqtt.Client, userdata, msg):
     if topic == TOPICS['CONCERNS_REQUIREMENTS']:
         data = json.loads(message)
         t = data["time"]
+        # update the time
+        if time != t:
+            time = t
+            print(f"\nTime {time}:")
+        
+        # print the concerns
         sat_concerns = data["sat"]
-        print("Sat Concerns:")
-        print(sat_concerns)
+        concerns.load_from_string(sat_concerns)
+        print(concerns)
 
 
 # setup the MQTT client

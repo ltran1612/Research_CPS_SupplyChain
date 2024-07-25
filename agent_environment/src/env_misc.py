@@ -331,7 +331,7 @@ class StateMangerGlobal(StateManger):
         if run_success:
             atoms = get_atoms(output)
             atoms = list(map(lambda atom :\
-                atom.replace("(", " ").replace(")", " ").replace(".", "")\
+                atom.replace("_", "-", 1).replace("(", "-").replace(")", " ").replace(".", "")\
                 ,atoms))
             return "\n".join(atoms)
         else:
