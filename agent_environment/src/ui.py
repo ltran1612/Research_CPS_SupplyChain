@@ -1,8 +1,8 @@
 # UI shower
 # listen to and display:
-# 1) Action at each time step. (TODO)
+# 1) Action at each time step. (DONE)
 # 3) The state of each agent. (DONE)
-# 4) The plan for each agent.  (TODO)
+# 4) The plan for each agent.  (DONE)
 # 5) The concerns of supply chain and their satisfaction (DONE)
 
 # libraries 
@@ -55,8 +55,9 @@ def on_message(client: mqtt.Client, userdata, msg):
     if topic.startswith(TOPICS['FOR_ENV']):
         # if this is a config file from the agent, ignore
         if len(message) > 0 and message[0] != "{":
-            # TODO: save the action
             print(f"-> Action of Agent {agent}: {message}")
+            magent: AgentDataModel = agents[agent]
+            magent.load_action(message)
     if topic.startswith(TOPICS['FOR_AGENT']):
         data = json.loads(message)
         if "time" in data: 

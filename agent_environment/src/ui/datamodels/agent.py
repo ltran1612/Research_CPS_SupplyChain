@@ -5,7 +5,7 @@ class AgentDataModel(DataModel):
         super().__init__()
         self.atoms = []
         self.name = name
-        self.actions = []
+        self.action = "" 
         self.load_from_string(s)
         self.plan = ""
 
@@ -20,8 +20,8 @@ class AgentDataModel(DataModel):
     
     # load action
     def load_action(self, action):
-        self.actions.append(action)
-        # TODO: notify
+        self.action = action
+        self._notify_subscribers(self.name)
 
     # load plan
     def load_plan(self, plan):
@@ -33,9 +33,9 @@ class AgentDataModel(DataModel):
         res = [""]
         res.extend(self.atoms)
         s ="\n**".join(res)
-        # TODO: include the plan
         p = self.plan
-        return f"Agent: {self.name}{s}\nPlan:\n{p}"
+        a = self.action 
+        return f"Agent: {self.name}{s}\nPlan:\n{p}\nAction:{a}"
 
     # fill function, to be implemented by child classes
     def fill(self, frame):

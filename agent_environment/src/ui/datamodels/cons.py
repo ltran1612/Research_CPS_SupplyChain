@@ -62,10 +62,7 @@ class ConcernModel(DataModel):
         if self.label is not None:
             self.label.config(text=self)
 
-    # def 
-    # Abstract
     # fill function, to be implemented by child classes
     def fill(self, frame):
-        # TODO: fill the frame with a label from the text
         self.label = tk.Label(frame, text=self.__str__())
         self.label.pack(pady=20)
