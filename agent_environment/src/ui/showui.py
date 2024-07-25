@@ -2,12 +2,12 @@ import tkinter as tk
 from tkinter import ttk
 
 from ui.datamodels.agents import AgentListModel
+from ui.datamodels.base import DataModel
 from ui.tabs.overview import fill as fillOverview
-from ui.tabs.ontology import fill as fillOntology
 from ui.tabs.settings import fill as fillSettings
 
 
-def start_ui(agents: AgentListModel):
+def start_ui(agents: AgentListModel, concerns: DataModel):
     # Create the main application window
     root = tk.Tk()
     root.title("Supply Chain Simulator")
@@ -55,7 +55,7 @@ def start_ui(agents: AgentListModel):
     agents.fill(tab2)
 
     # Tab 3 content
-    fillOntology(tab3)
+    concerns.fill(tab3)
 
     # Tab 4 content
     fillSettings(tab4)

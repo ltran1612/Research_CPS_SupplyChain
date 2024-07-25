@@ -1,5 +1,6 @@
 import logging
 from ui.datamodels.base import DataModel
+import tkinter as tk
 
 class ConcernModel(DataModel):
     def __init__(self) -> None:
@@ -9,6 +10,7 @@ class ConcernModel(DataModel):
             "property": {},
             "clause": {}
         }
+        self.label = None
 
     def __str__(self):
         def group_str(group: dict[str, bool], title):
@@ -56,11 +58,14 @@ class ConcernModel(DataModel):
             
             # add to group
             group[name] = status
-
-                
+        # update
+        if self.label is not None:
+            self.label.config(text=self)
 
     # def 
     # Abstract
     # fill function, to be implemented by child classes
     def fill(self, frame):
-        pass
+        # TODO: fill the frame with a label from the text
+        self.label = tk.Label(frame, text=self.__str__())
+        self.label.pack(pady=20)

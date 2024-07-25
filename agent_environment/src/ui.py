@@ -1,9 +1,10 @@
 # UI shower
 # listen to and display:
-# 1) Action at each time step. (TODO)
+# 1) Action at each time step. (DONE)
 # 2) The state of the environment. (TODO)
-# 3) The state of each agent. (WAIT)
-# 4) The plan for each agent.  (WAIT)
+# 3) The state of each agent. (DONE)
+# 4) The plan for each agent.  (TODO)
+# 5) The concerns of supply chain and their satisfaction (TODO)
 
 # libraries 
 import json
@@ -102,7 +103,5 @@ logging.getLogger().addHandler(log_handler)
 client.connect(broker_addr, 1883, 0)
 client.loop_start()
 
-# TODO: Start the interface
-# TODO: For each agent tab, let the agent model fill the frame for the agent tab. 
-start_ui(agents)
+start_ui(agents, concerns)
 client.loop_stop()
