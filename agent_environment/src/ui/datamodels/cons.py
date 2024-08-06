@@ -6,9 +6,9 @@ class ConcernModel(DataModel):
     def __init__(self) -> None:
         super().__init__()
         self.data = {
-            "concern": {},
+            "clause": {},
             "property": {},
-            "clause": {}
+            "concern": {},
         }
         self.label = None
 
