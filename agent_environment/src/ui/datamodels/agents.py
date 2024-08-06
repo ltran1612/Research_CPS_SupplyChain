@@ -42,7 +42,7 @@ class AgentListModel(DataModel):
             selected_value = combobox.get()
 
             label_combobox_result.delete("1.0", tk.END)
-            label_combobox_result.insert(tk.END,self.agents[selected_value])
+            label_combobox_result.insert(tk.END, self.agents[selected_value])
         # scrollbars
         h = tk.Scrollbar(frame, orient = 'horizontal')
         # attach Scrollbar to root window at 
@@ -72,11 +72,3 @@ class AgentListModel(DataModel):
         # Create a label to display the selected value
         label_combobox_result = tk.Text(frame, xscrollcommand=h, yscrollcommand=v)
         label_combobox_result.pack(pady=5)
-
-        # Create a button
-        button_tab = tk.Button(frame, text="Click Me", command=lambda: label_button_result.config(text="Button clicked!"))
-        button_tab.pack(pady=20)
-
-        # Create a label to display the button click result
-        label_button_result = tk.Label(frame, text="")
-        label_button_result.pack(pady=5)
