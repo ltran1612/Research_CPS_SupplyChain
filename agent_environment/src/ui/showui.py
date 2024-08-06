@@ -3,11 +3,12 @@ from tkinter import ttk
 
 from ui.datamodels.agents import AgentListModel
 from ui.datamodels.base import DataModel
+from ui.datamodels.time_md import TimeModel
 from ui.tabs.overview import fill as fillOverview
 from ui.tabs.settings import fill as fillSettings
 
 
-def start_ui(agents: AgentListModel, concerns: DataModel):
+def start_ui(agents: AgentListModel, concerns: DataModel, time: TimeModel):
     # Create the main application window
     root = tk.Tk()
     root.title("Supply Chain Simulator")
@@ -21,14 +22,7 @@ def start_ui(agents: AgentListModel, concerns: DataModel):
     backButton.pack(side="left", padx=5, pady=5)
 
     # label
-    timeLabel = tk.Label(top_frame, text="0:0")
-    timeLabel.pack(side="left", padx=5, pady=5)
-
-    nextButton= tk.Button(top_frame, text="Next")
-    nextButton.pack(side="left", padx=5, pady=5)
-
-    runButton = tk.Button(top_frame, text="Run")
-    runButton.pack(side="left", padx=5, pady=5)
+    time.fill(top_frame)
 
     # Create a Notebook widget for tabbed views
     notebook = ttk.Notebook(root)

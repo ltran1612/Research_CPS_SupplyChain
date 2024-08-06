@@ -14,6 +14,7 @@ from config import TOPICS
 from ui.datamodels.agent import AgentDataModel
 from ui.datamodels.agents import AgentListModel
 from ui.datamodels.cons import ConcernModel
+from ui.datamodels.time_md import TimeModel
 from ui.showui import start_ui 
 # custom libraries
 
@@ -26,6 +27,8 @@ time = -1
 agents = AgentListModel()
 # concerns
 concerns = ConcernModel()
+# time
+time_md = TimeModel()
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc):
@@ -66,6 +69,7 @@ def on_message(client: mqtt.Client, userdata, msg):
             # update the time
             if time != t:
                 time = t
+                time_md.load_from_string(time)
                 print(f"\nTime {time}:")
             
             # get the state
@@ -82,6 +86,7 @@ def on_message(client: mqtt.Client, userdata, msg):
         # update the time
         if time != t:
             time = t
+            time_md.load_from_string(time)
             print(f"\nTime {time}:")
         
         # print the concerns
@@ -115,5 +120,5 @@ logging.getLogger().addHandler(log_handler)
 client.connect(broker_addr, 1883, 0)
 client.loop_start()
 
-start_ui(agents, concerns)
+start_ui(agents, concerns, time_md)
 client.loop_stop()

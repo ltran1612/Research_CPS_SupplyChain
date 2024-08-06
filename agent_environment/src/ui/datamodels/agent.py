@@ -25,6 +25,8 @@ class AgentDataModel(DataModel):
 
     # load plan
     def load_plan(self, plan):
+        # TODO: get the atoms
+        # filter out only the occur atoms
         self.plan = plan
         # notify
         self._notify_subscribers(self.name)
