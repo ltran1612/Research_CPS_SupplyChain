@@ -58,7 +58,7 @@ class AgentListModel(DataModel):
         v.pack(side = tk.RIGHT, fill = tk.Y)
 
         # Create a label for the dropdown menu
-        label_dropdown = tk.Label(frame, text="Choose an option:")
+        label_dropdown = tk.Label(frame, text="Choose an agent to display:")
         label_dropdown.pack(pady=5)
 
         # Create a dropdown menu (combobox)
