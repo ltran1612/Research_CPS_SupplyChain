@@ -20,35 +20,40 @@ The src folder contains the following main files:
 Overall, we need:
 
 1. The Mosquitto pub/sub broker.
-2. ASPOntology Hybrid Reasoner.
+2. ASPOntology Hybrid Reasoner CLI.
 3. Python with the right packages.
 
-##### Prereqisite 1: Mosquitto
+##### Prerequisite 1: Mosquitto
 
 1. Install mosquitto following the instruction at https://mosquitto.org/download/: 
     
     Mosquitto is a MQTT broker (pubish-subscriber model) used to handle communication between agent and environemnt.  
 
 
-##### Prereqisite 2: ASPOntology Hybrid Reasoner 
+##### Prerequisite 2: ASPOntology Hybrid Reasoner CLI
+
+A CLI to convert .owl ontology files into Clingo ASP programs and run it with other Clingo ASP programs.
+This CLI was a modified version of the original program at https://github.com/thanhnh-infinity/Research_CPS.
 
 The Ontology HybridReasoner is in the "java-cli" git branch of the project. See the README.md in the branch for more information. A jar file of the reasoner was created; its path is "agent_environment/src/cli.jar". 
 
-The jar file requires 2 programs to be available in the $PATH.
+Thus, we only need to make it usable.
+
+The jar file requires 2 programs available in the $PATH to be usable:
 1. clingo: Clingo. See https://potassco.org/clingo/.
 2. sparql: Sparql program (can be installed by install Jena). See https://jena.apache.org/getting_started/index.html.
 
-##### Prereqisite 3: Python with the right packages
+The jar file was tested with Clingo 5.6.2 and Jena 5.0.0-rc1. 
+
+##### Prerequisite 3: Python with the right packages
 
 The system was developed with Python 3.11.6. There are no clear reasons why it would not work with later versions of Python, but it has not been tested. 
 
-For packages, we need the "paho-mqtt" package. See https://pypi.org/project/paho-mqtt/. Instructions:
+For packages, we need the "paho-mqtt" package version 2.1.0. See https://pypi.org/project/paho-mqtt/. Instructions:
 
 1. Install paho-mqtt module for agent and environment to talk to the broker:  
 
         pip install paho-mqtt
-
-    Link: https://pypi.org/project/paho-mqtt/
 
 #### How to run 
 
@@ -93,6 +98,8 @@ For packages, we need the "paho-mqtt" package. See https://pypi.org/project/paho
         python3 agent.py ../agent2_config.json
     
 #### Run OEC
+
+For convinience with running the OEC use case, a Makefile was written. The following is the list of targets to run each agent in the scenario.
 
 1. Run environment:
 
