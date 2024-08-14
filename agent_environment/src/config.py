@@ -1,10 +1,13 @@
-import logging, sys
+# contain the config settings required by the Python program of the project. 
 import json 
 
-# the default config
-defaultConfig = {
-    "brokerAddress": "mqtt://localhost:1883",
-} # 
+# the names of the topics 
+TOPICS = {
+    "FOR_ENV": "env",
+    "FOR_AGENT": "for",
+    "CONCERNS_REQUIREMENTS": "cons_reqs",
+    "PLAN": "plan"
+}
 
 # a function to display the content of config file 
 def show_config(config):
@@ -33,4 +36,4 @@ def load_config(args: list[str]):
         config = json.loads(text)
         return config
 
-    return defaultConfig
+    return None 

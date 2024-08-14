@@ -4,6 +4,7 @@ import logging
 from subprocess import CompletedProcess
 import sys
 import re
+from typing import Callable
 from misc import get_atoms, parse_clingo_output, reset_file, run_clingo, run_clingo_raw, write_to_temp_file, copy_file
 from env_misc import encode_setup_data 
 import unittest
@@ -53,7 +54,10 @@ class Planner:
 
         # copy initial plan to the plan file
         copy_file(self.initial_plan, self.theplan)
-            
+
+        # subscribers
+        self.subscribers: list[Callable[[str], None]] = []
+
     # check if the observation matches with the plan
     # precondition: the plan is stored in self.theplan 
     def observation_matches_plan(self, observation: str) -> bool:
@@ -123,6 +127,9 @@ class Planner:
         with open(self.temp_file, "w") as f:
             f.write(f"occur(A, V, T) :- occur_plan(A, V, T).")
             f.write(f"hold(A, V, T) :- hold_plan(A, V, T).")
+            f.write("#show hold/3.")
+            f.write("#show occur/3.")
+            f.write("#show.")
         # choose the files 
         files = [self.temp_file, self.theplan]
         # run the parsing process
@@ -222,8 +229,21 @@ class Planner:
         # check it again
         if self.observation_matches_plan(observation):
             logging.info(f"observation matches plan, get the action for {target_step}")
+            # plan changed, notify
+            self._notify(self.see_plan())
             return self.get_actions_at_step(target_step)
         
         # else show the differences
         return None 
+
+    # when this changes, run the function 
+    def subscribe(self, func: Callable[[str], None]):
+        self.subscribers.append(func)
+
+    # notify when changes
+    def _notify(self, s: str):
+        for sub in self.subscribers:
+            func: Callable[[str], None] = sub
+            func(s)
+
 

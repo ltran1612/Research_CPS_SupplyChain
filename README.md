@@ -2,40 +2,49 @@
 
 ## Project Structure
 
-### A Node.JS API backend + frontend for the hybrid ASP + Ontology Reasoner. 
 
-It consists of the following folders:
+### 1. Main Project: A Supply Chain Simulation System using Action Language Theory with CPS Framework Ontology. 
 
-1. client_src
-2. server_src
-3. src
+The folder of this project is "agent_environment". It includes the subdirectories:
 
-### An agent environment coordination program for testing action theory with Clingo. 
+1. src: the source folder of the base codes.  
+2. scenarios: containing Clingo action theory files. 
+3. config files (files ending with "..._config.json"): containing configuration files needed by each agent's and environment. 
 
-It consists of the following folders:
+The src folder contains the following main files: 
 
-1. agent_environment:
-
-    a. src: the source folder of the base codes.  
-    b. scenarios: containing Clingo action theory files for experimenting. 
-    c. config files (files ending with "..._config.json"): defining the files needed by each agent's and environment. 
-
-The src folder contains the following files: 
-
-1. agent.py: the code for running individual agent.
-2. env.py: the code for running the environment. 
-3. env_misc.py: some functions that env.py needs. 
-4. misc.py: some codes that both the environment and agent needs. 
-5. parser_factory.py: A parser factory to generate parsers to get fluent and actions' names. 
-6. planner.py: A planner defining the behaviour of each individual agent. 
+1. agent.py: the agent's program. 
+2. env.py: the environment's program.
 
 #### Prerequisites
+Overall, we need:
+
+1. The Mosquitto pub/sub broker.
+2. ASPOntology Hybrid Reasoner.
+3. Python with the right packages.
+
+##### Prereqisite 1: Mosquitto
 
 1. Install mosquitto following the instruction at https://mosquitto.org/download/: 
     
     Mosquitto is a MQTT broker (pubish-subscriber model) used to handle communication between agent and environemnt.  
 
-2. Install paho-mqtt module for agent and environment to talk to the broker:  
+
+##### Prereqisite 2: ASPOntology Hybrid Reasoner 
+
+The Ontology HybridReasoner is in the "java-cli" git branch of the project. See the README.md in the branch for more information. A jar file of the reasoner was created; its path is "agent_environment/src/cli.jar". 
+
+The jar file requires 2 programs to be available in the $PATH.
+1. clingo: Clingo. See https://potassco.org/clingo/.
+2. sparql: Sparql program (can be installed by install Jena). See https://jena.apache.org/getting_started/index.html.
+
+##### Prereqisite 3: Python with the right packages
+
+The system was developed with Python 3.11.6. There are no clear reasons why it would not work with later versions of Python, but it has not been tested. 
+
+For packages, we need the "paho-mqtt" package. See https://pypi.org/project/paho-mqtt/. Instructions:
+
+1. Install paho-mqtt module for agent and environment to talk to the broker:  
 
         pip install paho-mqtt
 
@@ -120,3 +129,11 @@ The src folder contains the following files:
 9. Run supplier of sonic electronics:
 
        make ID=es agent
+
+### 2. SubProject: A Node.JS API backend + frontend for the hybrid ASP + Ontology Reasoner. 
+
+It consists of the following folders:
+
+1. client_src
+2. server_src
+3. src
