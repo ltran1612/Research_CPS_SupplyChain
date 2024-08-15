@@ -22,10 +22,9 @@ class AgentDataModel(DataModel):
     def load_action(self, action):
         self.action = action
         self._notify_subscribers(self.name)
-
+    
     # load plan
     def load_plan(self, plan):
-        # TODO: get the atoms
         # filter out only the occur atoms
         self.plan = plan
         # notify

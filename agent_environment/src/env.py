@@ -104,6 +104,12 @@ def simulate():
     # calcualte the global next state
     state.calculate_state(step)
 
+    # TODO: 
+    # publish the state
+    env_state = state.get_env_state(step)
+    message = {"time": step, "state": env_state}
+    client.publish(TOPICS["ENV_STATE"], json.dumps(message), qos=2, retain=False)
+
     # display the clauses and concerns satisfied 
     sat_concerns = state.display_sat_concerns(step)
     logging.info(f"clauses and concerns satisfaction are:\n{sat_concerns}")

@@ -285,6 +285,21 @@ class StateMangerGlobal(StateManger):
             return False
         finally:
             self.lock.release()
+        
+    # get the overall state
+    def get_env_state(self, step=None):
+        self.lock.acquire()
+        with open(self.temp_file, "w") as f:
+            f.write(self.__get_filter(step=step))
+        files = [self.temp_file, self.env_state]
+        (run_success, output) = run_clingo(files)
+        if not run_success: 
+            raise Exception(f"cannot get the state for the environment")
+        self.lock.release()
+        
+        env_state = "".join(output)
+        return env_state
+
    
     def get_state(self, agent, step=None):
         self.lock.acquire()

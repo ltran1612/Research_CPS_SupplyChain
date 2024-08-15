@@ -31,7 +31,7 @@ concerns = ConcernModel()
 time_md = TimeModel()
 
 # The callback for when the client receives a CONNACK response from the server.
-def on_connect(client: mqtt.Client, userdata, flags, rc):
+def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
     logging.debug("Connected with result code "+str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
@@ -39,6 +39,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc):
     client.subscribe(f"{TOPICS['FOR_AGENT']}/+")
     client.subscribe(f"{TOPICS['CONCERNS_REQUIREMENTS']}")
     client.subscribe(f"{TOPICS['PLAN']}/+")
+    client.subscribe(f"{TOPICS['ENV_STATE']}")
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
@@ -54,6 +55,23 @@ def on_message(client: mqtt.Client, userdata, msg):
         agent = topic[topic.rindex("/")+1:]
     except ValueError as e:
         pass
+
+    # TODO: 
+    # get the topic for environment state
+    if topic == TOPICS["ENV_STATE"]:
+        print("environment state")
+        data = json.loads(message)
+        env_state = data["state"]
+
+        # update the time
+        t = data["time"]
+        # update the time
+        if time != t:
+            time = t
+            time_md.load_from_string(time)
+            print(f"\nTime {time}:")
+        print(env_state)
+        return
     
     if topic.startswith(TOPICS['FOR_ENV']):
         # if this is a config file from the agent, ignore
@@ -61,6 +79,8 @@ def on_message(client: mqtt.Client, userdata, msg):
             print(f"-> Action of Agent {agent}: {message}")
             magent: AgentDataModel = agents[agent]
             magent.load_action(message)
+        return
+
     if topic.startswith(TOPICS['FOR_AGENT']):
         data = json.loads(message)
         if "time" in data: 
@@ -79,20 +99,16 @@ def on_message(client: mqtt.Client, userdata, msg):
             else:
                 agents[agent] = AgentDataModel(state, agent)
             print(agents[agent])
+        return
 
     if topic == TOPICS['CONCERNS_REQUIREMENTS']:
         data = json.loads(message)
-        t = data["time"]
-        # update the time
-        if time != t:
-            time = t
-            time_md.load_from_string(time)
-            print(f"\nTime {time}:")
         
         # print the concerns
         sat_concerns = data["sat"]
         concerns.load_from_string(sat_concerns)
         print(concerns)
+        return
 
     if topic.startswith(TOPICS["PLAN"]):
         data = json.loads(message)
@@ -103,10 +119,20 @@ def on_message(client: mqtt.Client, userdata, msg):
             agents[agent] = AgentDataModel("", agent)
         magent: AgentDataModel = agents[agent]
         magent.load_plan(plan)
-
+        return
+    
+        # read the message
+        # print the message
+    # create an environment data model
+    # create a new topic to send environment data
+    # parse the data for
+    # 1) successful actions
+    # 2) overall state
+    # display those data in the ui 
+    # configuring all updates requirements
 
 # setup the MQTT client
-client = mqtt.Client()
+client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
 client.on_connect = on_connect
 client.on_message = on_message
 

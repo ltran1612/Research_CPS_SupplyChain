@@ -6,7 +6,8 @@ TOPICS = {
     "FOR_ENV": "env",
     "FOR_AGENT": "for",
     "CONCERNS_REQUIREMENTS": "cons_reqs",
-    "PLAN": "plan"
+    "PLAN": "plan",
+    "ENV_STATE": "env_state"
 }
 
 # a function to display the content of config file 
