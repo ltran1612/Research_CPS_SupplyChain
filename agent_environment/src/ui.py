@@ -14,6 +14,7 @@ from config import TOPICS
 from ui.datamodels.agent import AgentDataModel
 from ui.datamodels.agents import AgentListModel
 from ui.datamodels.cons import ConcernModel
+from ui.datamodels.environment import EnvironmentModel
 from ui.datamodels.time_md import TimeModel
 from ui.showui import start_ui 
 # custom libraries
@@ -29,6 +30,8 @@ agents = AgentListModel()
 concerns = ConcernModel()
 # time
 time_md = TimeModel()
+# environment
+env = EnvironmentModel(agents) 
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
@@ -58,6 +61,11 @@ def on_message(client: mqtt.Client, userdata, msg):
 
     # TODO: 
     # get the topic for environment state
+    # parse the data for
+    # 1) successful actions
+    # 2) overall state
+    # display those data in the ui 
+    # configuring all updates requirements
     if topic == TOPICS["ENV_STATE"]:
         print("environment state")
         data = json.loads(message)
@@ -123,13 +131,7 @@ def on_message(client: mqtt.Client, userdata, msg):
     
         # read the message
         # print the message
-    # create an environment data model
-    # create a new topic to send environment data
-    # parse the data for
-    # 1) successful actions
-    # 2) overall state
-    # display those data in the ui 
-    # configuring all updates requirements
+ 
 
 # setup the MQTT client
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)

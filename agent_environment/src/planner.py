@@ -237,7 +237,7 @@ class Planner:
         return None 
 
     # when this changes, run the function 
-    def subscribe(self, func: Callable[[str], None]):
+    def add_subscriber(self, func: Callable[[str], None]):
         self.subscribers.append(func)
 
     # notify when changes

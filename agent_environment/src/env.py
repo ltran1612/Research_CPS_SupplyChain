@@ -104,7 +104,6 @@ def simulate():
     # calcualte the global next state
     state.calculate_state(step)
 
-    # TODO: 
     # publish the state
     env_state = state.get_env_state(step)
     message = {"time": step, "state": env_state}

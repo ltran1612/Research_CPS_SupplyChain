@@ -39,7 +39,7 @@ logging.debug(f"Subscribed to {receive_topic}")
 def share_plan(plan):
     message = {"time": time_step, "plan": plan}
     client.publish(plan_topic, json.dumps(message), qos=2, retain=False)
-planner.subscribe(share_plan)
+planner.add_subscriber(share_plan)
 
 # variable to identify if we're connecting for the first time or not
 # with a Lock/mutex

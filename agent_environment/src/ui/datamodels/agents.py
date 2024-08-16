@@ -17,7 +17,7 @@ class AgentListModel(DataModel):
 
     def __setitem__(self, name: str, agent):
         self.agents[name] = agent 
-        agent.subscribe(self)
+        agent.add_subscriber(self)
         # updated
         for box in self.cboxes:
             if box.winfo_exists() != 1:

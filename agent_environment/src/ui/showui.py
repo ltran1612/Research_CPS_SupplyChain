@@ -3,12 +3,12 @@ from tkinter import ttk
 
 from ui.datamodels.agents import AgentListModel
 from ui.datamodels.base import DataModel
+from ui.datamodels.environment import EnvironmentModel
 from ui.datamodels.time_md import TimeModel
-from ui.tabs.overview import fill as fillOverview
 from ui.tabs.settings import fill as fillSettings
 
 
-def start_ui(agents: AgentListModel, concerns: DataModel, time: TimeModel):
+def start_ui(agents: AgentListModel, concerns: DataModel, env: EnvironmentModel, time: TimeModel):
     # Create the main application window
     root = tk.Tk()
     root.title("Supply Chain Simulator")
@@ -43,7 +43,7 @@ def start_ui(agents: AgentListModel, concerns: DataModel, time: TimeModel):
     notebook.pack(expand=True, fill='both')
 
     # ontology tab
-    fillOverview(tab1)
+    env.fill(tab1)
 
     # agents tab
     agents.fill(tab2)
