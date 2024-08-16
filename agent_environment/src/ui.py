@@ -78,7 +78,8 @@ def on_message(client: mqtt.Client, userdata, msg):
             time = t
             time_md.load_from_string(time)
             print(f"\nTime {time}:")
-        print(env_state)
+        env.load_from_string(env_state)
+        # print(env_state)
         return
     
     if topic.startswith(TOPICS['FOR_ENV']):
@@ -148,5 +149,5 @@ logging.getLogger().addHandler(log_handler)
 client.connect(broker_addr, 1883, 0)
 client.loop_start()
 
-start_ui(agents, concerns, time_md)
+start_ui(agents, concerns, env, time_md)
 client.loop_stop()
