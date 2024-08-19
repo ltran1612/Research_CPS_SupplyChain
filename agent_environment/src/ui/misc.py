@@ -69,7 +69,9 @@ class UIFluent:
 
 
     def __str__(self) -> str:
-        return f"fluent: {self.name} -- agent: {self.agent} -- value: {self.value}"
+        if self.agent is not None:
+            return f"agent {self.agent} has state '{self.name}' with value '{self.value}'"
+        return f"environment has state '{self.name}' with value '{self.value}'"
 
 class UIAction:
     # expect a single line string
@@ -96,4 +98,4 @@ class UIAction:
         self.time = values[-1][0:-2]
 
     def __str__(self) -> str:
-        return f"action: {self.name} -- agent: {self.agent} -- value: {self.value}"
+        return f"agent {self.agent} do '{self.name}' with value '{self.value}'"
