@@ -9,11 +9,16 @@ class EnvironmentModel(DataModel):
         super().__init__()
         self.agents = agents
         self.state = "" 
-        self.label_state = None
+        self.state_tbox = None
+        self.action_tbox = None
 
     # load state data from the state 
     # load the data from a string
     def load_from_string(self, s):
+        # TODO: parse the state
+        # TODO: parse the action
+        # TODO: convert the state to the right format
+        # TODO: convert the action to the right format 
         self.state = s
         self.__display()
     
@@ -21,31 +26,49 @@ class EnvironmentModel(DataModel):
         return self.state
     
     def __display(self):
-        if self.label_state is None:
+        if self.state_tbox is None or self.action_tbox is None:
             return
-        self.label_state.delete("1.0", tk.END)
-        self.label_state.insert(tk.END, self)
+
+        # actions
+        self.state_tbox.delete("1.0", tk.END)
+        self.state_tbox.insert(tk.END, self.state)
 
     # def 
     # fill function, to be implemented by child classes
     def fill(self, frame):
-        # TODO: display a text box to show the state in the UI
-        h = tk.Scrollbar(frame, orient = 'horizontal')
-        # attach Scrollbar to root window at 
-        # the bootom
-        h.pack(side = tk.BOTTOM, fill = tk.X)
-  
-        # create a vertical scrollbar-no need
-        # to write orient as it is by
-        # default vertical
-        v = tk.Scrollbar(frame)
-        # attach Scrollbar to root window on 
-        # the side
-        v.pack(side = tk.RIGHT, fill = tk.Y)
+        # label for state 
+        env_label = tk.Label(frame, text="State of the Environment") 
+        # label for action 
+        action_label = tk.Label(frame, text="Action Right Now") 
 
-        # Create a label to display the selected value
-        self.label_state = tk.Text(frame, xscrollcommand=h, yscrollcommand=v)
-        self.label_state.pack(pady=5)
+        # state environ
+        s_frame = tk.Frame(frame)
+        # display a text box to show the state in the UI
+        h = tk.Scrollbar(s_frame, orient = 'horizontal')
+        v = tk.Scrollbar(s_frame)
+        # Create a textbox to display the state
+        self.state_tbox = tk.Text(s_frame, xscrollcommand=h, yscrollcommand=v)
+        h.pack(side = tk.BOTTOM, fill = tk.X)
+        v.pack(side = tk.RIGHT, fill = tk.Y)
+        self.state_tbox.pack(pady=5)
+             
+        # action frame
+        a_frame =  tk.Frame(frame) 
+        # display a text box to show the state in the UI
+        ha = tk.Scrollbar(a_frame, orient = 'horizontal')
+        va = tk.Scrollbar(a_frame)
+        # Create a textbox to display the state
+        self.action_tbox = tk.Text(a_frame, xscrollcommand=ha, yscrollcommand=va)
+        # 
+        ha.pack(side = tk.BOTTOM, fill = tk.X)
+        va.pack(side = tk.RIGHT, fill = tk.Y)
+        self.action_tbox.pack(pady=5)
+
+        # packings to put them
+        env_label.pack()
+        s_frame.pack()
+        action_label.pack()
+        a_frame.pack()
 
     # handle the update event 
     # TODO: handle the update when it's updated 
