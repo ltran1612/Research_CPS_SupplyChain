@@ -4,22 +4,23 @@ from ui.datamodels.agents import AgentListModel
 from ui.datamodels.base import DataModel
 import tkinter as tk
 
+from ui.misc import parse_state_actions
+
 class EnvironmentModel(DataModel):
     def __init__(self, agents: AgentListModel) -> None:
         super().__init__()
         self.agents = agents
-        self.state = "" 
+        self.state = []
+        self.actions = []
         self.state_tbox = None
         self.action_tbox = None
 
     # load state data from the state 
     # load the data from a string
     def load_from_string(self, s):
-        # TODO: parse the state
-        # TODO: parse the action
-        # TODO: convert the state to the right format
-        # TODO: convert the action to the right format 
-        self.state = s
+        # parse the state
+        # parse the action
+        self.state, self.actions = parse_state_actions(s)
         self.__display()
     
     def __str__(self):
@@ -28,10 +29,14 @@ class EnvironmentModel(DataModel):
     def __display(self):
         if self.state_tbox is None or self.action_tbox is None:
             return
+        print("test display", self.state, self.actions)
+        # state 
+        self.state_tbox.delete("1.0", tk.END)
+        self.state_tbox.insert(tk.END, "\n".join(self.state))
 
         # actions
-        self.state_tbox.delete("1.0", tk.END)
-        self.state_tbox.insert(tk.END, self.state)
+        self.action_tbox.delete("1.0", tk.END)
+        self.action_tbox.insert(tk.END, "\n".join(self.actions))
 
     # def 
     # fill function, to be implemented by child classes
