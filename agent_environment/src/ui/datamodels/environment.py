@@ -32,11 +32,13 @@ class EnvironmentModel(DataModel):
         print("test display", self.state, self.actions)
         # state 
         self.state_tbox.delete("1.0", tk.END)
-        self.state_tbox.insert(tk.END, "\n".join(self.state))
+        values = list(map(lambda x: x.__str__(), self.state))
+        self.state_tbox.insert(tk.END, "\n".join(values))
 
         # actions
         self.action_tbox.delete("1.0", tk.END)
-        self.action_tbox.insert(tk.END, "\n".join(self.actions))
+        values = list(map(lambda x: x.__str__(), self.actions))
+        self.action_tbox.insert(tk.END, "\n".join(values))
 
     # def 
     # fill function, to be implemented by child classes
@@ -76,7 +78,6 @@ class EnvironmentModel(DataModel):
         a_frame.pack()
 
     # handle the update event 
-    # TODO: handle the update when it's updated 
     def update(self, event_name): 
         pass
 

@@ -18,13 +18,82 @@ def parse_state_actions(s: str):
     state = []
     actions = []
     for atom in atoms:
+        atom = atom.strip()
         if atom.startswith("hold"):
             state.append(atom)
             continue
 
         actions.append(atom)
     
-    # TODO: convert the state to the right format
-    # TODO: convert the action to the right format 
+    # convert the state to the right format
+    for i in range(len(state)):
+        # get the original
+        atom = state[i]
+        atom = UIFluent(atom)
+        # put it back
+        state[i] = atom
+
+    # convert the action to the right format 
+    for i in range(len(actions)):
+        # get the original
+        atom = actions[i]
+        atom = UIAction(atom)
+        # put it back
+        actions[i] = atom
     # print("test parse", s, state, action) 
     return state, actions
+
+class UIFluent:
+    # expect a single line string
+    # that is trim
+    # no error checking has been done in this function
+    def __init__(self, s) -> None:
+        values = s.split(",")
+        # first one is "hold("
+        # name is from 5 to the first comma 
+        self.name = values[0][5:]
+
+        # value is idx+1 + 1 due to "("" until the last comma 
+        self.value = ",".join(values[1:-1])
+
+        # agent
+        self.agent = None 
+        # agent is ( until first comma
+        cm1 =   self.value.find(",")
+        if cm1 != -1:
+            self.agent = self.value[1:cm1]
+        self.value = self.value[cm1+1:-1]
+
+        # time is the last comma + 1 until before the closing bracket and the .
+        self.time = values[-1][0:-2]
+
+
+    def __str__(self) -> str:
+        return f"fluent: {self.name} -- agent: {self.agent} -- value: {self.value}"
+
+class UIAction:
+    # expect a single line string
+    # that is trim
+    # no error checking has been done in this function
+    def __init__(self, s) -> None:
+        values = s.split(",")
+        # first one is "occur("
+        # name is from 6 to the first comma 
+        self.name = values[0][6:]
+
+        # value is idx+1 + 1 due to "("" until the last comma 
+        self.value = ",".join(values[1:-1])
+
+        # agent
+        self.agent = None 
+        # agent is ( until first comma
+        cm1 =   self.value.find(",")
+        if cm1 != -1:
+            self.agent = self.value[1:cm1]
+        self.value = self.value[cm1+1:-1]
+
+        # time is the last comma + 1 until before the closing bracket and the .
+        self.time = values[-1][0:-2]
+
+    def __str__(self) -> str:
+        return f"action: {self.name} -- agent: {self.agent} -- value: {self.value}"
