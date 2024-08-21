@@ -1,13 +1,14 @@
 import tkinter as tk
 from tkinter import ttk
 
+from ui.datamodels.agent import AgentDataModel
 from ui.datamodels.base import DataModel
 from ui.widgets.scrolltext import TextboxWithScrollbars
 class AgentListModel(DataModel):
     def __init__(self) -> None:
         super().__init__()
         # subscribe the individual agent
-        self.agents = dict() 
+        self.agents: dict[str, AgentDataModel] = dict() 
         self.cboxes = []
     
     def __contains__(self, agent: str):
@@ -45,7 +46,9 @@ class AgentListModel(DataModel):
             # TODO: display local state, plan, and action separately. 
             # label_combobox_result.delete("1.0", tk.END)
             # label_combobox_result.insert(tk.END, self.agents[selected_value])
-            local_state_box.replace_text(self.agents[selected_value])
+            local_state_box.replace_text(self.agents[selected_value].get_state())
+            plan_box.replace_text(self.agents[selected_value].get_plan())
+            action_box.replace_text(self.agents[selected_value].get_action())
 
         # Create a label for the dropdown menu
         label_dropdown = tk.Label(frame, text="Choose an agent to display:")
@@ -59,11 +62,21 @@ class AgentListModel(DataModel):
         # save combobox for updates 
         self.cboxes.append(combobox)
 
+        # labels
+        state_label = tk.Label(frame, text="Local State")
+        plan_label = tk.Label(frame, text="Plan")
+        action_label = tk.Label(frame, text="Attempting Actions")
         # text box for local state, plan, and action 
         # assign a new xcroll command
         local_state_box = TextboxWithScrollbars(frame)
         plan_box = TextboxWithScrollbars(frame)
         action_box = TextboxWithScrollbars(frame)
+        # packing
+        state_label.pack()
         local_state_box.pack(pady=5)
+        #
+        plan_label.pack()
         plan_box.pack(pady=5)
+        #
+        action_label.pack()
         action_box.pack(pady=5)
