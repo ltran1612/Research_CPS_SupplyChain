@@ -60,6 +60,19 @@ def on_message(client: mqtt.Client, userdata, msg):
         pass
 
     # TODO: 
+    # waiting for questions of the agents
+    # build a controller that incorporates the data of all modelsk
+    # the environment sends the questions to the ui
+    # the ui respond
+    
+    # TODO: 
+    # option 2: the environment continues until the UI asks it to pause, or continue
+    # + less network comm. 
+    # how to pause? maybe holding a lock.
+    # pause -> hold the lock
+    # continue -> relase the lock
+
+    # TODO: 
     # get the topic for environment state
     # parse the data for
     # 1) successful actions
@@ -82,6 +95,17 @@ def on_message(client: mqtt.Client, userdata, msg):
         # print(env_state)
         return
     
+    # receiving concerns requirements data
+    if topic == TOPICS['CONCERNS_REQUIREMENTS']:
+        data = json.loads(message)
+        
+        # print the concerns
+        sat_concerns = data["sat"]
+        concerns.load_from_string(sat_concerns)
+        print(concerns)
+        return
+
+    # receiving actions from the agents 
     if topic.startswith(TOPICS['FOR_ENV']):
         # if this is a config file from the agent, ignore
         if len(message) > 0 and message[0] != "{":
@@ -90,6 +114,7 @@ def on_message(client: mqtt.Client, userdata, msg):
             magent.load_action(message)
         return
 
+    # receiving local state of the agents
     if topic.startswith(TOPICS['FOR_AGENT']):
         data = json.loads(message)
         if "time" in data: 
@@ -110,15 +135,7 @@ def on_message(client: mqtt.Client, userdata, msg):
             print(agents[agent])
         return
 
-    if topic == TOPICS['CONCERNS_REQUIREMENTS']:
-        data = json.loads(message)
-        
-        # print the concerns
-        sat_concerns = data["sat"]
-        concerns.load_from_string(sat_concerns)
-        print(concerns)
-        return
-
+    # receiving the plans of the agents
     if topic.startswith(TOPICS["PLAN"]):
         data = json.loads(message)
         t = data["time"]

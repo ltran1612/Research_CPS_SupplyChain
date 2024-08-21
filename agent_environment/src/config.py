@@ -7,7 +7,8 @@ TOPICS = {
     "FOR_AGENT": "for",
     "CONCERNS_REQUIREMENTS": "cons_reqs",
     "PLAN": "plan",
-    "ENV_STATE": "env_state"
+    "ENV_STATE": "env_state",
+    #TODO: add control channel here
 }
 
 # a function to display the content of config file 

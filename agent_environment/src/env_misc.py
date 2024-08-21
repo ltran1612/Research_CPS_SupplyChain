@@ -209,6 +209,15 @@ class StateMangerGlobal(StateManger):
         self.lock.release()
     
     def __determine_actions_success(self, step):
+        # TODO: allow the decision of this to be done by the UI. 
+        # option 1: add a listener function
+        # that receives the actions of the agents
+        # that function can do things like: send the request to the environment
+        # waits for the respond of the environment -> how to wait? -> block wait while the answer is None, sleep 1 second
+        # would it be blocking the listening threads? yes, the message handling is blocking.
+        # -> run the calculate step on a different thread?
+        # we need to block but still need the message handling to work.  
+        # use the answers to decide
         logging.info(f"Determine the success of the actions executed at the end of step {step}")
         # we expect each agent to only send the action that they will execute
         for agent in self.agents:

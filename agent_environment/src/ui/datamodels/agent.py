@@ -29,7 +29,18 @@ class AgentDataModel(DataModel):
         self.plan = plan
         # notify
         self._notify_subscribers(self.name)
-    
+
+    # TODO: get plan, action, and local state
+    def get_state(self):
+        res = [""]
+        res.extend(self.atoms)
+        s ="\n**".join(res)
+        return s
+    def get_action(self):
+        return self.plan
+    def get_plan(self):
+        return self.action
+
     def __str__(self):
         res = [""]
         res.extend(self.atoms)

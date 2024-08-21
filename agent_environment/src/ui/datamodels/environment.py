@@ -5,6 +5,7 @@ from ui.datamodels.base import DataModel
 import tkinter as tk
 
 from ui.misc import parse_state_actions
+from ui.widgets.scrolltext import TextboxWithScrollbars
 
 class EnvironmentModel(DataModel):
     def __init__(self, agents: AgentListModel) -> None:
@@ -31,14 +32,12 @@ class EnvironmentModel(DataModel):
             return
         print("test display", self.state, self.actions)
         # state 
-        self.state_tbox.delete("1.0", tk.END)
         values = list(map(lambda x: x.__str__(), self.state))
-        self.state_tbox.insert(tk.END, "\n".join(values))
+        self.state_tbox.replace_text("\n".join(values))
 
         # actions
-        self.action_tbox.delete("1.0", tk.END)
         values = list(map(lambda x: x.__str__(), self.actions))
-        self.action_tbox.insert(tk.END, "\n".join(values))
+        self.action_tbox.replace_text("\n".join(values))
 
     # def 
     # fill function, to be implemented by child classes
@@ -49,33 +48,16 @@ class EnvironmentModel(DataModel):
         action_label = tk.Label(frame, text="Action Right Now") 
 
         # state environ
-        s_frame = tk.Frame(frame)
-        # display a text box to show the state in the UI
-        h = tk.Scrollbar(s_frame, orient = 'horizontal')
-        v = tk.Scrollbar(s_frame)
-        # Create a textbox to display the state
-        self.state_tbox = tk.Text(s_frame, xscrollcommand=h, yscrollcommand=v)
-        h.pack(side = tk.BOTTOM, fill = tk.X)
-        v.pack(side = tk.RIGHT, fill = tk.Y)
-        self.state_tbox.pack(pady=5)
+        self.state_tbox = TextboxWithScrollbars(frame)
              
         # action frame
-        a_frame =  tk.Frame(frame) 
-        # display a text box to show the state in the UI
-        ha = tk.Scrollbar(a_frame, orient = 'horizontal')
-        va = tk.Scrollbar(a_frame)
-        # Create a textbox to display the state
-        self.action_tbox = tk.Text(a_frame, xscrollcommand=ha, yscrollcommand=va)
-        # 
-        ha.pack(side = tk.BOTTOM, fill = tk.X)
-        va.pack(side = tk.RIGHT, fill = tk.Y)
-        self.action_tbox.pack(pady=5)
+        self.action_tbox = TextboxWithScrollbars(frame)
 
         # packings to put them
         env_label.pack()
-        s_frame.pack()
+        self.state_tbox.pack()
         action_label.pack()
-        a_frame.pack()
+        self.action_tbox.pack()
 
     # handle the update event 
     def update(self, event_name): 

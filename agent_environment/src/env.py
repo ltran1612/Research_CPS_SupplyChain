@@ -8,6 +8,7 @@
 from threading import Lock
 import json
 import logging, sys
+from time import sleep
 import paho.mqtt.client as mqtt
 # custom libraries
 from config import load_config, show_config, TOPICS
@@ -31,7 +32,6 @@ step = -1
 
 # the state engine simulation
 state = StateMangerGlobal(agents, global_domain_filepath, global_config, state_calculator, cps_reasoner, ontologies) 
-
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
     logging.debug("Connected with result code "+str(rc))
