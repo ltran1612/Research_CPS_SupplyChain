@@ -22,11 +22,14 @@ class TextboxWithScrollbars(tk.Frame):
 
     def insert_text(self, text):
         """Insert text into the text widget"""
+        self.text_widget.config(state=tk.NORMAL)
         self.text_widget.insert(tk.END, text)
         self.text_widget.config(state=tk.DISABLED)
     
     def delete_text(self):
+        self.text_widget.config(state=tk.NORMAL)
         self.text_widget.delete("1.0", tk.END)
+        self.text_widget.config(state=tk.DISABLED)
     
     def replace_text(self, text):
         self.delete_text()
