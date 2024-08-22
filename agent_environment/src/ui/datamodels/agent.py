@@ -13,6 +13,8 @@ class AgentDataModel(DataModel):
     def load_from_string(self, s):
         # split the strings for atoms
         self.atoms = s 
+        # reset the action
+        self.action = ""
         # update to the subscribers
         self._notify_subscribers(self.name)
     

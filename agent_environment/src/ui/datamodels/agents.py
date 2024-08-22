@@ -53,12 +53,12 @@ class AgentListModel(DataModel):
             local_state_box.replace_text("\n".join(values))
             #
             plan = agent.get_plan()
-            _, actions = parse_state_actions(plan)
+            _, actions = parse_state_actions(plan, True)
             values = list(map(lambda x: x.__str__(), actions))
             plan_box.replace_text("\n".join(values))
             #
             actions = agent.get_action()
-            _, actions = parse_state_actions(actions)
+            _, actions = parse_state_actions(actions, True)
             values = list(map(lambda x: x.__str__(), actions))
             action_box.replace_text("\n".join(values))
 

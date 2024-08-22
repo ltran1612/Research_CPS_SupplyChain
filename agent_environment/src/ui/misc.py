@@ -1,7 +1,7 @@
 from misc import get_atoms, run_clingo
 
 UI_TEMP_FILE = "ui_parse_temp.lp"
-def parse_state_actions(s: str): 
+def parse_state_actions(s: str, displayTime=False): 
     # code to parse the action and hold 
     with open(UI_TEMP_FILE, "w") as f:
         f.write(s)
@@ -37,7 +37,7 @@ def parse_state_actions(s: str):
     for i in range(len(actions)):
         # get the original
         atom = actions[i]
-        atom = UIAction(atom)
+        atom = UIAction(atom, displayTime)
         # put it back
         actions[i] = atom
     # print("test parse", s, state, action) 
@@ -77,7 +77,11 @@ class UIAction:
     # expect a single line string
     # that is trim
     # no error checking has been done in this function
-    def __init__(self, s) -> None:
+    def __init__(self, s, displayTime=False) -> None:
+        # flag to display time or not 
+        self.displayTime = displayTime 
+
+        # 
         values = s.split(",")
         # first one is "occur("
         # name is from 6 to the first comma 
@@ -98,4 +102,7 @@ class UIAction:
         self.time = values[-1][0:-2]
 
     def __str__(self) -> str:
-        return f"agent {self.agent} do '{self.name}' with value '{self.value}'"
+        time_str = ""
+        if self.displayTime:
+            time_str = f" at time {self.time}" 
+        return f"agent {self.agent} do '{self.name}' with value '{self.value}'{time_str}"
