@@ -44,7 +44,7 @@ class AgentListModel(DataModel):
         def on_combobox_select(event):
             selected_value = combobox.get()
 
-            # TODO: display local state, plan, and action separately. 
+            # display local state, plan, and action separately. 
             agent = self.agents[selected_value]
             #
             state = agent.get_state()

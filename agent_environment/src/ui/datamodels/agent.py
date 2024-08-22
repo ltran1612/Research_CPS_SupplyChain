@@ -30,7 +30,7 @@ class AgentDataModel(DataModel):
         # notify
         self._notify_subscribers(self.name)
 
-    # TODO: get plan, action, and local state
+    # get plan, action, and local state
     def get_state(self):
         return self.atoms
     def get_action(self):
