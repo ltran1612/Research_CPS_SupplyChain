@@ -3,7 +3,7 @@ from ui.datamodels.base import DataModel
 class AgentDataModel(DataModel):
     def __init__(self, s, name):
         super().__init__()
-        self.atoms = []
+        self.atoms = ""
         self.name = name
         self.action = "" 
         self.load_from_string(s)
@@ -12,9 +12,7 @@ class AgentDataModel(DataModel):
     # load the data from a string
     def load_from_string(self, s):
         # split the strings for atoms
-        atoms = s.split(". ")
-        atoms = list(set(atoms))
-        self.atoms = atoms
+        self.atoms = s 
         # update to the subscribers
         self._notify_subscribers(self.name)
     
@@ -32,18 +30,17 @@ class AgentDataModel(DataModel):
 
     # TODO: get plan, action, and local state
     def get_state(self):
-        res = [""]
-        res.extend(self.atoms)
-        s ="\n**".join(res)
-        return s
+        return self.atoms
     def get_action(self):
-        return self.plan
-    def get_plan(self):
         return self.action
+    def get_plan(self):
+        return self.plan
 
     def __str__(self):
         res = [""]
-        res.extend(self.atoms)
+        atoms = self.atoms.split(". ")
+        atoms = list(set(atoms))
+        res.extend(atoms)
         s ="\n**".join(res)
         p = self.plan
         a = self.action 

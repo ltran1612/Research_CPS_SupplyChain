@@ -3,6 +3,7 @@ from tkinter import ttk
 
 from ui.datamodels.agent import AgentDataModel
 from ui.datamodels.base import DataModel
+from ui.misc import parse_state_actions
 from ui.widgets.scrolltext import TextboxWithScrollbars
 class AgentListModel(DataModel):
     def __init__(self) -> None:
@@ -44,11 +45,22 @@ class AgentListModel(DataModel):
             selected_value = combobox.get()
 
             # TODO: display local state, plan, and action separately. 
-            # label_combobox_result.delete("1.0", tk.END)
-            # label_combobox_result.insert(tk.END, self.agents[selected_value])
-            local_state_box.replace_text(self.agents[selected_value].get_state())
-            plan_box.replace_text(self.agents[selected_value].get_plan())
-            action_box.replace_text(self.agents[selected_value].get_action())
+            agent = self.agents[selected_value]
+            #
+            state = agent.get_state()
+            state, _ = parse_state_actions(state)
+            values = list(map(lambda x: x.__str__(), state))
+            local_state_box.replace_text("\n".join(values))
+            #
+            plan = agent.get_plan()
+            _, actions = parse_state_actions(plan)
+            values = list(map(lambda x: x.__str__(), actions))
+            plan_box.replace_text("\n".join(values))
+            #
+            actions = agent.get_action()
+            _, actions = parse_state_actions(actions)
+            values = list(map(lambda x: x.__str__(), actions))
+            action_box.replace_text("\n".join(values))
 
         # Create a label for the dropdown menu
         label_dropdown = tk.Label(frame, text="Choose an agent to display:")
