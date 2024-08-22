@@ -45,7 +45,7 @@ class EnvironmentModel(DataModel):
         # label for state 
         env_label = tk.Label(frame, text="State of the Environment") 
         # label for action 
-        action_label = tk.Label(frame, text="Action Right Now") 
+        action_label = tk.Label(frame, text="Actions Executed in the Previous Time Step") 
 
         # state environ
         self.state_tbox = TextboxWithScrollbars(frame)
