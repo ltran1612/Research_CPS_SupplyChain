@@ -35,8 +35,14 @@ sim_done = True
 # the state engine simulation
 state = StateMangerGlobal(agents, global_domain_filepath, global_config, state_calculator, cps_reasoner, ontologies) 
 
-# TODO: setup function for getting answer
-GET_ANSWER_FUNC = None
+# setup function for getting answer
+def get_answer_func_from_ui(actions):
+    # send this list of actions to the UI
+    questions = {"type": "action_questions", "content": actions}
+    client.publish(TOPICS["ENV_UI"], json.dumps(questions), qos=2, retain=False)
+    logging.info("sent the questions to the UI to ask for actions approval.")
+    return False
+GET_ANSWER_FUNC = get_answer_func_from_ui
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
@@ -62,7 +68,7 @@ def on_message(client: mqtt.Client, userdata, msg):
     try:
         agent = topic[topic.rindex("/")+1:]
     except ValueError as e:
-        logging.error(e)
+        logging.error("Ignore: cannot parse the agent name from the topic because this might not be an agent's related topic")
 
     # check if this is the message containing the action information meant for the env from the agent. 
     # there could be other topics
@@ -88,7 +94,9 @@ def on_message(client: mqtt.Client, userdata, msg):
         content = message["content"]
 
         # handle the case when it's an answer to the actions
-        if mtype == "actions_answer":
+        if mtype == "actions_answers":
+            logging.info("Got the answers about the actions from the UI.")
+            # logging.info(content)
             answer = content 
             simulate(answer=answer, get_answer=GET_ANSWER_FUNC)
             return

@@ -231,6 +231,8 @@ class StateMangerGlobal(StateManger):
         if answer is None:
             temp = dict()
             for agent in self.agents:
+                # get the message of the agent
+                message = self.messages[agent] if agent in self.messages else ""
                 temp[agent] = message.strip()
             # call get_answer
             got_answer = get_answer(temp)
@@ -238,8 +240,10 @@ class StateMangerGlobal(StateManger):
             return got_answer 
         
         # got the answer update the function
-        for agent, value in enumerate(answer):
-            self.action[agent] = value 
+        # print("updating...")
+        for agent, value in answer.items():
+            # print("agent", agent, value)
+            self.actions[agent] = value 
         return True
             
     #
@@ -307,7 +311,7 @@ class StateMangerGlobal(StateManger):
             self.__determine_next_state(step) 
             return (True, True, "") 
         except Exception as e:
-            logging.error(e.__str__())
+            logging.error("Inside State Manager:" + e.__str__())
             traceback.print_exc()
             return (False, False, "") 
         finally:

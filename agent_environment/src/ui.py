@@ -43,6 +43,7 @@ def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
     client.subscribe(f"{TOPICS['CONCERNS_REQUIREMENTS']}")
     client.subscribe(f"{TOPICS['PLAN']}/+")
     client.subscribe(f"{TOPICS['ENV_STATE']}")
+    client.subscribe(f"{TOPICS['ENV_UI']}")
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
@@ -60,19 +61,28 @@ def on_message(client: mqtt.Client, userdata, msg):
         pass
 
     # TODO: 
-    # waiting for questions of the agents
-    # build a controller that incorporates the data of all modelsk
+    # waiting for the questions of the agents
     # the environment sends the questions to the ui
     # the ui respond
-    
-    # TODO: 
-    # option 2: the environment continues until the UI asks it to pause, or continue
-    # + less network comm. 
-    # how to pause? maybe holding a lock.
-    # pause -> hold the lock
-    # continue -> relase the lock
+    if topic == TOPICS["ENV_UI"]:
+        message = json.loads(message)
+        mtype = message["type"]
+        content = message["content"]
 
-    # TODO: 
+        if mtype == "action_questions":
+            questions = content
+            # we expect each agent to only send the action that they will execute
+            # TODO: move this part to the UI
+            print("received questions from the env")
+            def respond_to_env(answers):
+                response = {"type": "actions_answers", "content": answers}
+                client.publish(TOPICS["UI_ENV"], json.dumps(response), qos=2, retain=False)
+            time_md.load_questions(questions, respond_to_env)
+            return        
+
+    
+    # TODO: receives the status report after stopping or starting  
+
     # get the topic for environment state
     # parse the data for
     # 1) successful actions
