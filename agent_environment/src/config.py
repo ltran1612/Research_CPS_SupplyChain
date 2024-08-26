@@ -8,7 +8,8 @@ TOPICS = {
     "CONCERNS_REQUIREMENTS": "cons_reqs",
     "PLAN": "plan",
     "ENV_STATE": "env_state",
-    #TODO: add control channel here
+    "UI_ENV": "ui_env",
+    "ENV_UI": "env_ui",
 }
 
 # a function to display the content of config file 

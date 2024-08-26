@@ -29,18 +29,29 @@ ontologies = config["ontologies"]
 received = Received(agents) 
 # step or time stamp of the simulation
 step = -1
+# done with simulation
+sim_done = True
 
 # the state engine simulation
 state = StateMangerGlobal(agents, global_domain_filepath, global_config, state_calculator, cps_reasoner, ontologies) 
+
+# TODO: setup function for getting answer
+GET_ANSWER_FUNC = None
+
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
     logging.debug("Connected with result code "+str(rc))
     # Subscribing in on_connect() means that if we lose the connection and
     # reconnect then subscriptions will be renewed.
     client.subscribe(f"{TOPICS['FOR_ENV']}/+")
+    # subscribe to the control topic
+    client.subscribe(f"{TOPICS['UI_ENV']}")
 
 # The callback for when a PUBLISH message is received from the server.
 def on_message(client: mqtt.Client, userdata, msg):
+    # 
+    global GET_ANSWER_FUNC
+    global sim_done
     # extract the topic name
     topic: str = msg.topic
     # extract the message
@@ -67,7 +78,23 @@ def on_message(client: mqtt.Client, userdata, msg):
         # record that we received from the agent
         received.receive(agent)
         # start the simulation
-        simulate()
+        simulate(get_answer=GET_ANSWER_FUNC)
+    
+    # wait for ui's response
+    # call simulate again with the answer
+    if topic == f"{TOPICS['UI_ENV']}":
+        message = json.loads(message)
+        mtype = message["type"]
+        content = message["content"]
+
+        # handle the case when it's an answer to the actions
+        if mtype == "actions_answer":
+            answer = content 
+            simulate(answer=answer, get_answer=GET_ANSWER_FUNC)
+            return
+        # other types handle here
+        # TODO: 
+        # this includes start, pause, etc
 
 # setup the MQTT client
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -76,8 +103,9 @@ client.on_message = on_message
 
 # function to simulate
 simLock= Lock()
-def simulate(): 
+def simulate(answer=None, get_answer=None): 
     global step
+    global sim_done
 
     # if we haven't received from all agents 
     # return to wait for more 
@@ -92,40 +120,45 @@ def simulate():
     if not simLock.acquire(blocking=False):
         return
 
-    # increase the step
-    step += 1 
-    logging.info(f"starting the next step {step}")
-    # if we passed the last step as described in the simulation
-    # exit the simulation 
-    if step > state.get_last_step():
-        sys.exit(0)
-    logging.info(f"started the next step {step}")
+    if sim_done:
+        # increase the step
+        step += 1 
+        logging.info(f"starting the next step {step}")
+        # if we passed the last step as described in the simulation
+        # exit the simulation 
+        if step > state.get_last_step():
+            sys.exit(0)
+        logging.info(f"started the next step {step}")
 
     # calcualte the global next state
-    state.calculate_state(step)
+    got_error, sim_done, error = state.calculate_state(step, answer=answer, get_answer=get_answer)
+    if got_error:
+        # TODO: handle the error case here
+        pass
 
-    # publish the state
-    env_state = state.get_env_state(step)
-    message = {"time": step, "state": env_state}
-    client.publish(TOPICS["ENV_STATE"], json.dumps(message), qos=2, retain=False)
+    if sim_done:
+        # publish the state
+        env_state = state.get_env_state(step)
+        message = {"time": step, "state": env_state}
+        client.publish(TOPICS["ENV_STATE"], json.dumps(message), qos=2, retain=False)
 
-    # display the clauses and concerns satisfied 
-    sat_concerns = state.display_sat_concerns(step)
-    logging.info(f"clauses and concerns satisfaction are:\n{sat_concerns}")
-    message = {"time": step, "sat": sat_concerns}
-    client.publish(TOPICS["CONCERNS_REQUIREMENTS"], json.dumps(message), qos=2, retain=False)
+        # display the clauses and concerns satisfied 
+        sat_concerns = state.display_sat_concerns(step)
+        logging.info(f"clauses and concerns satisfaction are:\n{sat_concerns}")
+        message = {"time": step, "sat": sat_concerns}
+        client.publish(TOPICS["CONCERNS_REQUIREMENTS"], json.dumps(message), qos=2, retain=False)
 
-    # then, for each agent, pick out the requested information to send to them. 
-    for agent in agents:
-        # get only the relevant portion of information that relates to the agent
-        message = {"time": step, "state": state.get_state(agent, step)}
-        # send it
-        client.publish(f"{TOPICS['FOR_AGENT']}/{agent}", json.dumps(message), qos=2, retain=False)
+        # then, for each agent, pick out the requested information to send to them. 
+        for agent in agents:
+            # get only the relevant portion of information that relates to the agent
+            message = {"time": step, "state": state.get_state(agent, step)}
+            # send it
+            client.publish(f"{TOPICS['FOR_AGENT']}/{agent}", json.dumps(message), qos=2, retain=False)
+            logging.info(f"sent state information to {agent} for time {step}")
+
         logging.info(f"sent state information to {agent} for time {step}")
-
-    logging.info(f"sent state information to {agent} for time {step}")
-    # reset received array to get ready for the next round
-    received.reset()
+        # reset received array to get ready for the next round
+        received.reset()
     simLock.release()
 
 
