@@ -26,21 +26,26 @@ class TableWithCheckboxes(tk.Frame):
         row_idx = 0 
         # Create rows with data and checkboxes
         for row_idx, (key, value) in enumerate(data.items(), start=1):
-            # Key
-            key_label = tk.Label(self, text=key, font=("Arial", 12))
-            key_label.grid(row=row_idx, column=0)
-            self.table_widgets.append(key_label)
+            if value != "":
+                # Key
+                key_label = tk.Label(self, text=key, font=("Arial", 12))
+                key_label.grid(row=row_idx, column=0)
+                self.table_widgets.append(key_label)
 
-            # Value
-            value_label = tk.Label(self, text=value, font=("Arial", 12))
-            value_label.grid(row=row_idx, column=1)
-            self.table_widgets.append(value_label)
+                # Value
+                value_label = tk.Label(self, text=value, font=("Arial", 12))
+                value_label.grid(row=row_idx, column=1)
+                self.table_widgets.append(value_label)
 
-            # Checkbox
-            var = tk.BooleanVar()
-            checkbox = tk.Checkbutton(self, variable=var)
-            checkbox.grid(row=row_idx, column=2)
-            self.table_widgets.append(checkbox)
+                # Checkbox
+                var = tk.BooleanVar(value=True)
+                checkbox = tk.Checkbutton(self, variable=var)
+                checkbox.grid(row=row_idx, column=2)
+                self.table_widgets.append(checkbox)
+                self.check_vars.append((key, var))
+                continue
+
+            var = tk.BooleanVar(value=False)
             self.check_vars.append((key, var))
 
         # Add an update button
