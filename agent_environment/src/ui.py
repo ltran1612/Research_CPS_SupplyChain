@@ -77,7 +77,7 @@ def on_message(client: mqtt.Client, userdata, msg):
             def respond_to_env(answers):
                 response = {"type": "actions_answers", "content": answers}
                 client.publish(TOPICS["UI_ENV"], json.dumps(response), qos=2, retain=False)
-            time_md.load_questions(questions, respond_to_env)
+            env.load_questions(questions, respond_to_env)
             return        
 
     

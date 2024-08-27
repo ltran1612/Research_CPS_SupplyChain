@@ -5,6 +5,7 @@ from ui.datamodels.base import DataModel
 import tkinter as tk
 
 from ui.misc import parse_state_actions
+from ui.widgets.checkbox_table import TableWithCheckboxes
 from ui.widgets.scrolltext import TextboxWithScrollbars
 
 class EnvironmentModel(DataModel):
@@ -15,6 +16,7 @@ class EnvironmentModel(DataModel):
         self.actions = []
         self.state_tbox = None
         self.action_tbox = None
+        self.actions_checkbox = None
 
     # load state data from the state 
     # load the data from a string
@@ -35,27 +37,54 @@ class EnvironmentModel(DataModel):
         values = list(map(lambda x: x.__str__(), self.state))
         self.state_tbox.replace_text("\n".join(values))
 
+        # replace the questions
+        self.actions_checkbox.create_table({})
+
         # actions
         values = list(map(lambda x: x.__str__(), self.actions))
         self.action_tbox.replace_text("\n".join(values))
+
+
+    # load the questions
+    def load_questions(self, questions, answer_questions_func=None):
+        # get the answer from the UI
+        def get_answers_from_ui(data):
+            answer = {}
+            for agent, accepted in data.items():
+                answer[agent] = ""
+                if accepted:
+                    answer[agent] = questions[agent]
+            answer_questions_func(answer)
+                
+        # show the ui and get the answers, when gotten the answers 
+        self.actions_checkbox.create_table(questions, receive_answers_func=get_answers_from_ui)
 
     # def 
     # fill function, to be implemented by child classes
     def fill(self, frame):
         # label for state 
         env_label = tk.Label(frame, text="State of the Environment") 
+        # label for actions checkbox 
+        actions_checkbox_label = tk.Label(frame, text="Actions Waiting for Approval") 
         # label for action 
         action_label = tk.Label(frame, text="Actions Executed in the Previous Time Step") 
 
         # state environ
         self.state_tbox = TextboxWithScrollbars(frame)
-             
+
+        # actions questions
+        self.actions_checkbox = TableWithCheckboxes(frame, "Agent", "Actions")
+
         # action frame
         self.action_tbox = TextboxWithScrollbars(frame)
 
         # packings to put them
         env_label.pack()
         self.state_tbox.pack()
+        #
+        actions_checkbox_label.pack()
+        self.actions_checkbox.pack()
+        #
         action_label.pack()
         self.action_tbox.pack()
 
