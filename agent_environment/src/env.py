@@ -37,6 +37,8 @@ state = StateMangerGlobal(agents, global_domain_filepath, global_config, state_c
 
 # setup function for getting answer
 def get_answer_func_from_ui(actions):
+    global client
+
     # send this list of actions to the UI
     questions = {"type": "action_questions", "content": actions}
     client.publish(TOPICS["ENV_UI"], json.dumps(questions), qos=2, retain=False)
@@ -101,8 +103,16 @@ def on_message(client: mqtt.Client, userdata, msg):
             simulate(answer=answer, get_answer=GET_ANSWER_FUNC)
             return
         # other types handle here
-        # TODO: 
-        # this includes start, pause, etc
+        # start
+        if mtype == "start":
+            logging.info("request to start the simulation")
+            start_sim()
+            return
+        # pause 
+        if mtype == "pause":
+            logging.info("request to pause the simulation")
+            pause_sim()
+            return
 
 # setup the MQTT client
 client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -111,9 +121,79 @@ client.on_message = on_message
 
 # function to simulate
 simLock= Lock()
+controlLock = Lock()
+sim_paused = False 
+# hold and pause the sim lock
+def start_sim():
+    global simLock
+    global controlLock
+    global sim_paused
+    global client 
+
+    try:
+        # only one thread can control at one time
+        if not controlLock.acquire(blocking=False):
+            return
+
+        # release the sim lock
+        # case 1: the sim is unlocked
+        if not simLock.locked():
+            return
+
+        # if the sim is not paused 
+        if not sim_paused:
+            return
+
+        # case 2: the sim is locked
+        # release the simLock
+        simLock.release()
+        # unpause the sim
+        sim_paused = False
+        # notify the agent
+        message = {"type": "started", "content": ""}
+        client.publish(TOPICS["ENV_UI"], json.dumps(message), qos=2, retain=False)
+        # logging
+        logging.info("The simulation is started.")
+        # simulate
+        simulate(get_answer=GET_ANSWER_FUNC)
+    except Exception as e:
+        logging.error(e)
+    finally:
+        # release it
+        controlLock.release()
+
+def pause_sim():
+    global sim_paused
+    global simLock
+
+    try:
+        # only one thread can control at one time
+        if not controlLock.acquire(blocking=False):
+            return
+
+        # hold the sim lock
+        # case 1: the lock is not hold
+        # case 2: the lock is hold, wait until done
+        # what to do with multiple pauses request, in this case, just one is enough, exit
+        if sim_paused:
+            return
+
+        if simLock.acquire(blocking=True):    
+            sim_paused = True
+            # notify the agent
+            message = {"type": "paused", "content": ""}
+            client.publish(TOPICS["ENV_UI"], json.dumps(message), qos=2, retain=False)
+            logging.info("The simulation is paused.")
+    except Exception as e:
+        logging.error(e)
+    finally:
+        # release it    
+        controlLock.release()
+
 def simulate(answer=None, get_answer=None): 
     global step
     global sim_done
+    global simLock
 
     # if we haven't received from all agents 
     # return to wait for more 

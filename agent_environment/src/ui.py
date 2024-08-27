@@ -28,10 +28,21 @@ time = -1
 agents = AgentListModel()
 # concerns
 concerns = ConcernModel()
-# time
-time_md = TimeModel()
 # environment
 env = EnvironmentModel(agents) 
+
+# start and stop the simulation
+def start_sim():
+    global client
+    message = {"type": "start", "content": ""}
+    client.publish(TOPICS["UI_ENV"], json.dumps(message), qos=2, retain=False)
+def pause_sim():
+    global client
+    message = {"type": "pause", "content": ""}
+    client.publish(TOPICS["UI_ENV"], json.dumps(message), qos=2, retain=False)
+
+# TODO: time model setup
+time_md = TimeModel(start_func=start_sim, pause_func=pause_sim)
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc, properties):
@@ -78,9 +89,15 @@ def on_message(client: mqtt.Client, userdata, msg):
                 client.publish(TOPICS["UI_ENV"], json.dumps(response), qos=2, retain=False)
             env.load_questions(questions, respond_to_env)
             return        
-
-    
-    # TODO: receives the status report after stopping or starting  
+        
+        # receives the status report after stopping or starting  
+        # "started" and "paused"
+        if mtype == "started":
+            time_md.got_started()
+            return
+        if mtype == "paused":
+            time_md.got_paused()
+            return
 
     # get the topic for environment state
     # parse the data for
