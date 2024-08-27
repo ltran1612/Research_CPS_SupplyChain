@@ -60,7 +60,6 @@ def on_message(client: mqtt.Client, userdata, msg):
     except ValueError as e:
         pass
 
-    # TODO: 
     # waiting for the questions of the agents
     # the environment sends the questions to the ui
     # the ui respond
@@ -72,7 +71,7 @@ def on_message(client: mqtt.Client, userdata, msg):
         if mtype == "action_questions":
             questions = content
             # we expect each agent to only send the action that they will execute
-            # TODO: move this part to the UI
+            # move this part to the UI
             print("received questions from the env")
             def respond_to_env(answers):
                 response = {"type": "actions_answers", "content": answers}
