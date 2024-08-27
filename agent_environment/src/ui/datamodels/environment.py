@@ -55,9 +55,20 @@ class EnvironmentModel(DataModel):
                 if accepted:
                     answer[agent] = questions[agent]
             answer_questions_func(answer)
-                
+
+        # check if the questions are non-empty
+        empty = True 
+        for action in questions.values():
+            if action != "":
+                empty = False
+                break
+
         # show the ui and get the answers, when gotten the answers 
-        self.actions_checkbox.create_table(questions, receive_answers_func=get_answers_from_ui)
+        if not empty:
+            self.actions_checkbox.create_table(questions, receive_answers_func=get_answers_from_ui)
+            return
+        
+        answer_questions_func(questions)
 
     # def 
     # fill function, to be implemented by child classes

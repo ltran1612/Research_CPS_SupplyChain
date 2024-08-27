@@ -49,7 +49,7 @@ class TableWithCheckboxes(tk.Frame):
             self.check_vars.append((key, var))
 
         # Add an update button
-        update_button = ttk.Button(self, text="Update", command=self.update_values)
+        update_button = ttk.Button(self, text="Accept", command=self.update_values)
         update_button.grid(row=row_idx + 1, column=1, pady=10)
         self.table_widgets.append(update_button)
 
