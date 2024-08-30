@@ -1,7 +1,15 @@
 from misc import get_atoms, run_clingo
 
+# TODO: to be removed
+import json
+CONFIG = "../config/oec-ver3/ui.json"
+#
+TEMPLATES = None
+with open(CONFIG, "r") as f:
+    TEMPLATES = json.loads("".join(f.readlines()))
+
 UI_TEMP_FILE = "ui_parse_temp.lp"
-def parse_state_actions(s: str, displayTime=False): 
+def parse_state_actions(s: str, displayTime=False, templates=TEMPLATES): 
     # code to parse the action and hold 
     with open(UI_TEMP_FILE, "w") as f:
         f.write(s)
@@ -29,7 +37,7 @@ def parse_state_actions(s: str, displayTime=False):
     for i in range(len(state)):
         # get the original
         atom = state[i]
-        atom = UIFluent(atom)
+        atom = UIFluent(atom, templates=templates["fluents"])
         # put it back
         state[i] = atom
 
@@ -47,7 +55,7 @@ class UIFluent:
     # expect a single line string
     # that is trim
     # no error checking has been done in this function
-    def __init__(self, s) -> None:
+    def __init__(self, s, templates=None) -> None:
         values = s.split(",")
         # first one is "hold("
         # name is from 5 to the first comma 
@@ -67,11 +75,45 @@ class UIFluent:
         # time is the last comma + 1 until before the closing bracket and the .
         self.time = values[-1][0:-2]
 
+        # template
+        self.template = None
+        if templates is not None:
+            self.template = "" 
+            for template in templates:
+                if template == self.name:
+                    self.template = templates[template]
+                    break
+        
+    def __replace(self, s:str, target:str, value):
+        return s.replace(f"ui#{target}#ui", str(value))
 
     def __str__(self) -> str:
+        if self.template is None:
+            if self.agent is not None:
+                return f"agent {self.agent} has state '{self.name}' with value '{self.value}'"
+            return f"environment has state '{self.name}' with value '{self.value}'"
+
+        if self.template == "":
+            return ""
+
+        s: str = self.template    
         if self.agent is not None:
-            return f"agent {self.agent} has state '{self.name}' with value '{self.value}'"
-        return f"environment has state '{self.name}' with value '{self.value}'"
+            s = self.__replace(s, "agent", self.agent)
+
+        # TODO: parse the values 
+        # remove parenthesis
+        values = self.value[1:-1]
+        values = values.split(",")
+        for idx, value in enumerate(values):
+            value = value.strip(")")
+            value = value.strip("(")
+            value = value.strip(".")
+            if value == "":
+                continue
+            s = self.__replace(s, idx+1, value)
+        print("Parsed", values, self.name, s) 
+        return s
+
 
 class UIAction:
     # expect a single line string
