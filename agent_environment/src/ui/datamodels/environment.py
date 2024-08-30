@@ -35,6 +35,7 @@ class EnvironmentModel(DataModel):
         print("test display", self.state, self.actions)
         # state 
         values = list(map(lambda x: x.__str__(), self.state))
+        values = list(filter(lambda x: x != "", values))
         self.state_tbox.replace_text("\n".join(values))
 
         # replace the questions
@@ -42,6 +43,7 @@ class EnvironmentModel(DataModel):
 
         # actions
         values = list(map(lambda x: x.__str__(), self.actions))
+        values = list(filter(lambda x: x != "", values))
         self.action_tbox.replace_text("\n".join(values))
 
 

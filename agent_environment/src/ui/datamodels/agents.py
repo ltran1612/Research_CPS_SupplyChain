@@ -50,16 +50,19 @@ class AgentListModel(DataModel):
             state = agent.get_state()
             state, _ = parse_state_actions(state)
             values = list(map(lambda x: x.__str__(), state))
+            values = list(filter(lambda x: x != "", values))
             local_state_box.replace_text("\n".join(values))
             #
             plan = agent.get_plan()
             _, actions = parse_state_actions(plan, True)
             values = list(map(lambda x: x.__str__(), actions))
+            values = list(filter(lambda x: x != "", values))
             plan_box.replace_text("\n".join(values))
             #
             actions = agent.get_action()
             _, actions = parse_state_actions(actions, True)
             values = list(map(lambda x: x.__str__(), actions))
+            values = list(filter(lambda x: x != "", values))
             action_box.replace_text("\n".join(values))
 
         # Create a label for the dropdown menu
