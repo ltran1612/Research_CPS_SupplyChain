@@ -3,12 +3,12 @@ from tkinter import ttk
 
 from ui.datamodels.agents import AgentListModel
 from ui.datamodels.base import DataModel
+from ui.datamodels.environment import EnvironmentModel
 from ui.datamodels.time_md import TimeModel
-from ui.tabs.overview import fill as fillOverview
 from ui.tabs.settings import fill as fillSettings
 
 
-def start_ui(agents: AgentListModel, concerns: DataModel, time: TimeModel):
+def start_ui(agents: AgentListModel, concerns: DataModel, env: EnvironmentModel, time: TimeModel):
     # Create the main application window
     root = tk.Tk()
     root.title("Supply Chain Simulator")
@@ -16,10 +16,6 @@ def start_ui(agents: AgentListModel, concerns: DataModel, time: TimeModel):
     # top section
     top_frame = tk.Frame(root)
     top_frame.pack(side="top", fill="x")
-
-    # Create buttons and pack them into the top frame
-    backButton= tk.Button(top_frame, text="Back")
-    backButton.pack(side="left", padx=5, pady=5)
 
     # label
     time.fill(top_frame)
@@ -37,13 +33,13 @@ def start_ui(agents: AgentListModel, concerns: DataModel, time: TimeModel):
     notebook.add(tab1, text="Overview")
     notebook.add(tab2, text="Agent")
     notebook.add(tab3, text="Ontology")
-    notebook.add(tab4, text="Settings")
+    # notebook.add(tab4, text="Settings")
 
     # Pack the notebook widget to fill the main window
     notebook.pack(expand=True, fill='both')
 
     # ontology tab
-    fillOverview(tab1)
+    env.fill(tab1)
 
     # agents tab
     agents.fill(tab2)
@@ -51,8 +47,8 @@ def start_ui(agents: AgentListModel, concerns: DataModel, time: TimeModel):
     # Tab 3 content
     concerns.fill(tab3)
 
-    # Tab 4 content
-    fillSettings(tab4)
+    # # Tab 4 content
+    # fillSettings(tab4)
 
     # Start the Tkinter event loop
     root.mainloop()

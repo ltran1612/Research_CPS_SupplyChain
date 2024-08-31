@@ -207,20 +207,45 @@ class StateMangerGlobal(StateManger):
         with open(self.env_state, "a") as f:
             f.write("".join(output))
         self.lock.release()
-    
-    def __determine_actions_success(self, step):
+
+    # the function will receive a list of agents and actions 
+    def __determine_actions_success(self, step, answer, get_answer) -> bool:
+        # simulate again after receiving the response 
         logging.info(f"Determine the success of the actions executed at the end of step {step}")
-        # we expect each agent to only send the action that they will execute
-        for agent in self.agents:
-            # get the message of the agent
-            message = self.messages[agent] if agent in self.messages else ""
-            message = message.strip()
-            self.actions[agent] = message
-            answer = "n"
-            if message != "": 
-                answer = input(f"Allow the action {message} to be executed fully (yes='y'/no='n'):")
-            if answer == "n": 
-                self.actions[agent] = "" 
+        if get_answer is None and answer is None:
+            # we expect each agent to only send the action that they will execute
+            for agent in self.agents:
+                # get the message of the agent
+                message = self.messages[agent] if agent in self.messages else ""
+                message = message.strip()
+                self.actions[agent] = message
+                answer = "n"
+                if message != "": 
+                    answer = input(f"Allow the action {message} to be executed fully (yes='y'/no='n'):")
+                if answer == "n": 
+                    self.actions[agent] = "" 
+            # successfully determine the success
+            return True
+        
+        # determining through the get answer function
+        if answer is None:
+            temp = dict()
+            for agent in self.agents:
+                # get the message of the agent
+                message = self.messages[agent] if agent in self.messages else ""
+                temp[agent] = message.strip()
+            # call get_answer
+            got_answer = get_answer(temp)
+            # not done yet
+            return got_answer 
+        
+        # got the answer update the function
+        # print("updating...")
+        for agent, value in answer.items():
+            # print("agent", agent, value)
+            self.actions[agent] = value 
+        return True
+            
     #
     def __update_env_state(self, new_state):
         with open(self.env_state, "w") as f:
@@ -260,9 +285,13 @@ class StateMangerGlobal(StateManger):
         self.__update_env_state("".join(output))
         # reset message buffer
         self.messages = {}
-        
+     
     # calculate the state for the entire environment
-    def calculate_state(self, step=None):
+    # the function will receive a list of agents and actions 
+    # return a tuple of 2
+    # the first one is whether or not an error occurs
+    # the latter is whether or not the process is complete
+    def calculate_state(self, step=None, answer=None, get_answer=None):
         if step is None:
             return False
 
@@ -274,17 +303,34 @@ class StateMangerGlobal(StateManger):
         try:
             # determine the success of the actions of each agent
             if step > 0:
-                self.__determine_actions_success(step-1)
+                # if determining success is not done, exit
+                if not self.__determine_actions_success(step-1, answer=answer, get_answer=get_answer):
+                    return (True, False, "") 
 
             # gotten the actions, determine the next state
             self.__determine_next_state(step) 
-            return True
+            return (True, True, "") 
         except Exception as e:
-            logging.error(e.__str__())
+            logging.error("Inside State Manager:" + e.__str__())
             traceback.print_exc()
-            return False
+            return (False, False, "") 
         finally:
             self.lock.release()
+        
+    # get the overall state
+    def get_env_state(self, step=None):
+        self.lock.acquire()
+        with open(self.temp_file, "w") as f:
+            f.write(self.__get_filter(step=step))
+        files = [self.temp_file, self.env_state]
+        (run_success, output) = run_clingo(files)
+        if not run_success: 
+            raise Exception(f"cannot get the state for the environment")
+        self.lock.release()
+        
+        env_state = "".join(output)
+        return env_state
+
    
     def get_state(self, agent, step=None):
         self.lock.acquire()

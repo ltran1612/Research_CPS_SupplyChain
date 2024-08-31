@@ -10,7 +10,7 @@ hold(total_produced, (Agent, (Item, 0)), 0) :- produce_item(Agent, Item).
 hold(total_delivered_quality, (Agent, (ToAgent, Item, Quality, 0)), 0) :- deliver_item(Agent, ToAgent, Item, Quality).
 hold(total_delivered, (Agent, (ToAgent, Item, 0)), 0) :- deliver_item(Agent, ToAgent, Item).
 % %
-hold(total_received, (Agent, (FromAgent, Item, Quality, 0)), 0) :- recv_item(Agent, FromAgent, Item, Quality).
+hold(total_received_quality, (Agent, (FromAgent, Item, Quality, 0)), 0) :- recv_item(Agent, FromAgent, Item, Quality).
 hold(total_received, (Agent, (FromAgent, Item, 0)), 0) :- recv_item(Agent, FromAgent, Item).
 % %
 hold(available_item, (Agent, (Item, 0)), 0) :- item(Agent, Item).

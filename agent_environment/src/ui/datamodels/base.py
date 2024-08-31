@@ -24,8 +24,8 @@ class DataModel:
         for sub in self.subscribers:
             sub.update(event_name)
 
-    # subscribe to a function
-    def subscribe(self, obj):
+    # add a subscriber to this to a function
+    def add_subscriber(self, obj):
         self.subscribers.add(obj)
 
     # remove a subscriber 

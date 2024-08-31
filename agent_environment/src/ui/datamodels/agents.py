@@ -1,12 +1,15 @@
 import tkinter as tk
 from tkinter import ttk
 
+from ui.datamodels.agent import AgentDataModel
 from ui.datamodels.base import DataModel
+from ui.misc import parse_state_actions
+from ui.widgets.scrolltext import TextboxWithScrollbars
 class AgentListModel(DataModel):
     def __init__(self) -> None:
         super().__init__()
         # subscribe the individual agent
-        self.agents = dict() 
+        self.agents: dict[str, AgentDataModel] = dict() 
         self.cboxes = []
     
     def __contains__(self, agent: str):
@@ -17,7 +20,7 @@ class AgentListModel(DataModel):
 
     def __setitem__(self, name: str, agent):
         self.agents[name] = agent 
-        agent.subscribe(self)
+        agent.add_subscriber(self)
         # updated
         for box in self.cboxes:
             if box.winfo_exists() != 1:
@@ -41,21 +44,26 @@ class AgentListModel(DataModel):
         def on_combobox_select(event):
             selected_value = combobox.get()
 
-            label_combobox_result.delete("1.0", tk.END)
-            label_combobox_result.insert(tk.END, self.agents[selected_value])
-        # scrollbars
-        h = tk.Scrollbar(frame, orient = 'horizontal')
-        # attach Scrollbar to root window at 
-        # the bootom
-        h.pack(side = tk.BOTTOM, fill = tk.X)
-  
-        # create a vertical scrollbar-no need
-        # to write orient as it is by
-        # default vertical
-        v = tk.Scrollbar(frame)
-        # attach Scrollbar to root window on 
-        # the side
-        v.pack(side = tk.RIGHT, fill = tk.Y)
+            # display local state, plan, and action separately. 
+            agent = self.agents[selected_value]
+            #
+            state = agent.get_state()
+            state, _ = parse_state_actions(state)
+            values = list(map(lambda x: x.__str__(), state))
+            values = list(filter(lambda x: x != "", values))
+            local_state_box.replace_text("\n".join(values))
+            #
+            plan = agent.get_plan()
+            _, actions = parse_state_actions(plan, True)
+            values = list(map(lambda x: x.__str__(), actions))
+            values = list(filter(lambda x: x != "", values))
+            plan_box.replace_text("\n".join(values))
+            #
+            actions = agent.get_action()
+            _, actions = parse_state_actions(actions, True)
+            values = list(map(lambda x: x.__str__(), actions))
+            values = list(filter(lambda x: x != "", values))
+            action_box.replace_text("\n".join(values))
 
         # Create a label for the dropdown menu
         label_dropdown = tk.Label(frame, text="Choose an agent to display:")
@@ -69,6 +77,21 @@ class AgentListModel(DataModel):
         # save combobox for updates 
         self.cboxes.append(combobox)
 
-        # Create a label to display the selected value
-        label_combobox_result = tk.Text(frame, xscrollcommand=h, yscrollcommand=v)
-        label_combobox_result.pack(pady=5)
+        # labels
+        state_label = tk.Label(frame, text="Local State")
+        plan_label = tk.Label(frame, text="Plan")
+        action_label = tk.Label(frame, text="Attempting Actions")
+        # text box for local state, plan, and action 
+        # assign a new xcroll command
+        local_state_box = TextboxWithScrollbars(frame)
+        plan_box = TextboxWithScrollbars(frame)
+        action_box = TextboxWithScrollbars(frame)
+        # packing
+        state_label.pack()
+        local_state_box.pack(pady=5)
+        #
+        plan_label.pack()
+        plan_box.pack(pady=5)
+        #
+        action_label.pack()
+        action_box.pack(pady=5)
