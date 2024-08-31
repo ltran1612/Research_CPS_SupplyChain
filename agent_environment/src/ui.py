@@ -186,8 +186,11 @@ client.on_message = on_message
 log_handler = logging.StreamHandler(sys.stdout)
 log_handler.setLevel(logging.INFO)
 log_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
-logging.getLogger().setLevel(logging.ERROR)
+error_handler = logging.StreamHandler(sys.stdout)
+error_handler.setLevel(logging.ERROR)
+error_handler.setFormatter(logging.Formatter('ERROR: %(asctime)s - %(levelname)s - %(message)s'))
 logging.getLogger().addHandler(log_handler)
+logging.getLogger().addHandler(error_handler)
 
 client.connect(broker_addr, 1883, 0)
 client.loop_start()

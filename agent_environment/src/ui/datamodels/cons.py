@@ -58,8 +58,8 @@ class ConcernModel(DataModel):
             group = self.data[thetype]
             # status of a concern, clause, or property was updated from false to true
             if name in group and group[name] == True and status == False:
-                logging.error("something is wrong")
-                raise NotImplementedError("Not tested yet")
+                logging.error(f"something is wrong with {name}")
+                raise NotImplementedError("Wrong encodings.")
             
             # add to group
             group[name] = status
