@@ -9,7 +9,7 @@
         "total_delivered_quality":"agent ui#agent#ui sent to ui#1#ui amount of ui#4#ui for ui#2#ui with quality ui#3#ui.",
         "total_received": "agent ui#agent#ui received from ui#1#ui a total amount of ui#3#ui of ui#2#ui.",
         "total_received_quality": "agent ui#agent#ui received from ui#1#ui a total amount of ui#4#ui of ui#2#ui with quality ui#3#ui.",
-        "available_item": "agent ui#agent#ui has a total amount of ui#2#ui. of ui#1#ui",
-        "available_quality_item": "agent ui#agent#ui has a total amount of ui#3#ui. of ui#1#ui with quality ui#2#ui"
+        "available_item": "agent ui#agent#ui has a total amount of ui#2#ui of ui#1#ui.",
+        "available_quality_item": "agent ui#agent#ui has a total amount of ui#3#ui of ui#1#ui with quality ui#2#ui."
     }
 }
