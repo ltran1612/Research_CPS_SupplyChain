@@ -4,7 +4,7 @@ from ui.datamodels.agents import AgentListModel
 from ui.datamodels.base import DataModel
 import tkinter as tk
 
-from ui.misc import parse_state_actions
+from ui.misc import TEMPLATES, UIAction, parse_state_actions
 from ui.widgets.checkbox_table import TableWithCheckboxes
 from ui.widgets.scrolltext import TextboxWithScrollbars
 
@@ -49,6 +49,13 @@ class EnvironmentModel(DataModel):
 
     # load the questions
     def load_questions(self, questions, answer_questions_func=None):
+        # update questions to UIAction form
+
+        for agent, question in questions.items():
+            # TODO: fix this to be passing as an argument to the constructor
+            question = UIAction(question, templates=TEMPLATES["actions"])
+            question = question.__str__()
+            questions[agent] = question
         # get the answer from the UI
         def get_answers_from_ui(data):
             answer = {}

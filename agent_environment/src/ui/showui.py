@@ -33,7 +33,7 @@ def start_ui(agents: AgentListModel, concerns: DataModel, env: EnvironmentModel,
     notebook.add(tab1, text="Overview")
     notebook.add(tab2, text="Agent")
     notebook.add(tab3, text="Ontology")
-    notebook.add(tab4, text="Settings")
+    # notebook.add(tab4, text="Settings")
 
     # Pack the notebook widget to fill the main window
     notebook.pack(expand=True, fill='both')
@@ -47,8 +47,8 @@ def start_ui(agents: AgentListModel, concerns: DataModel, env: EnvironmentModel,
     # Tab 3 content
     concerns.fill(tab3)
 
-    # Tab 4 content
-    fillSettings(tab4)
+    # # Tab 4 content
+    # fillSettings(tab4)
 
     # Start the Tkinter event loop
     root.mainloop()

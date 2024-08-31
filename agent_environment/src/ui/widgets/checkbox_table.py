@@ -25,14 +25,14 @@ class TableWithCheckboxes(tk.Frame):
         row_idx = 0 
         # Create rows with data and checkboxes
         for row_idx, (key, value) in enumerate(data.items(), start=1):
-            if value != "":
+            if value.__str__() != "":
                 # Key
                 key_label = tk.Label(self, text=key, font=("Arial", 12))
                 key_label.grid(row=row_idx, column=0)
                 self.table_widgets.append(key_label)
 
                 # Value
-                value_label = tk.Label(self, text=value, font=("Arial", 12))
+                value_label = tk.Label(self, text=value.__str__(), font=("Arial", 12))
                 value_label.grid(row=row_idx, column=1)
                 self.table_widgets.append(value_label)
 
