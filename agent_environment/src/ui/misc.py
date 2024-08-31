@@ -45,7 +45,7 @@ def parse_state_actions(s: str, displayTime=False, templates=TEMPLATES):
     for i in range(len(actions)):
         # get the original
         atom = actions[i]
-        atom = UIAction(atom, displayTime)
+        atom = UIAction(atom, displayTime, templates=templates["actions"])
         # put it back
         actions[i] = atom
     # print("test parse", s, state, action) 
@@ -112,12 +112,11 @@ class UIFluent:
             s = self.__replace(s, idx+1, value)
         return s
 
-
 class UIAction:
     # expect a single line string
     # that is trim
     # no error checking has been done in this function
-    def __init__(self, s, displayTime=False) -> None:
+    def __init__(self, s, displayTime=False, templates=TEMPLATES) -> None:
         # flag to display time or not 
         self.displayTime = displayTime 
 
@@ -141,8 +140,34 @@ class UIAction:
         # time is the last comma + 1 until before the closing bracket and the .
         self.time = values[-1][0:-2]
 
+        # 
+        self.template = None
+        if templates is not None:
+            for template in templates:
+                if template == self.name:
+                    self.template = templates[template]
+                    break
+    def __replace(self, s:str, target:str, value):
+        return s.replace(f"ui#{target}#ui", str(value))  
     def __str__(self) -> str:
         time_str = ""
         if self.displayTime:
             time_str = f" at time {self.time}" 
-        return f"agent {self.agent} do '{self.name}' with value '{self.value}'{time_str}"
+        if self.template is None:
+            return f"agent {self.agent} do '{self.name}' with value '{self.value}'{time_str}"
+
+        s: str = self.template    
+        if self.agent is not None:
+            s = self.__replace(s, "agent", self.agent)
+
+        # parse the values 
+        # remove parenthesis
+        values = self.value[1:-1]
+        values = values.split(",")
+        for idx, value in enumerate(values):
+            value = value.strip()
+            value = value.strip(".()")
+            if value == "":
+                continue
+            s = self.__replace(s, idx+1, value)
+        return s
