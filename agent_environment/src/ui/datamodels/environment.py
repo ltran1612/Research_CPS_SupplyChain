@@ -50,11 +50,9 @@ class EnvironmentModel(DataModel):
     # load the questions
     def load_questions(self, questions, answer_questions_func=None):
         # update questions to UIAction form
-
         for agent, question in questions.items():
             # TODO: fix this to be passing as an argument to the constructor
             question = UIAction(question, templates=TEMPLATES["actions"])
-            question = question.__str__()
             questions[agent] = question
         # get the answer from the UI
         def get_answers_from_ui(data):
@@ -62,13 +60,13 @@ class EnvironmentModel(DataModel):
             for agent, accepted in data.items():
                 answer[agent] = ""
                 if accepted:
-                    answer[agent] = questions[agent]
+                    answer[agent] = questions[agent].get_asp()
             answer_questions_func(answer)
 
         # check if the questions are non-empty
         empty = True 
         for action in questions.values():
-            if action != "":
+            if action.__str__() != "":
                 empty = False
                 break
 
@@ -77,7 +75,11 @@ class EnvironmentModel(DataModel):
             self.actions_checkbox.create_table(questions, receive_answers_func=get_answers_from_ui)
             return
         
-        answer_questions_func(questions)
+        answers = {}
+        for question in questions:
+            answers[question] = questions[question].__str__()
+        
+        answer_questions_func(answers)
 
     # def 
     # fill function, to be implemented by child classes

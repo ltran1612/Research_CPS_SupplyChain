@@ -117,6 +117,7 @@ class UIAction:
     # that is trim
     # no error checking has been done in this function
     def __init__(self, s, displayTime=False, templates=TEMPLATES) -> None:
+        self.original = s
         # flag to display time or not 
         self.displayTime = displayTime 
 
@@ -149,7 +150,11 @@ class UIAction:
                     break
     def __replace(self, s:str, target:str, value):
         return s.replace(f"ui#{target}#ui", str(value))  
+    def get_asp(self):
+        return self.original
     def __str__(self) -> str:
+        if self.original == "":
+            return ""
         time_str = ""
         if self.displayTime:
             time_str = f" at time {self.time}" 
