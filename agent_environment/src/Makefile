@@ -3,6 +3,8 @@ all:
 
 env: 
 	python3 env.py ${SCENARIO_FOLDER}/env_config.json
+env_ui: 
+	python3 env.py ${SCENARIO_FOLDER}/env_config.json --ui
 env_test: 
 	python3 env.py ${SCENARIO_FOLDER}/env_test_config.json
 env_test_ui: 
