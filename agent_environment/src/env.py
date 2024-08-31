@@ -24,6 +24,11 @@ global_config = config["global_config"]
 state_calculator = config["state_calculator"]
 cps_reasoner = config["cps-reasoner"]
 ontologies = config["ontologies"]
+# ui settings
+has_ui = False
+for arg in sys.argv:
+    if arg == "--ui":
+        has_ui = True
 
 # initialized the received queue  
 received = Received(agents) 
@@ -44,7 +49,9 @@ def get_answer_func_from_ui(actions):
     client.publish(TOPICS["ENV_UI"], json.dumps(questions), qos=2, retain=False)
     logging.info("sent the questions to the UI to ask for actions approval.")
     return False
-GET_ANSWER_FUNC = get_answer_func_from_ui
+GET_ANSWER_FUNC = None 
+if has_ui:
+    GET_ANSWER_FUNC = get_answer_func_from_ui
 
 # The callback for when the client receives a CONNACK response from the server.
 def on_connect(client: mqtt.Client, userdata, flags, rc, properties):

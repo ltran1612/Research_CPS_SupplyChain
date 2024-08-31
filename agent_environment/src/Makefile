@@ -5,6 +5,8 @@ env:
 	python3 env.py ${SCENARIO_FOLDER}/env_config.json
 env_test: 
 	python3 env.py ${SCENARIO_FOLDER}/env_test_config.json
+env_test_ui: 
+	python3 env.py ${SCENARIO_FOLDER}/env_test_config.json --ui
 
 agent: 
 	python3 agent.py ${SCENARIO_FOLDER}/${ID}_config.json
