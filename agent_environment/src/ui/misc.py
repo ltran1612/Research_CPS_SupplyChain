@@ -100,7 +100,7 @@ class UIFluent:
         if self.agent is not None:
             s = self.__replace(s, "agent", self.agent)
 
-        # TODO: parse the values 
+        # parse the values 
         # remove parenthesis
         values = self.value[1:-1]
         values = values.split(",")
@@ -110,7 +110,6 @@ class UIFluent:
             if value == "":
                 continue
             s = self.__replace(s, idx+1, value)
-        print("Parsed", values, self.name, s) 
         return s
 
 
