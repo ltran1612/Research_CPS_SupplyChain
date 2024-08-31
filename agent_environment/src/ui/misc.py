@@ -170,4 +170,4 @@ class UIAction:
             if value == "":
                 continue
             s = self.__replace(s, idx+1, value)
-        return s
+        return f"{s}{time_str}"
