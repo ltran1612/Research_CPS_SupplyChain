@@ -105,9 +105,8 @@ class UIFluent:
         values = self.value[1:-1]
         values = values.split(",")
         for idx, value in enumerate(values):
-            value = value.strip(")")
-            value = value.strip("(")
-            value = value.strip(".")
+            value = value.strip()
+            value = value.strip(".()")
             if value == "":
                 continue
             s = self.__replace(s, idx+1, value)
