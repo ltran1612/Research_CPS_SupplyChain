@@ -17,10 +17,6 @@ def start_ui(agents: AgentListModel, concerns: DataModel, env: EnvironmentModel,
     top_frame = tk.Frame(root)
     top_frame.pack(side="top", fill="x")
 
-    # Create buttons and pack them into the top frame
-    backButton= tk.Button(top_frame, text="Back")
-    backButton.pack(side="left", padx=5, pady=5)
-
     # label
     time.fill(top_frame)
 

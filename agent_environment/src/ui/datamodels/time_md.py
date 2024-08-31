@@ -51,8 +51,11 @@ class TimeModel(DataModel):
         self.timeLabel = tk.Label(frame, text=self)
         self.timeLabel.pack(side="left", padx=5, pady=5)
 
-        nextButton= tk.Button(frame, text="Next")
-        nextButton.pack(side="left", padx=5, pady=5)
+        # Create buttons and pack them into the top frame
+        # backButton= tk.Button(top_frame, text="Back")
+        # backButton.pack(side="left", padx=5, pady=5)
+        # nextButton= tk.Button(frame, text="Next")
+        # nextButton.pack(side="left", padx=5, pady=5)
 
         def clicked():
             # call the corresponding

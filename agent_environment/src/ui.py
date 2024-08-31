@@ -41,7 +41,7 @@ def pause_sim():
     message = {"type": "pause", "content": ""}
     client.publish(TOPICS["UI_ENV"], json.dumps(message), qos=2, retain=False)
 
-# TODO: time model setup
+# time model setup
 time_md = TimeModel(start_func=start_sim, pause_func=pause_sim)
 
 # The callback for when the client receives a CONNACK response from the server.

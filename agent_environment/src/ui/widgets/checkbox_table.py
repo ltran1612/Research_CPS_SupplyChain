@@ -17,8 +17,7 @@ class TableWithCheckboxes(tk.Frame):
         self.receive_answers_func = receive_answers_func 
 
         # Create a table header
-        headers = ['Key', 'Value', 'Selected']
-        for idx, header in enumerate(headers):
+        for idx, header in enumerate(self.headers):
             label = tk.Label(self, text=header, font=("Arial", 12, "bold"))
             label.grid(row=0, column=idx)
             self.table_widgets.append(label)
