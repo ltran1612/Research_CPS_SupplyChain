@@ -11,5 +11,16 @@
         "total_received_quality": "agent ui#agent#ui received from ui#1#ui a total amount of ui#4#ui of ui#2#ui with quality ui#3#ui.",
         "available_item": "agent ui#agent#ui has a total amount of ui#2#ui of ui#1#ui.",
         "available_quality_item": "agent ui#agent#ui has a total amount of ui#3#ui of ui#1#ui with quality ui#2#ui."
+    },
+    "actions": {
+        "pay": "agent ui#agent#ui pay to ui#1#ui with an amount of ui#3#ui for ui#2#ui.",
+        "receive_money": "agent ui#agent#ui receives an amount of ui#4#ui from ui#1#ui for ui#3#ui (sent to ui#agent#ui at time ui#2#ui by ui#1#ui)",
+        "receive": "agent ui#agent#ui receives from ui#1#ui an amount of ui#4#ui of ui#3#ui (sent at time ui#2#ui).",
+        "receive_quality": "agent ui#agent#ui receives from ui#1#ui an amount of ui#5#ui of ui#3#ui with quality ui#4#ui (sent at time ui#2#ui).",
+        "produce": "agent ui#agent#ui produces ui#2#ui amount of ui#1#ui.",
+        "produce_quality": "agent ui#agent#ui produces ui#3#ui amount of ui#1#ui with quality ui#2#ui.",
+        "deliver": "agent ui#agent#ui delivers ui#3#ui amount of ui#2#ui to ui#1#ui.",
+        "deliver_quality": "agent ui#agent#ui delivers ui#4#ui amount of ui#2#ui to ui#1#ui with quality ui#3#ui."
     }
+
 }
